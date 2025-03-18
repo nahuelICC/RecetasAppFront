@@ -1,4 +1,42 @@
 /* You can add global styles to this file, and also import other style files */
+@import url(colors.css);
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html, body { height: 100%;
+  background-color: var(--color-verde-fondo);
+}
+body {
+  margin: 0;
+  font-family: "Liberation Serif", serif;
+  background-color: var(--color-verde-fondo);
+}
+
+.color-texto{
+  color: var(--color-texto);
+}
+
+.color-boton-verde{
+  background-color: var(--color-verde-boton);
+}
+
+.color-boton-amarillo{
+  background-color: var(--color-amarillo-boton);
+}
+
+.color-texto-blanco{
+  color: var(--color-texto-blanco);
+}
+
+.color-verde-claro{
+  background-color: var(--color-verde-cuadros);
+}
+
+.color-verde-oscuro{
+  background-color: var(--color-verde-fondo);
+}
+
+.color-rojo-resalto{
+  background-color: var(--color-rojo-resaltar);
+}
