@@ -1,1 +1,269 @@
-<p>registro works!</p>
+<div class="flex items-center justify-center min-h-screen mt-10">
+  <div class="color-verde-claro p-8 rounded-lg shadow-lg w-96">
+
+    <h2 class="text-2xl font-bold mb-6 mt-0 text-center">Crea tu cuenta</h2>
+    <!-- Barra de progreso -->
+
+    <h3 class="text-lg font-semibold mb-3 text-center">
+      {{ currentStep === 1 ? 'Datos del usuario' : currentStep === 2 ? 'Datos personales' : currentStep === 3 ? 'Información adicional' : 'Resumen' }}
+    </h3>
+
+    <div class="flex items-center justify-between mb-8">
+      <div *ngFor="let step of [1, 2, 3, 4]; let i = index" class="flex items-center" [ngClass]="{'flex-1': i < 3}">
+        <div
+          class="w-6 h-6 rounded-full flex items-center justify-center text-sm transition-colors"
+          [ngClass]="{
+        'bg-yellow-400': currentStep > i + 1,
+        'bg-gray-300': currentStep <= i + 1
+      }"
+        >
+          <span *ngIf="currentStep > i + 1">{{ i +1}}</span>
+          <span *ngIf="currentStep <= i + 1">{{ i + 1 }}</span>
+        </div>
+        <div
+          *ngIf="i < 3"
+          class="flex-1 h-1"
+          [ngClass]="currentStep > i + 1 ? 'bg-yellow-400' : 'bg-gray-300'"
+        ></div>
+      </div>
+    </div>
+
+
+
+    <form *ngIf="currentStep === 1" [formGroup]="formStep1">
+      <div class="space-y-4">
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-semibold text-gray-700">Nombre de usuario</label>
+          <input
+            type="text"
+            formControlName="username"
+            placeholder="Ingrese su nombre de usuario"
+            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
+          >
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-semibold text-gray-700">Email</label>
+          <input
+            type="email"
+            formControlName="email"
+            placeholder="Ingrese su correo electrónico"
+            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
+          >
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-semibold text-gray-700">Contraseña</label>
+          <div class="relative">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="Ingrese su contraseña"
+              class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
+            />
+            <button
+              (mousedown)="showPassword = true"
+              (mouseup)="showPassword = false"
+              (mouseleave)="showPassword = false"
+              class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-600 hover:text-gray-800 focus:outline-none"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M2.458 12C3.732 7.943 7.521 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.478 0-8.268-2.943-9.542-7z"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-semibold text-gray-700">Confirmar contraseña</label>
+          <div class="relative">
+            <input
+              [type]="showConfirmPassword ? 'text' : 'password'"
+              formControlName="confirmPassword"
+              placeholder="Confirme su contraseña"
+              class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
+            />
+            <button
+              (mousedown)="showConfirmPassword = true"
+              (mouseup)="showConfirmPassword = false"
+              (mouseleave)="showConfirmPassword = false"
+              class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-600 hover:text-gray-800 focus:outline-none"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M2.458 12C3.732 7.943 7.521 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.478 0-8.268-2.943-9.542-7z"
+                />
+              </svg>
+            </button>
+          </div>
+
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-semibold text-gray-700">Foto de perfil: (Opcional)</label>
+          <input
+            type="file"
+            accept="image/*"
+            (change)="onFileSelect($event)"
+            class="hidden"
+            formControlName="fotoPerfil"
+            id="fileInput"
+          />
+          <app-boton class="cursor-pointer"
+          [label]="'Seleccionar archivo'"
+          (click)="triggerFileInput()"
+          size="small">
+          </app-boton>
+        </div>
+
+        <!-- Vista previa de la imagen -->
+        <div *ngIf="imagenPreview" class="mt-2 relative">
+          <img
+            [src]="imagenPreview"
+            alt="Vista previa de la foto de perfil"
+            class="w-32 h-auto border rounded shadow cursor-pointer"
+            (click)="limpiarVistaPrevia()"
+          />
+        </div>
+      </div>
+    </form>
+
+    <!-- Paso 2 - Credenciales -->
+    <form *ngIf="currentStep === 2" [formGroup]="formStep2">
+      <div class="space-y-4">
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-semibold text-gray-700">Nombre</label>
+          <input
+            type="text"
+            formControlName="nombre"
+            placeholder="Ingrese su nombre"
+            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
+          >
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-semibold text-gray-700">Apellidos</label>
+          <input
+            type="text"
+            formControlName="apellidos"
+            placeholder="Ingrese sus apellidos"
+            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
+          >
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-semibold text-gray-700">Fecha nacimiento</label>
+          <input
+            type="date"
+            formControlName="fecha"
+            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
+          >
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-semibold text-gray-700">Número de teléfono</label>
+          <input
+            type="text"
+            formControlName="telefono"
+            placeholder="Ingrese su numero de teléfono"
+            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
+          >
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-semibold text-gray-700">Descripción breve: (opcional)</label>
+          <textarea
+            formControlName="descripcionBreve"
+            placeholder="Ingrese una descripción breve"
+            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
+            rows="4"
+          ></textarea>
+        </div>
+
+      </div>
+    </form>
+
+    <!-- Paso 3 - Información adicional -->
+    <form *ngIf="currentStep === 3" [formGroup]="formStep3">
+      <div class="space-y-4">
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-medium text-gray-700">Teléfono</label>
+          <input
+            type="tel"
+            formControlName="telefono"
+            placeholder="Ingrese su número telefónico"
+            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
+          >
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-medium text-gray-700">Dirección</label>
+          <input
+            type="text"
+            formControlName="direccion"
+            placeholder="Ingrese su dirección"
+            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
+          >
+        </div>
+      </div>
+    </form>
+
+    <!-- Paso 4 - Resumen -->
+    <div *ngIf="currentStep === 4" class="space-y-4">
+      <div>
+        <h3 class="font-bold">Resumen:</h3>
+        <p>Nombre: {{ formStep1.value.username }}</p>
+        <p>Email: {{ formStep1.value.email }}</p>
+        <p>Teléfono: {{ formStep3.value.telefono }}</p>
+      </div>
+    </div>
+
+    <!-- Botones de navegación -->
+    <div class="flex justify-between mt-8">
+      <app-boton
+        *ngIf="currentStep > 1"
+        (click)="previousStep()"
+        [label]="'Anterior'"
+       >Anterior</app-boton>
+
+      <app-boton
+        *ngIf="currentStep < 4"
+        (click)="nextStep()"
+        [color]="'var(--color-amarillo-boton)'"
+        [label]="'Siguiente'"
+        [disabled]="!isCurrentStepValid()">
+        {{ currentStep === 4 ? 'Finalizar' : 'Siguiente' }}
+      </app-boton>
+    </div>
+  </div>
+</div>
