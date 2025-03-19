@@ -58,6 +58,7 @@ export class RegistroComponent implements OnInit {
     this.registroService.getAlergenosImagen().subscribe(
       (response) => {
         this.alergenos = response;
+        console.log(this.alergenos);
       },
       (error) => {
         console.error('Error al obtener los alergenos', error);
@@ -67,6 +68,7 @@ export class RegistroComponent implements OnInit {
     this.registroService.getIngredientesBuscador().subscribe(
       (response) => {
         this.ingredientes = response;
+        console.log(this.ingredientes);
       },
       (error) => {
         console.error('Error al obtener los ingredientes', error);
@@ -113,31 +115,35 @@ export class RegistroComponent implements OnInit {
       return;
     }
 
+    // Guarda el archivo seleccionado
     this.portadaSeleccionada = input.files[0];
 
+    // Crea la vista previa
     const reader = new FileReader();
     reader.onload = () => {
       this.imagenPreview = reader.result as string;
     };
     reader.readAsDataURL(this.portadaSeleccionada);
+
+    // Actualiza el valor del FormControl
+    this.formStep1.get('fotoPerfil')?.setValue(this.portadaSeleccionada.name);
   }
 
   limpiarVistaPrevia(): void {
     this.imagenPreview = null;
     this.portadaSeleccionada = null;
 
+    // Limpiar el valor del FormControl
+    this.formStep1.get('fotoPerfil')?.setValue('');
+
+    // Limpiar el input file
     const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
     if (fileInput) {
       fileInput.value = '';
     }
   }
 
-  triggerFileInput() {
-    const fileInput = document.getElementById('fileInput') as HTMLInputElement;
-    if (fileInput) {
-      fileInput.click();
-    }
-  }
+
 
   fechaValidator(control: AbstractControl): { [key: string]: any } | null {
     const fechaNacimiento = new Date(control.value);

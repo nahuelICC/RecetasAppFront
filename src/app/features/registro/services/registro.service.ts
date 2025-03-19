@@ -14,11 +14,11 @@ export class RegistroService {
   constructor(private http: HttpClient) {
   }
 
-  getAlergenosImagen(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/listarMostrar`);
+  getAlergenosImagen(): Observable<any[]> {
+    return this.http.get<any>(`${this.apiUrl}/listarMostrar`);
   }
 
   getIngredientesBuscador(): Observable<any> {
-    return this.http.get(`${this.apiIngredientesUrl}/listarBuscador`);
+    return this.http.get<any>(`${this.apiIngredientesUrl}/listarBuscador`);
   }
 }
