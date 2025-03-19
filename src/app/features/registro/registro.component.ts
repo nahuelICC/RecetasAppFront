@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import {Component, input, OnInit} from '@angular/core';
 import {AbstractControl, FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {NgClass, NgForOf, NgIf} from '@angular/common';
 import {BotonComponent} from '../../shared/components/boton/boton.component';
+import {RegistroService} from './services/registro.service';
+
 
 @Component({
   selector: 'app-registro',
@@ -16,7 +18,9 @@ import {BotonComponent} from '../../shared/components/boton/boton.component';
   standalone: true,
   styleUrl: './registro.component.css'
 })
-export class RegistroComponent {
+export class RegistroComponent implements OnInit {
+  ingredientes: any[] = [];
+  alergenos: any[] = [];
   showPassword: boolean = false; // Controla si la contraseña principal es visible
   showConfirmPassword: boolean = false; // Controla si la confirmación de contraseña es visible
   currentStep = 1;
@@ -27,7 +31,7 @@ export class RegistroComponent {
   formStep2;
   formStep3;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private registroService: RegistroService) {
     this.formStep1 = this.fb.group({
       username: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
@@ -48,6 +52,26 @@ export class RegistroComponent {
       telefono: [''],
       direccion: ['']
     });
+  }
+
+  ngOnInit(): void {
+    this.registroService.getAlergenosImagen().subscribe(
+      (response) => {
+        this.alergenos = response;
+      },
+      (error) => {
+        console.error('Error al obtener los alergenos', error);
+      }
+    );
+
+    this.registroService.getIngredientesBuscador().subscribe(
+      (response) => {
+        this.ingredientes = response;
+      },
+      (error) => {
+        console.error('Error al obtener los ingredientes', error);
+      }
+    );
   }
 
   nextStep() {
@@ -131,5 +155,7 @@ export class RegistroComponent {
 
     return null;
   }
+
+
 
 }

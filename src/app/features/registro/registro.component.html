@@ -135,9 +135,8 @@
             type="file"
             accept="image/*"
             (change)="onFileSelect($event)"
-            class="hidden"
             formControlName="fotoPerfil"
-            id="fileInput"
+            class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
           />
           <app-boton class="cursor-pointer"
           [label]="'Seleccionar archivo'"
