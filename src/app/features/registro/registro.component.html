@@ -1,5 +1,5 @@
-<div class="flex items-center justify-center min-h-screen mt-10">
-  <div class="color-verde-claro p-8 rounded-lg shadow-lg w-96">
+<div class="flex items-center justify-center min-h-screen mt-10 px-4 md:px-10">
+  <div class="color-verde-claro p-8 rounded-lg shadow-lg w-full max-w-3xl">
 
     <h2 class="text-2xl font-bold mb-6 mt-0 text-center">Crea tu cuenta</h2>
     <!-- Barra de progreso -->
@@ -31,7 +31,7 @@
 
 
     <form *ngIf="currentStep === 1" [formGroup]="formStep1">
-      <div class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="flex flex-col gap-1">
           <label class="text-sm font-semibold text-gray-700">Nombre de usuario</label>
           <input
@@ -40,6 +40,10 @@
             placeholder="Ingrese su nombre de usuario"
             class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
           >
+          <div *ngIf="formStep1.get('username')?.invalid && (formStep1.get('username')?.dirty || formStep1.get('username')?.touched)"
+               class="text-red-500 text-xs mt-1">
+            <span *ngIf="formStep1.get('username')?.errors?.['required']">El nombre de usuario es obligatorio</span>
+          </div>
         </div>
 
         <div class="flex flex-col gap-1">
@@ -50,6 +54,11 @@
             placeholder="Ingrese su correo electrónico"
             class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
           >
+          <div *ngIf="formStep1.get('email')?.invalid && (formStep1.get('email')?.dirty || formStep1.get('email')?.touched)"
+               class="text-red-500 text-xs mt-1">
+            <span *ngIf="formStep1.get('email')?.errors?.['required']">El email es obligatorio</span>
+            <span *ngIf="formStep1.get('email')?.errors?.['email']">Formato de email inválido</span>
+          </div>
         </div>
         <div class="flex flex-col gap-1">
           <label class="text-sm font-semibold text-gray-700">Contraseña</label>
@@ -66,27 +75,14 @@
               (mouseleave)="showPassword = false"
               class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-600 hover:text-gray-800 focus:outline-none"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M2.458 12C3.732 7.943 7.521 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.478 0-8.268-2.943-9.542-7z"
-                />
-              </svg>
+              <ion-icon name="eye" class="h-5 w-5"></ion-icon>
             </button>
+          </div>
+          <div *ngIf="formStep1.get('password')?.invalid && (formStep1.get('password')?.dirty || formStep1.get('password')?.touched)"
+               class="text-red-500 text-xs mt-1">
+            <span *ngIf="formStep1.get('password')?.errors?.['required']">La contraseña es obligatoria</span>
+            <span *ngIf="formStep1.get('password')?.errors?.['minlength']">Mínimo 8 caracteres</span>
+            <span *ngIf="formStep1.get('password')?.errors?.['pattern']">Debe contener mayúscula, número y carácter especial</span>
           </div>
         </div>
 
@@ -105,56 +101,47 @@
               (mouseleave)="showConfirmPassword = false"
               class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-600 hover:text-gray-800 focus:outline-none"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M2.458 12C3.732 7.943 7.521 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.478 0-8.268-2.943-9.542-7z"
-                />
-              </svg>
+              <ion-icon name="eye" class="h-5 w-5"></ion-icon>
             </button>
+          </div>
+          <div *ngIf="formStep1.get('confirmPassword')?.invalid && (formStep1.get('confirmPassword')?.dirty || formStep1.get('confirmPassword')?.touched)"
+               class="text-red-500 text-xs mt-1">
+            <span *ngIf="formStep1.get('confirmPassword')?.errors?.['required']">La confirmación de contraseña es obligatoria</span>
+            <span *ngIf="formStep1.errors?.['mismatch'] && formStep1.get('confirmPassword')?.touched"
+                  class="text-red-500 text-xs mt-1">
+                  Las contraseñas no coinciden
+            </span>
           </div>
 
         </div>
-        <div class="flex flex-col gap-1">
+        <!-- Input para subir imagen -->
+        <div class="flex flex-col gap-1 mt-4">
           <label class="text-sm font-semibold text-gray-700">Foto de perfil: (Opcional)</label>
           <input
             type="file"
             accept="image/*"
             (change)="onFileSelect($event)"
-            formControlName="fotoPerfil"
             class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
           />
+          <!-- Vista previa de la imagen -->
+          <div *ngIf="imagenPreview" class="mt-2 relative">
+            <img
+              [src]="imagenPreview"
+              alt="Vista previa de la foto de perfil"
+              class="w-32 h-auto border rounded shadow cursor-pointer"
+              (click)="limpiarVistaPrevia()"
+            />
+          </div>
         </div>
 
-        <!-- Vista previa de la imagen -->
-        <div *ngIf="imagenPreview" class="mt-2 relative">
-          <img
-            [src]="imagenPreview"
-            alt="Vista previa de la foto de perfil"
-            class="w-32 h-auto border rounded shadow cursor-pointer"
-            (click)="limpiarVistaPrevia()"
-          />
-        </div>
+
+
       </div>
     </form>
 
-    <!-- Paso 2 - Credenciales -->
+    <!-- Paso 2 - Datos Personales -->
     <form *ngIf="currentStep === 2" [formGroup]="formStep2">
-      <div class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="flex flex-col gap-1">
           <label class="text-sm font-semibold text-gray-700">Nombre</label>
           <input
@@ -163,6 +150,10 @@
             placeholder="Ingrese su nombre"
             class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
           >
+          <div *ngIf="formStep2.get('nombre')?.invalid && (formStep2.get('nombre')?.dirty || formStep2.get('nombre')?.touched)"
+               class="text-red-500 text-xs mt-1">
+            <span *ngIf="formStep2.get('nombre')?.errors?.['required']">El nombre es obligatorio</span>
+          </div>
         </div>
 
         <div class="flex flex-col gap-1">
@@ -173,6 +164,10 @@
             placeholder="Ingrese sus apellidos"
             class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
           >
+          <div *ngIf="formStep2.get('apellidos')?.invalid && (formStep2.get('apellidos')?.dirty || formStep2.get('apellidos')?.touched)"
+               class="text-red-500 text-xs mt-1">
+            <span *ngIf="formStep2.get('apellidos')?.errors?.['required']">Los apellidos son obligatorios</span>
+          </div>
         </div>
 
         <div class="flex flex-col gap-1">
@@ -182,6 +177,11 @@
             formControlName="fecha"
             class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
           >
+          <div *ngIf="formStep2.get('fecha')?.invalid && (formStep2.get('fecha')?.dirty || formStep2.get('fecha')?.touched)"
+               class="text-red-500 text-xs mt-1">
+            <span *ngIf="formStep2.get('fecha')?.errors?.['fechaInvalida']">{{ formStep2.get('fecha')?.errors?.['fechaInvalida'] }}</span>
+            <span *ngIf="formStep2.get('fecha')?.errors?.['edadInvalida']">{{ formStep2.get('fecha')?.errors?.['edadInvalida'] }}</span>
+          </div>
         </div>
 
         <div class="flex flex-col gap-1">
@@ -189,57 +189,126 @@
           <input
             type="text"
             formControlName="telefono"
-            placeholder="Ingrese su numero de teléfono"
+            placeholder="Ingrese su número de teléfono"
             class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
           >
+          <div *ngIf="formStep2.get('telefono')?.invalid && (formStep2.get('telefono')?.dirty || formStep2.get('telefono')?.touched)"
+               class="text-red-500 text-xs mt-1">
+            <span *ngIf="formStep2.get('telefono')?.errors?.['required']">El teléfono es obligatorio</span>
+            <span *ngIf="formStep2.get('telefono')?.errors?.['pattern']">Debe tener 9 dígitos</span>
+          </div>
         </div>
 
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-semibold text-gray-700">Descripción breve: (opcional)</label>
-          <textarea
-            formControlName="descripcionBreve"
-            placeholder="Ingrese una descripción breve"
-            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
-            rows="4"
-          ></textarea>
-        </div>
 
+      </div>
+      <div class="flex flex-col gap-1 mt-4">
+        <label class="text-sm font-semibold text-gray-700">Descripción breve (Opcional)</label>
+        <textarea
+          formControlName="descripcionBreve"
+          placeholder="Ingrese una descripción breve"
+          class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all max-h-20"
+          rows="4"
+        ></textarea>
       </div>
     </form>
 
     <!-- Paso 3 - Información adicional -->
     <form *ngIf="currentStep === 3" [formGroup]="formStep3">
       <div class="space-y-4">
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-700">Teléfono</label>
-          <input
-            type="tel"
-            formControlName="telefono"
-            placeholder="Ingrese su número telefónico"
-            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
-          >
+        <div class="flex flex-wrap">
+        <h4 class="text-xl font-semibold mb-2">Ingredientes favoritos:</h4> <h4 class="text-sm md:text-lg font-light mb-2 mx-1 ">(Selecciona un maximo de 3)</h4>
         </div>
-
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-700">Dirección</label>
+        <!-- Buscador de ingredientes -->
+        <div class="flex bg-white items-center border rounded-lg p-2 flex-grow">
+  <span class="text-gray-500 mr-2 flex">
+    <ion-icon name="search"></ion-icon>
+  </span>
           <input
             type="text"
-            formControlName="direccion"
-            placeholder="Ingrese su dirección"
-            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
-          >
+            placeholder="Buscar"
+            class="w-full outline-none bg-transparent"
+            (input)="filtrarIngredientes($event)">
         </div>
+
+        <!-- Resultados de búsqueda con scroll y fondo blanco -->
+        <div *ngIf="ingredientesFiltrados.length > 0"
+             class="bg-white border rounded-lg shadow-md max-h-40 overflow-y-auto mt-2 p-2">
+          <div *ngFor="let ingrediente of ingredientesFiltrados.slice(0, 5)"
+               class="cursor-pointer hover:bg-gray-100 p-2 rounded"
+               (click)="seleccionarIngrediente(ingrediente)">
+            {{ ingrediente.nombre }}
+          </div>
+        </div>
+
+        <!-- Ingredientes seleccionados como chips de Ionic -->
+        <div class="flex gap-2 flex-wrap mt-3">
+          <ion-chip *ngFor="let ingrediente of ingredientesSeleccionados; let i = index">
+            <ion-label>{{ ingrediente.nombre }}</ion-label>
+            <ion-icon name="close-circle" (click)="eliminarIngrediente(i)"></ion-icon>
+          </ion-chip>
+        </div>
+
+        <!-- Alergenos -->
+        <h4 class="font-semibold mb-2">Alergenos:</h4>
+        <div class="grid grid-cols-7 gap-2">
+          <div *ngFor="let alergeno of alergenos" class="cursor-pointer">
+            <img
+              [src]="alergeno.imagen"
+              alt="{{ alergeno.nombre }}"
+              class="w-full h-auto border rounded shadow"
+              [class.border-yellow-400]="esAlergenoSeleccionado(alergeno)"
+              (click)="toggleAlergeno(alergeno)"
+            />
+          </div>
+        </div>
+      </div>
+      <div *ngIf="hasAlergenoConflict()" class="text-red-500 text-sm p-2 mt-2 border border-red-300 rounded bg-red-50">
+        Existe un conflicto entre tus ingredientes seleccionados y alérgenos. Por favor, revisa que ningún ingrediente contenga un alérgeno que hayas seleccionado.
       </div>
     </form>
 
     <!-- Paso 4 - Resumen -->
-    <div *ngIf="currentStep === 4" class="space-y-4">
-      <div>
-        <h3 class="font-bold">Resumen:</h3>
-        <p>Nombre: {{ formStep1.value.username }}</p>
-        <p>Email: {{ formStep1.value.email }}</p>
-        <p>Teléfono: {{ formStep3.value.telefono }}</p>
+    <div *ngIf="currentStep === 4" class="space-y-4 bg-white p-6 rounded-lg shadow-lg">
+      <h3 class="text-xl font-bold text-center text-gray-800 mb-4">Resumen del Registro</h3>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <p><strong class="text-gray-700">Nombre de usuario:</strong> {{ formStep1.value.username }}</p>
+        <p><strong class="text-gray-700">Email:</strong> {{ formStep1.value.email }}</p>
+        <p><strong class="text-gray-700">Nombre:</strong> {{ formStep2.value.nombre }}</p>
+        <p><strong class="text-gray-700">Apellidos:</strong> {{ formStep2.value.apellidos }}</p>
+        <p><strong class="text-gray-700">Fecha de nacimiento:</strong> {{ formStep2.value.fecha }}</p>
+        <p><strong class="text-gray-700">Teléfono:</strong> {{ formStep2.value.telefono }}</p>
+        <p><strong class="text-gray-700">Descripción breve:</strong> {{ formStep2.value.descripcionBreve || 'No especificada' }}</p>
       </div>
+
+      <!-- Ingredientes seleccionados -->
+      <div class="mt-4">
+        <h4 class="text-lg font-bold text-gray-800">Ingredientes Seleccionados:</h4>
+        <div *ngIf="ingredientesSeleccionados.length > 0; else sinIngredientes">
+          <div class="flex gap-2 flex-wrap mt-2">
+            <ion-chip class="sinPointer" *ngFor="let ingrediente of ingredientesSeleccionados">
+              <ion-label >{{ ingrediente.nombre }}</ion-label>
+            </ion-chip>
+          </div>
+        </div>
+        <ng-template #sinIngredientes>
+          <p class="text-gray-500">No se han seleccionado ingredientes.</p>
+        </ng-template>
+      </div>
+
+        <h4 class="text-lg font-bold text-gray-800 mt-3">Alergenos Seleccionados:</h4>
+        <div class="grid grid-cols-7 gap-2" *ngIf="alergenosSeleccionados.length > 0; else sinAlergenos">
+        <div *ngFor="let alergeno of alergenosSeleccionados">
+          <img
+            [src]="alergeno.imagen"
+            alt="{{ alergeno.id }}"
+            class="w-full h-auto border rounded shadow"
+          />
+        </div>
+        </div>
+        <ng-template #sinAlergenos>
+          <p>No se han seleccionado alérgenos.</p>
+        </ng-template>
     </div>
 
     <!-- Botones de navegación -->
@@ -248,15 +317,13 @@
         *ngIf="currentStep > 1"
         (click)="previousStep()"
         [label]="'Anterior'"
-       >Anterior</app-boton>
+      >Anterior</app-boton>
 
       <app-boton
-        *ngIf="currentStep < 4"
         (click)="nextStep()"
         [color]="'var(--color-amarillo-boton)'"
-        [label]="'Siguiente'"
+        [label]="currentStep === 4 ? 'Finalizar' : 'Siguiente'"
         [disabled]="!isCurrentStepValid()">
-        {{ currentStep === 4 ? 'Finalizar' : 'Siguiente' }}
       </app-boton>
     </div>
   </div>
