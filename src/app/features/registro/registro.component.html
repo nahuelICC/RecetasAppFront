@@ -262,7 +262,7 @@
           </div>
         </div>
       </div>
-      <div *ngIf="hasAlergenoConflict()" class="text-red-500 text-sm p-2 mt-2 border border-red-300 rounded bg-red-50">
+      <div *ngIf="validadorConflictoAlergenos()" class="text-red-500 text-sm p-2 mt-2 border border-red-300 rounded bg-red-50">
         Existe un conflicto entre tus ingredientes seleccionados y alérgenos. Por favor, revisa que ningún ingrediente contenga un alérgeno que hayas seleccionado.
       </div>
     </form>
