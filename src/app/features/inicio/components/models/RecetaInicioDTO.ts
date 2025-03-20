@@ -1,8 +1,7 @@
 export interface RecetaInicioDTO {
-  id: number;
+  imagen: string;
   titulo: string;
-  imagenUrl: string;
-  autor: string;
-  likes: number;
-  fechaPublicacion: string;
+  alergenos: string[];
+  nombreCooker: string;
+  fotoPerfilCooker: string;
 }

@@ -8,12 +8,12 @@ import {RecetaInicioDTO} from '../models/RecetaInicioDTO';
 })
 export class InicioService {
 
-  private apiUrl = 'http://localhost:8080/receta/recetasInicio'; // URL base del backend
+  private apiUrl = 'api/receta'; // URL base del backend
 
   constructor(private http: HttpClient) {}
 
   getTop10RecetasByCookerId(cookerId: number): Observable<RecetaInicioDTO[]> {
-    return this.http.get<RecetaInicioDTO[]>(`${this.apiUrl}/${cookerId}`);
+    return this.http.get<RecetaInicioDTO[]>(`${this.apiUrl}/recetasInicio/${cookerId}`);
   }
 
 
