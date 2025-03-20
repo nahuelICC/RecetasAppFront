@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {RecetaInicioDTO} from '../models/RecetaInicioDTO';
+import {RecetaInicioDTO} from '../../models/RecetaInicioDTO';
 import {IonicModule} from '@ionic/angular';
 import {NgForOf} from '@angular/common';
 

@@ -1,43 +1,36 @@
-<div class="bg-[#abd1c6] rounded-sm shadow-md p-4">
-  <!-- Sección superior con la foto de perfil y el nombre del Cooker -->
-  <div class="flex items-center space-x-4">
-    <!-- Foto de perfil del Cooker -->
-    <img [src]="receta.fotoPerfilCooker" alt="Perfil Cooker" class="w-12 h-12 rounded-full object-cover">
-    <!-- Nombre del Cooker -->
-    <p class="font-bold">{{ receta.nombreCooker }}</p>
+<div class="bg-[#abd1c6] rounded-md shadow-md pt-3 pb-3">
+  <div class="flex items-center justify-between pl-3 pr-3">
+    <div class="flex items-center space-x-4">
+      <img [src]="receta.fotoPerfilCooker" alt="Perfil Cooker" class="w-12 h-12 rounded-full object-cover">
+      <p class="font-bold">{{ receta.nombreCooker }}</p>
+    </div>
+    <button class="text-white hover:text-gray-300">
+      <ion-icon name="ellipsis-horizontal-outline" class="h-5 w-5 text-black"></ion-icon>
+    </button>
   </div>
 
-  <!-- Imagen de la receta -->
   <img [src]="receta.imagen" alt="Receta" class="w-full h-64 object-cover rounded-t-lg mt-4">
 
-  <div class="mt-2">
+  <div class="mt-2 pr-3 pl-3">
     <p class="font-bold">{{ receta.titulo }}</p>
   </div>
-  <div class="flex flex-wrap gap-2 mt-1">
+
+  <div class="flex flex-wrap mt-1 pr-3 pl-3">
     <img *ngFor="let alergeno of receta.alergenos" [src]="alergeno" [alt]="alergeno"
-         class="w-8 h-8 object-contain rounded-lg border border-gray-300 p-1">
+         class="w-12 h-12 object-contain rounded-lg p-1">
   </div>
 
-  <!-- Sección de botones y iconos (con iconos de Ionic) -->
-  <div class="flex justify-between mt-2">
+  <div class="flex justify-between mt-2 pl-3 pr-3">
     <div class="flex items-center space-x-2">
-      <!-- Icono de like -->
       <button class="text-white hover:text-gray-300">
-        <ion-icon name="heart-outline"></ion-icon>
+        <ion-icon name="heart-outline" class="h-6 w-6 text-black"></ion-icon>
       </button>
-      <!-- Icono de compartir -->
       <button class="text-white hover:text-gray-300">
-        <ion-icon name="share-social" class="h-5 w-5"></ion-icon>
+        <ion-icon name="chatbubble-outline" class="h-5 w-5 text-black"></ion-icon>
       </button>
-      <!-- Icono de guardar -->
       <button class="text-white hover:text-gray-300">
-        <ion-icon name="bookmark"></ion-icon>
+        <ion-icon name="bookmark-outline" class="h-5 w-5 text-black"></ion-icon>
       </button>
     </div>
-
-    <!-- Icono adicional -->
-    <button class="text-white hover:text-gray-300">
-      <ion-icon name="ellipsis-horizontal-outline" class="h-5 w-5"></ion-icon>
-    </button>
   </div>
 </div>

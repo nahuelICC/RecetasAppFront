@@ -3,7 +3,18 @@ import { appConfig } from './app/app.config';
 import { AppComponent } from './app/app.component';
 
 import { addIcons } from "ionicons";
-import {heart, home, person, add, search, closeCircle, eye, heartOutline} from "ionicons/icons";
+import {
+  heart,
+  home,
+  person,
+  add,
+  search,
+  closeCircle,
+  eye,
+  heartOutline,
+  shareSocialOutline,
+  chatbubbleOutline, bookmarkOutline, ellipsisHorizontalOutline
+} from "ionicons/icons";
 
 addIcons({
   heart,
@@ -13,7 +24,11 @@ addIcons({
   search,
   closeCircle,
   eye,
-  heartOutline
+  heartOutline,
+  shareSocialOutline,
+  chatbubbleOutline,
+  bookmarkOutline,
+  ellipsisHorizontalOutline,
 
 });
 
