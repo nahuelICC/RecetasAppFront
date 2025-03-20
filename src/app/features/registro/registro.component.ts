@@ -3,7 +3,7 @@ import {AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators
 import {NgClass, NgForOf, NgIf} from '@angular/common';
 import {BotonComponent} from '../../shared/components/boton/boton.component';
 import {RegistroService} from './services/registro.service';
-import {IonChip, IonIcon, IonLabel} from '@ionic/angular/standalone';
+import {IonChip, IonContent, IonIcon, IonLabel} from '@ionic/angular/standalone';
 
 
 @Component({
@@ -17,6 +17,7 @@ import {IonChip, IonIcon, IonLabel} from '@ionic/angular/standalone';
     IonIcon,
     IonChip,
     IonLabel,
+    IonContent,
   ],
   templateUrl: './registro.component.html',
   standalone: true,
