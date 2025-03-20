@@ -9,6 +9,7 @@ html, body { height: 100%;
 }
 body {
   margin: 0;
+  height: auto;
   font-family: "Liberation Serif", serif;
   background-color: var(--color-verde-fondo);
 }
@@ -39,4 +40,8 @@ body {
 
 .color-rojo-resalto{
   background-color: var(--color-rojo-resaltar);
+}
+
+ion-content{
+  --background: var(--color-verde-fondo);
 }
