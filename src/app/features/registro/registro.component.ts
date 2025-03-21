@@ -166,6 +166,8 @@ export class RegistroComponent implements OnInit {
 
   envioFormulario() {
     this.isloading = true;
+    this.cdr.detectChanges();
+    console.log(this.isloading);
     this.showConfirmRegistro = false;
     const formData = new FormData();
 
