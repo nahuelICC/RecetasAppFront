@@ -7,6 +7,7 @@ import {IonChip, IonContent, IonIcon, IonLabel} from '@ionic/angular/standalone'
 import {AlertInfoComponent, AlertType} from '../../shared/components/alert-info/alert-info.component';
 import {AlertConfirmarComponent} from '../../shared/components/alert-confirmar/alert-confirmar.component';
 import {Router} from '@angular/router';
+import {PantallaCargaComponent} from '../../shared/components/pantalla-carga/pantalla-carga.component';
 
 
 @Component({
@@ -23,6 +24,7 @@ import {Router} from '@angular/router';
     IonContent,
     AlertInfoComponent,
     AlertConfirmarComponent,
+    PantallaCargaComponent,
   ],
   templateUrl: './registro.component.html',
   standalone: true,
@@ -44,6 +46,7 @@ export class RegistroComponent implements OnInit {
   isAlertVisible: boolean = false;
   showConfirmRegistro: boolean = false;
   showAlertConfirmar: boolean = false;
+  isloading: boolean = false;
 
 
   formStep1:FormGroup;
@@ -162,6 +165,7 @@ export class RegistroComponent implements OnInit {
   }
 
   envioFormulario() {
+    this.isloading = true;
     this.showConfirmRegistro = false;
     const formData = new FormData();
 
@@ -188,11 +192,13 @@ export class RegistroComponent implements OnInit {
     this.registroService.registrarUsuario(formData).subscribe({
       next: (response) => {
         this.alertMessage = "Usuario registrado correctamente. Revise su correo para activar su cuenta";
+        this.isloading = false;
         this.showAlertConfirmar = true;
       },
       error: (error) => {
         this.alertMessage = error.error.message || 'Error al registrar el usuario';
         this.alertType = "error";
+        this.isloading = false;
         this.isAlertVisible = true;
       }
     });
