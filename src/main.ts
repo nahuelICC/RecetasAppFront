@@ -3,7 +3,7 @@ import { appConfig } from './app/app.config';
 import { AppComponent } from './app/app.component';
 
 import { addIcons } from "ionicons";
-import { heart, home, person, add, search, closeCircle, eye } from "ionicons/icons";
+import { heart, home, person, add, search, closeCircle, eye, help } from "ionicons/icons";
 
 addIcons({
   heart,
@@ -12,7 +12,8 @@ addIcons({
   add,
   search,
   closeCircle,
-  eye
+  eye,
+  help
 });
 
 

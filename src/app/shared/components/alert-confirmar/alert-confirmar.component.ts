@@ -1,15 +1,15 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { BotonComponent } from '../boton/boton.component';
-import { MatIcon } from '@angular/material/icon';
 import { NgClass, NgIf } from '@angular/common';
+import {IonIcon} from "@ionic/angular/standalone";
 
 @Component({
   selector: 'app-alert-confirmar',
   imports: [
     BotonComponent,
-    MatIcon,
     NgClass,
-    NgIf
+    NgIf,
+    IonIcon
   ],
   templateUrl: './alert-confirmar.component.html',
   standalone: true,
