@@ -15,6 +15,7 @@ import {
   shareSocialOutline,
   chatbubbleOutline, bookmarkOutline, ellipsisHorizontalOutline
 } from "ionicons/icons";
+import { heart, home, person, add, search, closeCircle, eye, help } from "ionicons/icons";
 
 addIcons({
   heart,
@@ -23,6 +24,8 @@ addIcons({
   add,
   search,
   closeCircle,
+  eye,
+  help
   eye,
   heartOutline,
   shareSocialOutline,
