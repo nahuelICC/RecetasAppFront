@@ -3,7 +3,7 @@ import {AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators
 import {NgClass, NgForOf, NgIf} from '@angular/common';
 import {BotonComponent} from '../../shared/components/boton/boton.component';
 import {RegistroService} from './services/registro.service';
-import {IonChip, IonContent, IonIcon, IonLabel} from '@ionic/angular/standalone';
+import {IonChip,IonIcon, IonLabel} from '@ionic/angular/standalone';
 import {AlertInfoComponent, AlertType} from '../../shared/components/alert-info/alert-info.component';
 import {AlertConfirmarComponent} from '../../shared/components/alert-confirmar/alert-confirmar.component';
 import {Router} from '@angular/router';
@@ -21,7 +21,6 @@ import {PantallaCargaComponent} from '../../shared/components/pantalla-carga/pan
     IonIcon,
     IonChip,
     IonLabel,
-    IonContent,
     AlertInfoComponent,
     AlertConfirmarComponent,
     PantallaCargaComponent,

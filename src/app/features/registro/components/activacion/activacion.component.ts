@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {RegistroService} from '../../services/registro.service';
-import {IonContent} from '@ionic/angular/standalone';
 import {NgClass} from '@angular/common';
 import {BotonComponent} from '../../../../shared/components/boton/boton.component';
 
@@ -11,7 +10,6 @@ import {BotonComponent} from '../../../../shared/components/boton/boton.componen
   styleUrls: ['./activacion.component.css'],
   standalone: true,
   imports: [
-    IonContent,
     NgClass,
     BotonComponent
   ]

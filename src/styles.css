@@ -10,7 +10,6 @@ html, body { height: 100%;
 body {
   margin: 0;
   height: auto;
-  font-family: "Liberation Serif", serif;
   background-color: var(--color-verde-fondo);
 }
 
@@ -44,4 +43,5 @@ body {
 
 ion-content{
   --background: var(--color-verde-fondo);
+  font-family: "Cambria, Georgia, serif", sans-serif;
 }

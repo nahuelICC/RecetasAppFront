@@ -3,7 +3,6 @@ import {AuthService} from '../../core/services/auth.service';
 import {LoginService} from './services/login.service';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Router, RouterLink} from '@angular/router';
-import {IonContent} from '@ionic/angular/standalone';
 import {BotonComponent} from '../../shared/components/boton/boton.component';
 import {NgIf} from '@angular/common';
 import {PantallaCargaComponent} from '../../shared/components/pantalla-carga/pantalla-carga.component';
@@ -12,7 +11,6 @@ import {AlertInfoComponent, AlertType} from '../../shared/components/alert-info/
 @Component({
   selector: 'app-login',
   imports: [
-    IonContent,
     BotonComponent,
     RouterLink,
     NgIf,
