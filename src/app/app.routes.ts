@@ -5,7 +5,7 @@ import {ActivacionComponent} from './features/registro/components/activacion/act
 
 export const routes: Routes = [
   { path: 'registro', component: RegistroComponent },
-  { path: 'activar-cuenta', component: ActivacionComponent }
+  { path: 'activar-cuenta', component: ActivacionComponent },
   {path: 'registro', component: RegistroComponent},
   {path: 'main', component: InicioComponent},
 ];
