@@ -4,6 +4,10 @@ import {NgClass, NgForOf, NgIf} from '@angular/common';
 import {BotonComponent} from '../../shared/components/boton/boton.component';
 import {RegistroService} from './services/registro.service';
 import {IonChip, IonContent, IonIcon, IonLabel} from '@ionic/angular/standalone';
+import {AlertInfoComponent, AlertType} from '../../shared/components/alert-info/alert-info.component';
+import {AlertConfirmarComponent} from '../../shared/components/alert-confirmar/alert-confirmar.component';
+import {Router} from '@angular/router';
+import {PantallaCargaComponent} from '../../shared/components/pantalla-carga/pantalla-carga.component';
 
 
 @Component({
@@ -18,6 +22,9 @@ import {IonChip, IonContent, IonIcon, IonLabel} from '@ionic/angular/standalone'
     IonChip,
     IonLabel,
     IonContent,
+    AlertInfoComponent,
+    AlertConfirmarComponent,
+    PantallaCargaComponent,
   ],
   templateUrl: './registro.component.html',
   standalone: true,
@@ -34,13 +41,19 @@ export class RegistroComponent implements OnInit {
   ingredientesFiltrados: any[] = [];
   ingredientesSeleccionados: any[] = [];
   alergenosSeleccionados: any[] = [];
+  alertMessage: string = '';
+  alertType: AlertType = 'success';
+  isAlertVisible: boolean = false;
+  showConfirmRegistro: boolean = false;
+  showAlertConfirmar: boolean = false;
+  isloading: boolean = false;
 
 
   formStep1:FormGroup;
   formStep2:FormGroup;
   formStep3:FormGroup;
 
-  constructor(private fb: FormBuilder, private registroService: RegistroService,private cdr: ChangeDetectorRef) {
+  constructor(private fb: FormBuilder, private registroService: RegistroService,private cdr: ChangeDetectorRef,private router: Router,) {
     this.formStep1 = this.fb.group({
       username: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
@@ -124,7 +137,7 @@ export class RegistroComponent implements OnInit {
     if (this.currentStep < 4) {
       this.currentStep++;
     } else {
-      this.envioFormulario();
+      this.showConfirmRegistro = true;
     }
   }
 
@@ -152,6 +165,10 @@ export class RegistroComponent implements OnInit {
   }
 
   envioFormulario() {
+    this.isloading = true;
+    this.cdr.detectChanges();
+    console.log(this.isloading);
+    this.showConfirmRegistro = false;
     const formData = new FormData();
 
     const datos = {
@@ -176,12 +193,20 @@ export class RegistroComponent implements OnInit {
 
     this.registroService.registrarUsuario(formData).subscribe({
       next: (response) => {
-        console.log('Registro exitoso', response);
+        this.alertMessage = "Usuario registrado correctamente. Revise su correo para activar su cuenta";
+        this.isloading = false;
+        this.showAlertConfirmar = true;
       },
       error: (error) => {
-        console.error('Error en el registro', error);
+        this.alertMessage = error.error.message || 'Error al registrar el usuario';
+        this.alertType = "error";
+        this.isloading = false;
+        this.isAlertVisible = true;
       }
     });
+    setTimeout(() => {
+      this.isAlertVisible = false;
+    }, 2000);
   }
 
   onFileSelect(event: Event): void {
@@ -265,6 +290,11 @@ export class RegistroComponent implements OnInit {
 
   esAlergenoSeleccionado(alergeno: any): boolean {
     return this.alergenosSeleccionados.some((a) => a.id === alergeno.id);
+  }
+
+  onConfirm() {
+    this.showAlertConfirmar = false;
+    this.router.navigate(['']);
   }
 
 

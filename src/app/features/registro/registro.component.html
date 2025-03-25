@@ -329,4 +329,28 @@
     </div>
   </div>
 </div>
+  <app-alert-info
+    [message]="alertMessage"
+    [isVisible]="isAlertVisible"
+    [type]="alertType">
+  </app-alert-info>
+
+  <app-alert-confirmar
+    *ngIf="showConfirmRegistro" [message]="'¿Estás seguro de que quieres completar el registro?'"
+    (confirm)="envioFormulario()" (cancel)="showConfirmRegistro = false">
+  </app-alert-confirmar>
+
+  <app-alert-confirmar
+    *ngIf="showAlertConfirmar"
+    [message]="alertMessage"
+    (confirm)="onConfirm()"
+    [confirmLabel]="'Aceptar'"
+    [showCancelButton]="false"
+    [showIcon]="false">
+  </app-alert-confirmar>
+
+  <app-pantalla-carga *ngIf="isloading"></app-pantalla-carga>
+
+
 </ion-content>
+

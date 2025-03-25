@@ -26,4 +26,8 @@ export class RegistroService {
   registrarUsuario(formData: FormData): Observable<any> {
     return this.http.post<any>(`${this.apiUsuarioUrl}/registro`, formData);
   }
+
+  activarCuenta(token: string): Observable<any> {
+    return this.http.put<any>(`${this.apiUsuarioUrl}/activar?token=${token}`, {});
+  }
 }
