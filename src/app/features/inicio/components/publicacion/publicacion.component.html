@@ -9,7 +9,7 @@
     </button>
   </div>
 
-  <img [src]="receta.imagen" alt="Receta" class="w-full h-64 object-cover rounded-t-lg mt-4">
+  <img [src]="receta.imagen" alt="Receta" class="w-full h-64 object-cover mt-4">
 
   <div class="mt-2 pr-3 pl-3">
     <p class="font-bold">{{ receta.titulo }}</p>
@@ -22,8 +22,10 @@
 
   <div class="flex justify-between mt-2 pl-3 pr-3">
     <div class="flex items-center space-x-2">
-      <button class="text-white hover:text-gray-300">
-        <ion-icon name="heart-outline" class="h-6 w-6 text-black"></ion-icon>
+      <button (click)="toggleLike()" class="text-white hover:text-gray-300">
+        <ion-icon [name]="recetaLeGusta ? 'heart' : 'heart-outline'" class="h-6 w-6"
+                  [class.text-red-500]="recetaLeGusta"
+                  [class.text-black]="!recetaLeGusta"></ion-icon>
       </button>
       <button class="text-white hover:text-gray-300">
         <ion-icon name="chatbubble-outline" class="h-5 w-5 text-black"></ion-icon>

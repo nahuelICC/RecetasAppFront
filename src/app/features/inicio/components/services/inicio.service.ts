@@ -15,6 +15,23 @@ export class InicioService {
   getTop10RecetasByCookerId(cookerId: number): Observable<RecetaInicioDTO[]> {
     return this.http.get<RecetaInicioDTO[]>(`${this.apiUrl}/recetasInicio/${cookerId}`);
   }
+  getRecetasSiguiendo(cookerId: number): Observable<RecetaInicioDTO[]> {
+    return this.http.get<RecetaInicioDTO[]>(`${this.apiUrl}/recetasSiguiendo/${cookerId}`);
+  }
 
+  darMeGustaAReceta(recetaId: number, cookerId: number): Observable<string> {
+    return this.http.post<string>(`${this.apiUrl}/meGusta`, { recetaId, cookerId }, { responseType: 'text' as 'json' });
+  }
+
+  verificarMeGusta(recetaId: number, cookerId: number): Observable<boolean> {
+    return this.http.post<boolean>(`${this.apiUrl}/estado`, { recetaId, cookerId });
+  }
+
+  eliminarMeGusta(recetaId: number, cookerId: number): Observable<string> {
+    return this.http.request<string>('DELETE', `${this.apiUrl}/meGusta`, {
+      body: { recetaId, cookerId },
+      responseType: 'text' as 'json'
+    });
+  }
 
 }

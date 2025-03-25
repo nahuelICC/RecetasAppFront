@@ -18,23 +18,34 @@ import {PublicacionComponent} from './components/publicacion/publicacion.compone
 export class InicioComponent implements OnInit {
 
   recetas: RecetaInicioDTO[] = [];
+  vista: string = 'paraTi'; // Vista por defecto
+  cookerId: number = 1;
 
   constructor(private inicioService: InicioService) {}
 
   ngOnInit(): void {
-    this.inicioService.getTop10RecetasByCookerId(1)
-      .subscribe((recetas) => {
-        this.recetas = recetas;
-      });
+    this.cargarRecetas();
   }
 
-  vista: string = 'paraTi'; // Por defecto, se muestra "Para ti"
+  cargarRecetas() {
+    if (this.vista === 'paraTi') {
+      this.inicioService.getTop10RecetasByCookerId(this.cookerId).subscribe(recetas => {
+        this.recetas = recetas;
+      });
+    } else if (this.vista === 'siguiendo') {
+      this.inicioService.getRecetasSiguiendo(this.cookerId).subscribe(recetas => {
+        this.recetas = recetas;
+      });
+    }
+  }
 
   mostrarParaTi() {
     this.vista = 'paraTi';
+    this.cargarRecetas();
   }
 
   mostrarSiguiendo() {
     this.vista = 'siguiendo';
+    this.cargarRecetas();
   }
 }
