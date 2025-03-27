@@ -1,0 +1,35 @@
+<div *ngIf="!isMobile" class="color-verde-claro rounded-full mx-4 mt-4 p-4 flex items-center justify-between">
+  <div class="flex items-center gap-2">
+    <ion-icon name="restaurant-outline" class="text-2xl"></ion-icon>
+    <span class="text-lg font-bold">Cookers</span>
+  </div>
+  <nav class="flex items-center gap-16 mr-4">
+    <a class="color-texto" href="#">Home</a>
+    <a class="color-texto" href="#">Recetas</a>
+    <a class="color-texto" href="#">Perfil</a>
+    <ion-icon name="paper-plane-outline" class="text-2xl"></ion-icon>
+    <app-boton
+    size="medium"
+    [label]="'Cerrar Sesión'"
+    [color]="'var(--color-amarillo-boton)'"></app-boton>
+  </nav>
+</div>
+
+<div *ngIf="isMobile" class="fixed top-0 left-0 right-0 color-verde-claro p-4 flex justify-between items-center">
+  <span class="text-lg font-bold">Cookers</span>
+  <ion-icon name="paper-plane-outline" class="text-2xl"></ion-icon>
+</div>
+
+<ion-tabs *ngIf="isMobile" class="fixed bottom-0 left-0 right-0 shadow-lg">
+  <ion-tab-bar class="color-verde-claro">
+    <ion-tab-button tab="home" class="color-verde-claro">
+      <ion-icon name="home-outline"></ion-icon>
+    </ion-tab-button>
+    <ion-tab-button tab="recetas" class="color-verde-claro">
+      <ion-icon name="book-outline"></ion-icon>
+    </ion-tab-button>
+    <ion-tab-button tab="perfil" class="color-verde-claro">
+      <ion-icon name="person-outline"></ion-icon>
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-tabs>
