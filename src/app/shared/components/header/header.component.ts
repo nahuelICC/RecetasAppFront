@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {Platform} from '@ionic/angular';
-import {IonAvatar, IonIcon, IonImg, IonTabButton, IonTabs} from '@ionic/angular/standalone';
+import {IonAvatar, IonIcon, IonTabButton, IonTabs} from '@ionic/angular/standalone';
 import {NgIf} from '@angular/common';
 import {BotonComponent} from '../boton/boton.component';
 import {AuthService} from '../../../core/services/auth.service';
@@ -18,7 +18,6 @@ import {HeaderService} from '../../services/header.service';
     NgIf,
     BotonComponent,
     IonAvatar,
-    IonImg,
   ]
 })
 export class HeaderComponent  implements OnInit {
