@@ -50,7 +50,6 @@ export class LoginComponent {
 
     this.loginService.login(this.loginForm.value).subscribe({
       next: (response) => {
-        console.log(response);
         if (response.token) {
           this.authService.setToken(response.token);
           const destino = this.authService.isAdmin() ? '/admin' : '/main';

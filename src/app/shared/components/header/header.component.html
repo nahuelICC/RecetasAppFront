@@ -1,35 +1,31 @@
-<div *ngIf="!isMobile" class="color-verde-claro rounded-full mx-4 mt-4 p-4 flex items-center justify-between">
+<div *ngIf="!isMobile" class="color-verde-claro rounded-full mx-6 mt-4 p-2 px-4 flex items-center justify-between fixed top-0 left-0 right-0 z-50">
   <div class="flex items-center gap-2">
-    <ion-icon name="restaurant-outline" class="text-2xl"></ion-icon>
-    <span class="text-lg font-bold">Cookers</span>
+    <img src="assets/logo.png" class="h-10 sm:h-12 w-auto max-w-[120px] sm:max-w-[160px] hidden lg:block">
+    <span class="lg:text-2xl text-lg font-bold texto-logo">Cookers</span>
   </div>
   <nav class="flex items-center gap-16 mr-4">
-    <a class="color-texto" href="#">Home</a>
-    <a class="color-texto" href="#">Recetas</a>
-    <a class="color-texto" href="#">Perfil</a>
-    <ion-icon name="paper-plane-outline" class="text-2xl"></ion-icon>
-    <app-boton
-    size="medium"
-    [label]="'Cerrar Sesión'"
-    [color]="'var(--color-amarillo-boton)'"></app-boton>
+    <a class="color-texto font-semibold hover:text-white" href="/main">Home</a>
+    <a class="color-texto font-semibold hover:text-white" href="#">Buscador</a>
+    <a class="color-texto font-semibold hover:text-white" href="#">Nutriscore</a>
+    <ion-icon name="paper-plane-outline" class="text-2xl hover:cursor-pointer avion" *ngIf="authService.isLogged()"></ion-icon>
+    <div class="relative" *ngIf="authService.isLogged()">
+      <ion-avatar (click)="toggleMenu()" class="cursor-pointer w-10 h-10">
+        <img alt="Avatar" [src]="imagenPerfil" class="w-full h-full rounded-full" />
+      </ion-avatar>
+
+      <div *ngIf="menuOpen" class="absolute right-0 mt-2 w-48 bg-white shadow-xl rounded-lg z-50 border border-gray-200">
+        <button class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2">
+          Perfil
+        </button>
+        <button class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2" (click)="logout()">
+          Cerrar Sesión
+        </button>
+      </div>
+    </div>
   </nav>
 </div>
 
-<div *ngIf="isMobile" class="fixed top-0 left-0 right-0 color-verde-claro p-4 flex justify-between items-center">
-  <span class="text-lg font-bold">Cookers</span>
+<div *ngIf="isMobile" class="fixed top-0 left-0 right-0 color-verde-claro p-4 flex justify-between items-center z-50 border-b border-b-gray-300">
+  <span class="text-lg font-bold texto-logo">Cookers</span>
   <ion-icon name="paper-plane-outline" class="text-2xl"></ion-icon>
 </div>
-
-<ion-tabs *ngIf="isMobile" class="fixed bottom-0 left-0 right-0 shadow-lg">
-  <ion-tab-bar class="color-verde-claro">
-    <ion-tab-button tab="home" class="color-verde-claro">
-      <ion-icon name="home-outline"></ion-icon>
-    </ion-tab-button>
-    <ion-tab-button tab="recetas" class="color-verde-claro">
-      <ion-icon name="book-outline"></ion-icon>
-    </ion-tab-button>
-    <ion-tab-button tab="perfil" class="color-verde-claro">
-      <ion-icon name="person-outline"></ion-icon>
-    </ion-tab-button>
-  </ion-tab-bar>
-</ion-tabs>
