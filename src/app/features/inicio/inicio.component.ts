@@ -15,12 +15,12 @@ import {BotonAddRecetaComponent} from '../../shared/components/boton-add-receta/
     BotonAddRecetaComponent
   ],
   templateUrl: './inicio.component.html',
-  styleUrl: './inicio.component.css'
+  styleUrls: ['./inicio.component.css']
 })
 export class InicioComponent implements OnInit {
 
   recetas: RecetaInicioDTO[] = [];
-  vista: 'paraTi' | 'siguiendo' = 'paraTi';
+  vista: 'paraTi' | 'siguiendo' = 'paraTi';  // Controla qué vista se muestra
   cookerId: number = 1;
 
   constructor(private inicioService: InicioService) {}
@@ -42,12 +42,12 @@ export class InicioComponent implements OnInit {
   }
 
   mostrarParaTi() {
-    this.vista = 'paraTi';
+    this.vista = 'paraTi';   // Cambia la vista a 'paraTi'
     this.cargarRecetas();
   }
 
   mostrarSiguiendo() {
-    this.vista = 'siguiendo';
+    this.vista = 'siguiendo';  // Cambia la vista a 'siguiendo'
     this.cargarRecetas();
   }
 }
