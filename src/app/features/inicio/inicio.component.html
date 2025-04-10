@@ -1,20 +1,28 @@
-<div class="container mx-auto px-32 py-8">
-  <!-- Barra de navegación -->
+<div class="container mx-auto px-4 py-8">
   <div class="flex justify-center gap-6">
     <div>
-      <button (click)="mostrarParaTi()" class="text-2xl font-bold mb-4 text-white" [class.text-blue-500]="vista === 'paraTi'">
+      <button
+        (click)="mostrarParaTi()"
+        class="text-2xl font-bold mb-4 text-white pb-2 transition-all inline-block border-b-2"
+        [class.border-transparent]="vista !== 'paraTi'"
+        [class.border-white]="vista === 'paraTi'">
         Para ti
       </button>
     </div>
     <div>
-      <button (click)="mostrarSiguiendo()" class="text-2xl font-bold mb-4 text-white" [class.text-blue-500]="vista === 'siguiendo'">
+      <button
+        (click)="mostrarSiguiendo()"
+        class="text-2xl font-bold mb-4 text-white pb-2 transition-all inline-block border-b-2"
+        [class.border-transparent]="vista !== 'siguiendo'"
+        [class.border-white]="vista === 'siguiendo'">
         Siguiendo
       </button>
     </div>
   </div>
 
   <!-- Contenido dinámico -->
-  <div class="grid grid-cols-1 gap-4 pt-7">
+  <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-4 pt-7 pl-12 pr-12">
     <app-publicacion *ngFor="let receta of recetas" [receta]="receta"></app-publicacion>
   </div>
 </div>
+<app-boton-add-receta></app-boton-add-receta>

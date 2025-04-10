@@ -1,38 +1,85 @@
-<div class="bg-[#abd1c6] rounded-md shadow-md pt-3 pb-3">
-  <div class="flex items-center justify-between pl-3 pr-3">
-    <div class="flex items-center space-x-4">
-      <img [src]="receta.fotoPerfilCooker" alt="Perfil Cooker" class="w-12 h-12 rounded-full object-cover">
-      <p class="font-bold">{{ receta.nombreCooker }}</p>
+<div class="bg-[var(--color-verde-cuadros)] rounded-md shadow-md pt-3 pb-3 relative" (dblclick)="handleDobleClick()">
+<!-- Animación de Me Gusta -->
+  <div *ngIf="mostrarAnimacionLike"
+       class="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+    <ion-icon name="heart" class="text-red-500 text-[80px] animate-pop"></ion-icon>
+  </div>
+
+  <!-- Animación de Guardar -->
+  <div *ngIf="mostrarAnimacionGuardar"
+       class="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+    <ion-icon name="bookmark-sharp" class="text-yellow-500 text-[80px] animate-pop"></ion-icon>
+  </div>
+
+  <div class="flex items-center justify-between px-3">
+    <div class="flex items-center space-x-2 sm:space-x-4">
+      <img [src]="receta.fotoPerfilCooker" alt="Perfil Cooker"
+           class="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover">
+      <p class="font-bold text-sm sm:text-base">{{ receta.nombreCooker }}</p>
     </div>
-    <button class="text-white hover:text-gray-300">
-      <ion-icon name="ellipsis-horizontal-outline" class="h-5 w-5 text-black"></ion-icon>
-    </button>
+
+    <div class="flex items-center space-x-1 sm:space-x-2">
+      <!-- Botón de menú desplegable -->
+      <div class="relative">
+        <button (click)="toggleMenu($event)" class="text-white hover:text-gray-300">
+          <ion-icon name="ellipsis-horizontal-outline"
+                    class="h-5 w-5 sm:h-6 sm:w-6 text-black"></ion-icon>
+        </button>
+
+        <!-- Menú desplegable ajustado -->
+        <div *ngIf="menuAbierto"
+             class="absolute right-full sm:right-[calc(100%+1rem)] -top-2 mt-2 w-auto shadow-lg rounded-md z-10 transform transition-all">
+          <div class="flex items-center bg-[var(--color-amarillo-boton)] p-2 space-x-2 rounded-md">
+            <button
+              class="text-black hover:text-gray-700 transition-colors flex"
+              (click)="agregarIngredientes(); menuAbierto = false">
+              <ion-icon name="add-circle-outline" class="h-5 w-5 sm:h-6 sm:w-6"></ion-icon>
+              <ion-icon name="cart-outline" class="h-5 w-5 sm:h-6 sm:w-6"></ion-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <img [src]="receta.imagen" alt="Receta" class="w-full h-64 object-cover mt-4">
+  <img [src]="receta.imagen" alt="Receta"
+       class="w-full h-48 sm:h-64 object-cover mt-4">
 
-  <div class="mt-2 pr-3 pl-3">
-    <p class="font-bold">{{ receta.titulo }}</p>
+  <div class="mt-2 px-3">
+    <p class="font-bold text-base sm:text-lg">{{ receta.titulo }}</p>
   </div>
 
-  <div class="flex flex-wrap mt-1 pr-3 pl-3">
+  <div class="flex flex-wrap mt-1 px-3 space-x-1">
     <img *ngFor="let alergeno of receta.alergenos" [src]="alergeno" [alt]="alergeno"
-         class="w-12 h-12 object-contain rounded-lg p-1">
+         class="w-10 h-10 sm:w-12 sm:h-12 object-contain rounded-lg p-0.5 sm:p-1">
   </div>
 
-  <div class="flex justify-between mt-2 pl-3 pr-3">
-    <div class="flex items-center space-x-2">
+  <div class="flex justify-between mt-2 px-3">
+    <div class="flex items-center space-x-3 sm:space-x-4">
       <button (click)="toggleLike()" class="text-white hover:text-gray-300">
-        <ion-icon [name]="recetaLeGusta ? 'heart' : 'heart-outline'" class="h-6 w-6"
+        <ion-icon [name]="recetaLeGusta ? 'heart' : 'heart-outline'"
+                  class="h-6 w-6 sm:h-7 sm:w-7"
                   [class.text-red-500]="recetaLeGusta"
                   [class.text-black]="!recetaLeGusta"></ion-icon>
       </button>
       <button class="text-white hover:text-gray-300">
-        <ion-icon name="chatbubble-outline" class="h-5 w-5 text-black"></ion-icon>
+        <ion-icon name="chatbubble-outline"
+                  class="h-5 w-5 sm:h-6 sm:w-6 text-black"></ion-icon>
       </button>
-      <button class="text-white hover:text-gray-300">
-        <ion-icon name="bookmark-outline" class="h-5 w-5 text-black"></ion-icon>
+      <button (click)="toggleGuardar()" class="text-white hover:text-gray-300">
+        <ion-icon [name]="recetaGuardada ? 'bookmark-sharp' : 'bookmark-outline'"
+                  class="h-5 w-5 sm:h-6 sm:w-6"
+                  [class.text-yellow-500]="recetaGuardada"
+                  [class.text-black]="!recetaGuardada"></ion-icon>
       </button>
     </div>
   </div>
+  <app-alert-info
+    *ngIf="alertVisible"
+    [message]="alertMessage"
+    [type]="alertType"
+    [isVisible]="alertVisible">
+  </app-alert-info>
 </div>
+
+

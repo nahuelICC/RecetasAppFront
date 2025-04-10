@@ -1,8 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {RecetaInicioDTO} from './models/RecetaInicioDTO';
-import {InicioService} from './components/services/inicio.service';
+import {InicioService} from './services/inicio.service';
 import {NgForOf, NgIf} from '@angular/common';
 import {PublicacionComponent} from './components/publicacion/publicacion.component';
+import {BotonAddRecetaComponent} from '../../shared/components/boton-add-receta/boton-add-receta.component';
 
 @Component({
   selector: 'app-inicio',
@@ -10,7 +11,8 @@ import {PublicacionComponent} from './components/publicacion/publicacion.compone
   imports: [
     PublicacionComponent,
     NgForOf,
-    NgIf
+    NgIf,
+    BotonAddRecetaComponent
   ],
   templateUrl: './inicio.component.html',
   styleUrl: './inicio.component.css'
@@ -18,7 +20,7 @@ import {PublicacionComponent} from './components/publicacion/publicacion.compone
 export class InicioComponent implements OnInit {
 
   recetas: RecetaInicioDTO[] = [];
-  vista: string = 'paraTi'; // Vista por defecto
+  vista: 'paraTi' | 'siguiendo' = 'paraTi';
   cookerId: number = 1;
 
   constructor(private inicioService: InicioService) {}
