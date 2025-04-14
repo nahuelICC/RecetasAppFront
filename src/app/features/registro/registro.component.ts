@@ -293,7 +293,7 @@ export class RegistroComponent implements OnInit {
 
   onConfirm() {
     this.showAlertConfirmar = false;
-    this.router.navigate(['']);
+    this.router.navigate(['login']);
   }
 
 
