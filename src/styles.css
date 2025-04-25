@@ -43,5 +43,6 @@ body {
 }
 
 ion-content{
-  --background: var(--color-verde-fondo);
-}
+    --background: var(--color-verde-fondo);
+    font-family: "Cambria,Geoorgia, serif";
+  }

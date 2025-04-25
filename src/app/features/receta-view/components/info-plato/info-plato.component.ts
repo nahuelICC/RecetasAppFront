@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { IonIcon } from '@ionic/angular/standalone';
+import { RecetaViewResponse } from '../../models/RecetaViewResponse';
 
 @Component({
   selector: 'app-info-plato',
@@ -9,4 +10,5 @@ import { IonIcon } from '@ionic/angular/standalone';
 })
 export class InfoPlatoComponent {
 
+  @Input() receta!:RecetaViewResponse;
 }

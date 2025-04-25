@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { Alergeno } from '../../models/Alergeno';
 
 @Component({
   selector: 'app-alergeno',
@@ -11,4 +12,5 @@ export class AlergenoComponent  implements OnInit {
 
   ngOnInit() {}
 
+  @Input() alergeno!: Alergeno
 }

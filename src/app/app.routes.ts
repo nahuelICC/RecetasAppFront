@@ -10,5 +10,5 @@ export const routes: Routes = [
   { path: 'registro', component: RegistroComponent },
   { path: 'main', component: InicioComponent },
   { path: 'registro', component: RegistroComponent },
-  { path: 'receta', component: RecetaViewComponent },
+  { path: 'receta/:id', component: RecetaViewComponent },
 ];
