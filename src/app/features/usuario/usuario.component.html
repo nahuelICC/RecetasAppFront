@@ -6,7 +6,7 @@
       <img alt="Avatar" [src]="imagenPerfil" class="w-full h-full object-cover" />
     </div>
     <div class="flex-1">
-      <div class="flex flex-col sm:flex-row gap-3.5 ion-align-items-center">
+      <div class="flex flex-col sm:flex-row gap-3.5">
       <h2 class="font-semibold text-xl mb-1 ">{{perfil.nombre}} {{perfil.apellidos}}</h2>
         <div class="flex gap-3 mt-0 lg:mt-4 mb-4 lg:mb-0">
         <app-boton
@@ -70,30 +70,15 @@
 
   <div *ngIf="activeTab === 'recetas'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
     <div *ngFor="let receta of recetas">
-      <app-cuadro-receta [receta]="receta" [esPerfilPropio]="esPerfilPropio"></app-cuadro-receta>
+      <app-cuadro-receta [receta]="receta" [esPerfilPropio]="esPerfilPropio" *ngIf="receta.esVisible || esPerfilPropio"></app-cuadro-receta>
     </div>
   </div>
 
   <!-- Colecciones -->
   <div *ngIf="activeTab === 'colecciones'" class="space-y-4">
-    <div *ngFor="let coleccion of colecciones">
-      <div class="bg-gray-200 text-black p-3 rounded cursor-pointer" (click)="coleccion.expandida = !coleccion.expandida">
-        <p class="font-semibold">{{ coleccion.titulo }}</p>
-      </div>
-      <div *ngIf="coleccion.expandida" class="color-verde-claro text-black p-3 rounded mt-1">
-        <ul>
-          <li *ngFor="let receta of coleccion.recetas.slice(0, coleccion.verMas ? coleccion.recetas.length : 5)">
-            <div class="flex justify-between border-b py-1">
-              <span>{{ receta.nombre }}</span>
-              <span class="text-sm">{{ receta.tiempo }}</span>
-            </div>
-          </li>
-        </ul>
-        <button class="mt-2 text-sm text-blue-700" (click)="coleccion.verMas = !coleccion.verMas">
-          {{ coleccion.verMas ? 'Ver menos' : 'Ver más' }}
-        </button>
-      </div>
-    </div>
+   <app-coleccion-recetas
+   [colecciones]="colecciones"
+   [esPerfilPropio]="esPerfilPropio"></app-coleccion-recetas>
   </div>
 
   <!-- Recetas Guardadas -->

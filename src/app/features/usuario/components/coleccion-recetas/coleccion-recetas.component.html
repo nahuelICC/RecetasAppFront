@@ -1,0 +1,49 @@
+<div class="space-y-4">
+  <div *ngFor="let coleccion of colecciones">
+    <div
+      class="color-verde-claro text-black p-3 rounded-lg cursor-pointer flex justify-between"
+      (click)="toggleExpandida(coleccion)"
+    *ngIf="coleccion.esVisible || esPerfilPropio">
+
+      <p class="font-semibold">{{ coleccion.titulo }}</p>
+
+      <div class="flex gap-3 items-center">
+
+        <span class="text-sm">{{ coleccion.recetas.length }} recetas</span>
+
+        <ion-icon
+          [name]="coleccion.esVisible ? 'eye-outline' : 'eye-off-outline'"
+          class="text-xl cursor-pointer"
+          (click)="toggleVisibilidad(coleccion); $event.stopPropagation()"
+        *ngIf="esPerfilPropio">
+        </ion-icon>
+
+        <ion-icon
+          name="chevron-down-outline"
+          class="text-xl"
+          [ngClass]="{ 'rotate-180': coleccion.expandida }">
+        </ion-icon>
+      </div>
+    </div>
+
+    <div *ngIf="coleccion.expandida" class="color-verde-claro text-black p-3 rounded mt-1">
+      <ul>
+        <li *ngFor="let receta of coleccion.recetas.slice(0, coleccion.verMas ? coleccion.recetas.length : 5)">
+          <div class="flex justify-between border-b py-1">
+            <span>{{ receta.nombre }}</span>
+            <div class="flex gap-3">
+              <span class="text-sm">{{ receta.duracion }}</span>
+              <ion-icon name="time-outline" class="text-xl"></ion-icon>
+            </div>
+          </div>
+        </li>
+      </ul>
+
+      <button
+        class="mt-2 text-sm color-texto font-bold"
+        (click)="toggleVerMas(coleccion)">
+        {{ coleccion.verMas ? 'Ver menos' : 'Ver más' }}
+      </button>
+    </div>
+  </div>
+</div>

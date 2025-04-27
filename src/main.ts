@@ -4,7 +4,7 @@ import { AppComponent } from './app/app.component';
 
 import { addIcons } from "ionicons";
 import { heart, add, search, closeCircle, eye, help, heartOutline, shareSocialOutline, chatbubbleOutline, bookmarkOutline, ellipsisHorizontalOutline, home, paperPlaneOutline, person, bookOutline, restaurantOutline, logOut, nutrition, bookmarkSharp,
-  addCircleOutline, cartOutline, gridOutline, documentOutline,eyeOutline,eyeOffOutline, timeOutline, albumsOutline, pencilOutline } from "ionicons/icons";
+  addCircleOutline, cartOutline, gridOutline, documentOutline,eyeOutline,eyeOffOutline, timeOutline, albumsOutline, pencilOutline, chevronDownOutline } from "ionicons/icons";
 
 addIcons({
   heart,
@@ -34,7 +34,8 @@ addIcons({
   eyeOffOutline,
   timeOutline,
   albumsOutline,
-  pencilOutline
+  pencilOutline,
+  chevronDownOutline
 
 });
 

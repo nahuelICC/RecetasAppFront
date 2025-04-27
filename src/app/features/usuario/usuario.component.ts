@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {NgForOf, NgIf} from '@angular/common';
+import {NgClass, NgForOf, NgIf} from '@angular/common';
 import {IonIcon} from '@ionic/angular/standalone';
 import {UsuarioService} from './services/usuario.service';
 import {HeaderService} from '../../shared/services/header.service';
@@ -8,6 +8,7 @@ import {BotonAddRecetaComponent} from '../../shared/components/boton-add-receta/
 import {CuadroRecetaComponent} from './components/cuadro-receta/cuadro-receta.component';
 import {CuadroRecetaGuardadaComponent} from './components/cuadro-receta-guardada/cuadro-receta-guardada.component';
 import {ActivatedRoute} from '@angular/router';
+import {ColeccionRecetasComponent} from './components/coleccion-recetas/coleccion-recetas.component';
 
 @Component({
   selector: 'app-usuario',
@@ -21,7 +22,9 @@ import {ActivatedRoute} from '@angular/router';
     BotonComponent,
     BotonAddRecetaComponent,
     CuadroRecetaComponent,
-    CuadroRecetaGuardadaComponent
+    CuadroRecetaGuardadaComponent,
+    NgClass,
+    ColeccionRecetasComponent
   ]
 })
 export class UsuarioComponent  implements OnInit {
