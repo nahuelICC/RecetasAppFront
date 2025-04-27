@@ -15,7 +15,9 @@
     <div class="flex items-center space-x-2 sm:space-x-4">
       <img [src]="receta.fotoPerfilCooker" alt="Perfil Cooker"
            class="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover">
-      <p class="font-bold text-sm sm:text-base">{{ receta.nombreCooker }}</p>
+      <p class="font-bold text-sm sm:text-base cursor-pointer"  [routerLink]="'/perfil/' + receta.cookerId">
+          {{ receta.nombreCooker }}
+      </p>
     </div>
 
     <div class="flex items-center space-x-1 sm:space-x-2">
