@@ -1,12 +1,14 @@
 import { Component } from '@angular/core';
 import {IonicModule} from '@ionic/angular';
+import {RouterLink} from '@angular/router';
 
 
 
 @Component({
   selector: 'app-boton-add-receta',
   imports: [
-    IonicModule
+    IonicModule,
+    RouterLink
   ],
   templateUrl: './boton-add-receta.component.html',
   standalone: true,
