@@ -1,12 +1,18 @@
+// crear-receta.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Receta } from './models/receta';
+import { Receta, Ingrediente } from './models/receta';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CrearRecetaService {
   constructor(private http: HttpClient) {}
+
+  getIngredientes(): Observable<Ingrediente[]> {
+    return this.http.get<Ingrediente[]>('http://localhost:8081/ingrediente/listar');
+  }
 
   registrarReceta(receta: Receta, imagen: File | null, video: File | null) {
     const formData = new FormData();
@@ -15,7 +21,8 @@ export class CrearRecetaService {
       nombre: receta.nombre,
       duracion: receta.duracion,
       descripcion: receta.descripcion,
-      esVisible: receta.esVisible
+      esVisible: receta.esVisible,
+      ingredientes: receta.ingredientes
     };
 
     const recetaBlob = new Blob([JSON.stringify(recetaPlain)], { type: 'application/json' });
@@ -28,9 +35,8 @@ export class CrearRecetaService {
       formData.append('video', video);
     }
 
-    // Elimina el header 'Accept' o asegúrate de que el servidor devuelva JSON
     return this.http.post('http://localhost:8081/receta/registro', formData, {
-      responseType: 'text' // Maneja respuestas no JSON
+      responseType: 'text'
     });
   }
 }
