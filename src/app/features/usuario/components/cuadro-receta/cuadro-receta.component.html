@@ -1,0 +1,29 @@
+<div class="rounded-lg overflow-hidden relative aspect-square">
+
+  <div class="absolute top-2 right-2 color-verde-claro p-1.5 rounded-full flex" *ngIf="esPerfilPropio">
+    <ion-icon
+      [name]="receta.esVisible ? 'eye-outline' : 'eye-off-outline'"
+      class="text-xl text-white" >
+    </ion-icon>
+  </div>
+
+  <img [src]="receta.fotoReceta" alt="fotoReceta" class="w-full h-full object-cover" />
+
+  <div class="color-verde-claro p-6 absolute bottom-0 w-full">
+    <div class="flex justify-between items-center text-sm mt-1">
+    <p class="font-semibold text-md truncate text-black">{{ receta.nombre }}</p>
+      <div class="flex gap-3">
+        <div class="flex flex-col justify-center">
+        <ion-icon name="heart-outline" class="hover:text-green-400 cursor-pointer"></ion-icon>
+        <span class="text-sm text-center">{{ receta.meGusta }}</span>
+        </div>
+        <div class="flex flex-col justify-center" *ngIf="esPerfilPropio">
+        <ion-icon name="bookmark-outline" class="hover:text-green-400 cursor-pointer"></ion-icon>
+        <span class="text-sm text-center">{{ receta.guardados }}</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>

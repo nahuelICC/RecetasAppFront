@@ -5,4 +5,5 @@ export interface RecetaInicioDTO {
   alergenos: string[];
   nombreCooker: string;
   fotoPerfilCooker: string;
+  cookerId: number;
 }

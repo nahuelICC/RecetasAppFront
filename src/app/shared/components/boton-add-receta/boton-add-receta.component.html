@@ -1,5 +1,7 @@
-<ion-fab horizontal="end" vertical="bottom" slot="fixed" [style.display]="isVisible ? 'block' : 'none'" (scroll)="onWindowScroll()">
-  <ion-fab-button>
-    <ion-icon size="large" name="add"></ion-icon>
-  </ion-fab-button>
-</ion-fab>
+<ion-content>
+  <ion-fab horizontal="end" vertical="bottom" slot="fixed" [style.display]="isVisible ? 'block' : 'none'" [style.padding-right]="'16px'">
+    <ion-fab-button [routerLink]="'/crear-receta'">
+      <ion-icon size="large" name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

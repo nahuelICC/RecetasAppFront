@@ -1,8 +1,11 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, HostListener, Input, OnInit} from '@angular/core';
 import {RecetaInicioDTO} from '../../models/RecetaInicioDTO';
 import {IonicModule} from '@ionic/angular';
-import {NgForOf} from '@angular/common';
-import {InicioService} from '../services/inicio.service';
+import {NgForOf, NgIf} from '@angular/common';
+import {InicioService} from '../../services/inicio.service';
+import {BotonComponent} from '../../../../shared/components/boton/boton.component';
+import {AlertInfoComponent} from '../../../../shared/components/alert-info/alert-info.component';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-publicacion',
@@ -11,7 +14,11 @@ import {InicioService} from '../services/inicio.service';
   standalone: true,
   imports: [
     IonicModule,
-    NgForOf
+    NgForOf,
+    NgIf,
+    BotonComponent,
+    AlertInfoComponent,
+    RouterLink
   ]
 })
 export class PublicacionComponent  implements OnInit {
@@ -20,12 +27,62 @@ export class PublicacionComponent  implements OnInit {
   cookerId: number = 1;
 
   recetaLeGusta: boolean = false;
+  recetaGuardada: boolean = false;
+  menuAbierto: boolean = false;
+  mostrarAnimacionLike: boolean = false;
+  mostrarAnimacionGuardar: boolean = false;
+  alertVisible: boolean = false;
+  alertMessage: string = '';
+  alertType: 'success' | 'error' | 'warning' = 'success';
 
   constructor(private inicioService: InicioService) {}
 
   ngOnInit() {
     this.verificarEstadoMeGusta();
+    this.verificarEstadoGuardado();
   }
+  toggleMenu(event: Event) {
+    event.stopPropagation(); // Evita que se cierre el menú inmediatamente
+    this.menuAbierto = !this.menuAbierto;
+  }
+
+  @HostListener('document:click', ['$event'])
+  cerrarMenu(event: Event) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.relative')) {
+      this.menuAbierto = false;
+    }
+  }
+
+  agregarIngredientes() {
+    this.inicioService.agregarIngredientesALaListaCompra(this.receta.id, this.cookerId).subscribe({
+      next: (res) => {
+        console.log('Ingredientes añadidos a la lista de compra:', res);
+
+        // Mostrar alerta
+        this.alertMessage = 'Ingredientes añadidos a la lista de la compra';
+        this.alertType = 'success';
+        this.alertVisible = true;
+
+        // Ocultar alerta después de 3 segundos
+        setTimeout(() => this.alertVisible = false, 3000);
+      },
+      error: (err) => {
+        console.error('Error al añadir ingredientes a la lista de compra:', err);
+
+        // También podrías mostrar una alerta de error si lo deseas
+        this.alertMessage = 'Error al añadir ingredientes';
+        this.alertType = 'error';
+        this.alertVisible = true;
+
+        setTimeout(() => this.alertVisible = false, 3000);
+      }
+    });
+
+    this.menuAbierto = false;
+  }
+
+
 
   verificarEstadoMeGusta() {
     this.inicioService.verificarMeGusta(this.receta.id, this.cookerId).subscribe({
@@ -34,6 +91,16 @@ export class PublicacionComponent  implements OnInit {
       },
       error: (err) => {
         console.error('Error al verificar me gusta:', err);
+      }
+    });
+  }
+  verificarEstadoGuardado() {
+    this.inicioService.verificarRecetaGuardada(this.receta.id, this.cookerId).subscribe({
+      next: (estado) => {
+        this.recetaGuardada = estado;
+      },
+      error: (err) => {
+        console.error('Error al verificar si está guardada:', err);
       }
     });
   }
@@ -54,12 +121,46 @@ export class PublicacionComponent  implements OnInit {
       this.inicioService.darMeGustaAReceta(this.receta.id, this.cookerId).subscribe({
         next: (res) => {
           this.recetaLeGusta = true;
+          this.mostrarAnimacionLike = true;
+          setTimeout(() => this.mostrarAnimacionLike = false, 700);
           console.log('Me gusta añadido:', res);
         },
         error: (err) => {
           console.error('Error al dar me gusta:', err);
         }
       });
+    }
+  }
+
+  toggleGuardar() {
+    if (this.recetaGuardada) {
+      this.inicioService.eliminarRecetaGuardada(this.receta.id, this.cookerId).subscribe({
+        next: (res) => {
+          this.recetaGuardada = false;
+          console.log('Receta eliminada de guardados:', res);
+        },
+        error: (err) => {
+          console.error('Error al eliminar de guardados:', err);
+        }
+      });
+    } else {
+      this.inicioService.guardarReceta(this.receta.id, this.cookerId).subscribe({
+        next: (res) => {
+          this.recetaGuardada = true;
+          this.mostrarAnimacionGuardar = true;
+          setTimeout(() => this.mostrarAnimacionGuardar = false, 700);
+          console.log('Receta guardada correctamente:', res);
+        },
+        error: (err) => {
+          console.error('Error al guardar receta:', err);
+        }
+      });
+    }
+  }
+
+  handleDobleClick() {
+    if (!this.recetaLeGusta) {
+      this.toggleLike();
     }
   }
 

@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {Platform} from '@ionic/angular';
-import {IonAvatar, IonIcon, IonTabButton, IonTabs} from '@ionic/angular/standalone';
+import {IonAvatar, IonIcon} from '@ionic/angular/standalone';
 import {NgIf} from '@angular/common';
-import {BotonComponent} from '../boton/boton.component';
+
 import {AuthService} from '../../../core/services/auth.service';
 import {HeaderService} from '../../services/header.service';
 
@@ -12,11 +12,8 @@ import {HeaderService} from '../../services/header.service';
   styleUrls: ['./header.component.css'],
   standalone: true,
   imports: [
-    IonTabs,
-    IonTabButton,
     IonIcon,
     NgIf,
-    BotonComponent,
     IonAvatar,
   ]
 })

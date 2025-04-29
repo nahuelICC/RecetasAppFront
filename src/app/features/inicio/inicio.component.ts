@@ -1,8 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {RecetaInicioDTO} from './models/RecetaInicioDTO';
-import {InicioService} from './components/services/inicio.service';
+import {InicioService} from './services/inicio.service';
 import {NgForOf, NgIf} from '@angular/common';
 import {PublicacionComponent} from './components/publicacion/publicacion.component';
+import {BotonAddRecetaComponent} from '../../shared/components/boton-add-receta/boton-add-receta.component';
 
 @Component({
   selector: 'app-inicio',
@@ -10,15 +11,16 @@ import {PublicacionComponent} from './components/publicacion/publicacion.compone
   imports: [
     PublicacionComponent,
     NgForOf,
-    NgIf
+    NgIf,
+    BotonAddRecetaComponent
   ],
   templateUrl: './inicio.component.html',
-  styleUrl: './inicio.component.css'
+  styleUrls: ['./inicio.component.css']
 })
 export class InicioComponent implements OnInit {
 
   recetas: RecetaInicioDTO[] = [];
-  vista: string = 'paraTi'; // Vista por defecto
+  vista: 'paraTi' | 'siguiendo' = 'paraTi';  // Controla qué vista se muestra
   cookerId: number = 1;
 
   constructor(private inicioService: InicioService) {}
@@ -40,12 +42,12 @@ export class InicioComponent implements OnInit {
   }
 
   mostrarParaTi() {
-    this.vista = 'paraTi';
+    this.vista = 'paraTi';   // Cambia la vista a 'paraTi'
     this.cargarRecetas();
   }
 
   mostrarSiguiendo() {
-    this.vista = 'siguiendo';
+    this.vista = 'siguiendo';  // Cambia la vista a 'siguiendo'
     this.cargarRecetas();
   }
 }
