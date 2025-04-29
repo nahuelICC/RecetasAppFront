@@ -164,4 +164,13 @@ export class CrearRecetaComponent implements OnInit {
   getMaxForMeasure(measure: string): number {
     return (measure === 'g' || measure === 'ml') ? 10000 : 100;
   }
+
+  isFormValid(): boolean {
+    return (
+      this.receta.nombre.trim() !== '' &&
+      this.receta.descripcion.trim() !== '' &&
+      this.imagen !== null &&
+      this.receta.ingredientes.length > 0
+    );
+  }
 }
