@@ -1,7 +1,7 @@
 import {Component, HostListener, Input, OnInit} from '@angular/core';
 import {RecetaInicioDTO} from '../../models/RecetaInicioDTO';
 import {IonicModule} from '@ionic/angular';
-import {NgForOf, NgIf} from '@angular/common';
+import {NgClass, NgForOf, NgIf} from '@angular/common';
 import {InicioService} from '../../services/inicio.service';
 import {BotonComponent} from '../../../../shared/components/boton/boton.component';
 import {AlertInfoComponent} from '../../../../shared/components/alert-info/alert-info.component';
@@ -18,7 +18,8 @@ import {RouterLink} from '@angular/router';
     NgIf,
     BotonComponent,
     AlertInfoComponent,
-    RouterLink
+    RouterLink,
+    NgClass
   ]
 })
 export class PublicacionComponent  implements OnInit {

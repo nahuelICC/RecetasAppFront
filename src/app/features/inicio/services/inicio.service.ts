@@ -60,5 +60,13 @@ export class InicioService {
     });
   }
 
+  getUltimasRecetas(): Observable<RecetaInicioDTO[]> {
+    return this.http.get<RecetaInicioDTO[]>(`${this.apiUrl}/nuevas`);
+  }
+
+  getTop10RecetasFavoritas(): Observable<RecetaInicioDTO[]> {
+    return this.http.get<RecetaInicioDTO[]>(`${this.apiUrl}/favoritas`);  // Endpoint del backend para recetas más gustadas
+  }
+
 
 }
