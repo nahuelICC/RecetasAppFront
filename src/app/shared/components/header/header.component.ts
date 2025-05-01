@@ -5,6 +5,7 @@ import {NgIf} from '@angular/common';
 
 import {AuthService} from '../../../core/services/auth.service';
 import {HeaderService} from '../../services/header.service';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -15,6 +16,7 @@ import {HeaderService} from '../../services/header.service';
     IonIcon,
     NgIf,
     IonAvatar,
+    RouterLink,
   ]
 })
 export class HeaderComponent  implements OnInit {
