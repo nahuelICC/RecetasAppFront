@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, ElementRef, NgZone, OnInit, ViewChild} from '@angular/core';
 import {NgClass, NgForOf, NgIf} from '@angular/common';
-import {IonIcon} from '@ionic/angular/standalone';
+import {IonIcon, IonInfiniteScroll, IonInfiniteScrollContent} from '@ionic/angular/standalone';
 import {UsuarioService} from './services/usuario.service';
 import {HeaderService} from '../../shared/services/header.service';
 import {BotonComponent} from '../../shared/components/boton/boton.component';
@@ -33,7 +33,9 @@ import {AuthService} from '../../core/services/auth.service';
     AlertInfoComponent,
     ReactiveFormsModule,
     AlertConfirmarComponent,
-    RouterLink
+    RouterLink,
+    IonInfiniteScroll,
+    IonInfiniteScrollContent
   ]
 })
 export class UsuarioComponent  implements OnInit {
@@ -60,6 +62,15 @@ export class UsuarioComponent  implements OnInit {
   seguidores: any[] = [];
   mostrarSeguidores = false;
   idPropietario: number = 0;
+  recetasMostradas: any[] = [];
+  recetasPage = 1;
+  recetasPerPage = 9;
+  recetasGuardadasMostradas: any[] = [];
+  guardadasPage = 1;
+  guardadasPerPage = 9;
+  coleccionesMostradas: any[] = [];
+  coleccionesPage = 1;
+  coleccionesPerPage = 4;
 
 
 
@@ -70,10 +81,12 @@ export class UsuarioComponent  implements OnInit {
     this.idPropietario = this.authService.getUserId() || 0;
     if (id && id !== this.idPropietario.toString()) {
       this.usuarioService.getPerfilId(id).subscribe((response) => {
-        console.log(response);
         this.perfil = response;
         this.recetas = response.recetas;
         this.colecciones = response.colecciones;
+
+        this.recetasMostradas = this.recetas.slice(0, this.recetasPerPage);
+        this.coleccionesMostradas = this.colecciones.slice(0, this.coleccionesPerPage);
       });
       this.esPerfilPropio = false;
     } else {
@@ -83,6 +96,10 @@ export class UsuarioComponent  implements OnInit {
         this.recetas = response.recetas;
         this.colecciones = response.colecciones;
         this.recetasGuardadas = response.recetasGuardadas;
+
+        this.recetasMostradas = this.recetas.slice(0, this.recetasPerPage);
+        this.coleccionesMostradas = this.colecciones.slice(0, this.coleccionesPerPage);
+        this.recetasGuardadasMostradas = this.recetasGuardadas.slice(0, this.guardadasPerPage);
       });
     }
 
@@ -246,6 +263,46 @@ export class UsuarioComponent  implements OnInit {
         window.location.reload();
       });
     });
+  }
+
+  loadMoreRecetas(event: any) {
+    const startIndex = this.recetasMostradas.length;
+    const endIndex = startIndex + this.recetasPerPage;
+    const next = this.recetas.slice(startIndex, endIndex);
+
+    this.recetasMostradas = [...this.recetasMostradas, ...next];
+    event.target.complete();
+
+    // Deshabilitar si no hay más datos
+    if (this.recetasMostradas.length >= this.recetas.length) {
+      event.target.disabled = true;
+    }
+  }
+
+  loadMoreGuardadas(event: any) {
+    const startIndex = this.recetasGuardadasMostradas.length;
+    const endIndex = startIndex + this.guardadasPerPage;
+    const next = this.recetasGuardadas.slice(startIndex, endIndex);
+
+    this.recetasGuardadasMostradas = [...this.recetasGuardadasMostradas, ...next];
+    event.target.complete();
+
+    if (this.recetasGuardadasMostradas.length >= this.recetasGuardadas.length) {
+      event.target.disabled = true;
+    }
+  }
+
+  loadMoreColecciones(event: any) {
+    const startIndex = this.coleccionesMostradas.length;
+    const endIndex = startIndex + this.coleccionesPerPage;
+    const next = this.colecciones.slice(startIndex, endIndex);
+
+    this.coleccionesMostradas = [...this.coleccionesMostradas, ...next];
+    event.target.complete();
+
+    if (this.coleccionesMostradas.length >= this.colecciones.length) {
+      event.target.disabled = true;
+    }
   }
 
 

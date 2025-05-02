@@ -10,3 +10,9 @@ ion-fab-button {
 ion-fab-button:hover {
   opacity: 1;
 }
+
+ion-fab {
+  margin: 16px;
+  position: fixed;
+  z-index: 999;
+}

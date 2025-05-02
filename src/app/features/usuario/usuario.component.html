@@ -240,25 +240,49 @@
 
 
   <div *ngIf="activeTab === 'recetas'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-    <div *ngFor="let receta of recetas">
+    <div *ngFor="let receta of recetasMostradas">
       <app-cuadro-receta [receta]="receta" [esPerfilPropio]="esPerfilPropio"
                          *ngIf="receta.esVisible || esPerfilPropio"></app-cuadro-receta>
     </div>
   </div>
 
+  <ion-infinite-scroll
+    (ionInfinite)="loadMoreRecetas($event)"
+    threshold="100px"
+    *ngIf="recetasMostradas.length < recetas.length"
+  >
+    <ion-infinite-scroll-content loadingSpinner="bubbles"></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+
   <!-- Colecciones -->
   <div *ngIf="activeTab === 'colecciones'" class="space-y-4">
     <app-coleccion-recetas
-      [colecciones]="colecciones"
+      [colecciones]="coleccionesMostradas"
       [esPerfilPropio]="esPerfilPropio"></app-coleccion-recetas>
+
+    <ion-infinite-scroll
+      (ionInfinite)="loadMoreColecciones($event)"
+      threshold="100px"
+      *ngIf="coleccionesMostradas.length < colecciones.length">
+      <ion-infinite-scroll-content loadingSpinner="bubbles"></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
   </div>
+
 
   <!-- Recetas Guardadas -->
   <div *ngIf="activeTab === 'guardadas' && esPerfilPropio" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-    <div *ngFor="let receta of recetasGuardadas">
+    <div *ngFor="let receta of recetasGuardadasMostradas">
       <app-cuadro-receta-guardada [receta]="receta"></app-cuadro-receta-guardada>
     </div>
   </div>
+
+  <ion-infinite-scroll
+    (ionInfinite)="loadMoreGuardadas($event)"
+    threshold="100px"
+    *ngIf="recetasGuardadasMostradas.length < recetasGuardadas.length">
+    <ion-infinite-scroll-content loadingSpinner="bubbles"></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </div>
 
 <app-alert-info
