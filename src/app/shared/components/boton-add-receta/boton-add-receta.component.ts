@@ -1,14 +1,14 @@
-import { Component, HostListener } from '@angular/core';
-import {IonFab, IonFabButton, IonIcon} from '@ionic/angular/standalone';
+import { Component } from '@angular/core';
+import {IonicModule} from '@ionic/angular';
+import {RouterLink} from '@angular/router';
 
 
 
 @Component({
   selector: 'app-boton-add-receta',
   imports: [
-    IonFabButton,
-    IonIcon,
-    IonFab
+    IonicModule,
+    RouterLink
   ],
   templateUrl: './boton-add-receta.component.html',
   standalone: true,
