@@ -1,0 +1,127 @@
+/* recipe-steps.component.scss */
+:host {
+    --recipe-primary-color: var(--ion-color-primary, #3880ff);
+    --recipe-dark-color: var(--ion-color-dark, #222428);
+    --recipe-light-color: var(--ion-color-light, #f4f5f8);
+    --recipe-medium-color: var(--ion-color-medium, #92949c);
+    --recipe-accent-color: var(--ion-color-secondary, #3dc2ff);
+    --recipe-success-color: var(--ion-color-success, #2dd36f);
+    --recipe-warning-color: var(--ion-color-warning, #ffc409);
+    --recipe-border-radius: 8px;
+  }
+  
+  .recipe-steps-container {
+    padding-bottom: 16px;
+  }
+    
+  /* Personalización del acordeón */
+  .custom-accordion {
+    background: transparent;
+    --ion-item-background: transparent;
+  }
+  
+  .step-item {
+    margin-bottom: 12px;
+    border-radius: var(--recipe-border-radius);
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+  
+  .step-header {
+    --background: #ABD1C6;
+    --color: var(--recipe-dark-color);
+    --border-radius: var(--recipe-border-radius);
+    --padding-start: 8px;
+    --inner-padding-end: 8px;
+  }
+  
+ 
+  
+  .step-title {
+    font-weight: 600;
+    font-size: 16px;
+    white-space: normal;
+  }
+  
+  .step-icon {
+    color: var(--recipe-medium-color);
+    transition: transform 0.3s;
+  }
+  
+  /* Rotar icono cuando el acordeón está expandido */
+  ion-accordion.accordion-expanding .step-icon,
+  ion-accordion.accordion-expanded .step-icon {
+    transform: rotate(180deg);
+  }
+  
+  .step-content {
+    padding: 16px;
+    line-height: 1.5;
+    background-color: #ABD1C6;
+    color: var(--recipe-dark-color);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Elementos adicionales dentro del paso */
+  .step-timing {
+    display: flex;
+    align-items: center;
+    margin-top: 12px;
+    color: var(--recipe-medium-color);
+    font-size: 14px;
+    
+    ion-icon {
+      margin-right: 6px;
+      font-size: 16px;
+    }
+  }
+  
+  .step-image {
+    margin: 16px 0;
+    border-radius: var(--recipe-border-radius);
+    overflow: hidden;
+    
+    img {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+    }
+  }
+  
+  .step-tips {
+    margin-top: 16px;
+    background-color: rgba(var(--ion-color-warning-rgb), 0.1);
+    border-left: 3px solid var(--recipe-warning-color);
+    padding: 12px;
+    border-radius: var(--recipe-border-radius);
+    
+    h4 {
+      margin-top: 0;
+      color: var(--recipe-dark-color);
+      display: flex;
+      align-items: center;
+      font-size: 16px;
+      font-weight: 600;
+      
+      ion-icon {
+        margin-right: 6px;
+        color: var(--recipe-warning-color);
+      }
+    }
+    
+    p {
+      margin-bottom: 0;
+      font-size: 14px;
+    }
+  }
+  
+  /* Añade esto a tu archivo global.scss si quieres personalizar el componente nativo de Ionic */
+  ion-accordion-group::part(native) {
+    background: transparent;
+  }
+  
+  ion-accordion.accordion-collapsed::part(header),
+  ion-accordion.accordion-expanding::part(header),
+  ion-accordion.accordion-expanded::part(header) {
+    box-shadow: none;
+  }

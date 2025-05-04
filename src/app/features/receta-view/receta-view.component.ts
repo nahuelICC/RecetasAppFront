@@ -1,17 +1,19 @@
 import { Component } from '@angular/core';
 import { InfoPlatoComponent } from './components/info-plato/info-plato.component';
 import { AlergenoComponent } from "./components/alergeno/alergeno.component";
-import { IonAccordion, IonAccordionGroup, IonItem, IonLabel } from '@ionic/angular/standalone';
+import { IonAccordion, IonAccordionGroup, IonItem, IonLabel, IonIcon } from '@ionic/angular/standalone';
 import { ComentarioComponent } from './components/comentario/comentario.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RecetaService } from './services/receta.service';
 import { RecetaViewResponse } from './models/RecetaViewResponse';
-import { NgFor } from '@angular/common';
+import { NgFor, NgIf } from '@angular/common';
 import { PasoResponse } from './models/PasoResponse';
+import { addIcons } from 'ionicons';
+import { chevronDown, timeOutline, bulbOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-receta-view',
-  imports: [InfoPlatoComponent, AlergenoComponent, IonAccordion, IonAccordionGroup, IonItem, IonLabel, ComentarioComponent,NgFor],
+  imports: [InfoPlatoComponent, AlergenoComponent, IonAccordion, IonAccordionGroup, IonItem, IonLabel, IonIcon, ComentarioComponent, NgFor, NgIf],
   templateUrl: './receta-view.component.html',
   styleUrl: './receta-view.component.css'
 })
@@ -21,7 +23,7 @@ export class RecetaViewComponent {
     private route: ActivatedRoute,
     private recetaService: RecetaService
   ) {
-
+    addIcons({ chevronDown, timeOutline, bulbOutline });
   }
 
   idReceta!: string;
@@ -59,8 +61,4 @@ export class RecetaViewComponent {
       }
     )
   }
-
-
-
-
 }

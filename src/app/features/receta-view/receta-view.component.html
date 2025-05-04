@@ -19,14 +19,25 @@
       </ul>
   </div>
   <!-- Pasos -->
-  <div>
-      <h2 class="text-white">Instrucciones</h2>
-      <ion-accordion-group class=" text-white" multiple="true">
-        <ion-accordion *ngFor="let paso of pasosReceta; let i = index" [value]="'paso_' + i">
-            <ion-item slot="header" color="dark">
-                <ion-label>{{paso.numero}} º Paso : {{paso.titulo}} </ion-label>
+  <div class="recipe-steps-container">
+      <h2 class="recipe-section-title text-white">Pasos</h2>
+      <ion-accordion-group class="custom-accordion" multiple="true">
+        <ion-accordion *ngFor="let paso of pasosReceta; let i = index" [value]="'paso_' + i" class="step-item">
+            <ion-item slot="header" class="step-header">
+                <div class="bg-[#CAC4D0] w-10 h-10 flex items-center justify-center rounded-full m-2">{{paso.numero}}</div>
+                <ion-label class="step-title">{{paso.titulo}}</ion-label>
             </ion-item>
-            <div class="ion-padding text-black" slot="content">{{paso.descripcion}}</div>
+            <div class="step-content" slot="content">
+                <p>{{paso.descripcion}}</p>
+                <div class="step-timing" *ngIf="paso.tiempoEstimado">
+                    <ion-icon name="time-outline"></ion-icon>
+                    <span>Tiempo estimado: {{paso.tiempoEstimado}} minutos</span>
+                </div>
+                <div class="step-tips" *ngIf="paso.consejo">
+                    <h4><ion-icon name="bulb-outline"></ion-icon> Consejo</h4>
+                    <p>{{paso.consejo}}</p>
+                </div>
+            </div>
         </ion-accordion>
     </ion-accordion-group>
   </div>
