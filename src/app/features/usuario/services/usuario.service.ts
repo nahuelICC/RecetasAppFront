@@ -8,6 +8,8 @@ export class UsuarioService {
 
   private apiUrl = '/api/cooker';
   private apiUrlUsuario = '/api/usuario';
+  private apiUrlReceta = '/api/receta';
+  private apiUrlColeccion = '/api/coleccion';
 
 
   constructor(private http: HttpClient) { }
@@ -48,5 +50,35 @@ export class UsuarioService {
         id
       }
     });
+  }
+
+  editarVisibilidadReceta(idReceta: number, esVisible: boolean) {
+    return this.http.put(`${this.apiUrlReceta}/visibilidad`, null, {
+      params: {
+        recetaId: idReceta.toString(),
+        visibilidad: esVisible.toString()
+      }
+    });
+  }
+
+  editarVisibilidadColeccion(idColeccion: number, esVisible: boolean) {
+    return this.http.put(`${this.apiUrlColeccion}/visibilidad`, null, {
+      params: {
+        id: idColeccion.toString(),
+        visibilidad: esVisible.toString()
+      }
+    });
+  }
+
+  perfilBloqueado(id:string) {
+    return this.http.get(`${this.apiUrl}/perfilBloqueado`, {
+    params: {
+      idCooker: id
+    }
+    });
+  }
+
+  fotoPerfilVisita(id:string) {
+    return this.http.get(`${this.apiUrl}/foto/${id}`,  {responseType: 'text'});
   }
 }

@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {IonIcon} from '@ionic/angular/standalone';
 import {NgClass, NgForOf, NgIf} from '@angular/common';
+import {UsuarioService} from '../../services/usuario.service';
 
 @Component({
   selector: 'app-coleccion-recetas',
@@ -16,7 +17,7 @@ import {NgClass, NgForOf, NgIf} from '@angular/common';
 })
 export class ColeccionRecetasComponent  implements OnInit {
 
-  constructor() { }
+  constructor(private usuarioService:UsuarioService) { }
 
   ngOnInit() {}
 
@@ -34,6 +35,7 @@ export class ColeccionRecetasComponent  implements OnInit {
 
   toggleVisibilidad(coleccion: any) {
     coleccion.esVisible = !coleccion.esVisible;
+    this.usuarioService.editarVisibilidadColeccion(coleccion.id, coleccion.esVisible).subscribe();
   }
 
 }

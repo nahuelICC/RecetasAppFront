@@ -45,7 +45,7 @@ export class UsuarioComponent  implements OnInit {
   recetas: any[] = [];
   colecciones: any[] = [];
   recetasGuardadas: any[] = [];
-  imagenPerfil: string = 'https://ionicframework.com/docs/img/demos/avatar.svg';
+  imagenPerfilUsuario: string = 'https://ionicframework.com/docs/img/demos/avatar.svg';
   esPerfilPropio: boolean = true;
   editandoPerfil: boolean = false;
   datosEdicion: any = {};
@@ -63,14 +63,12 @@ export class UsuarioComponent  implements OnInit {
   mostrarSeguidores = false;
   idPropietario: number = 0;
   recetasMostradas: any[] = [];
-  recetasPage = 1;
   recetasPerPage = 9;
   recetasGuardadasMostradas: any[] = [];
-  guardadasPage = 1;
   guardadasPerPage = 9;
   coleccionesMostradas: any[] = [];
-  coleccionesPage = 1;
   coleccionesPerPage = 4;
+  perfilBloqueado = false;
 
 
 
@@ -85,8 +83,21 @@ export class UsuarioComponent  implements OnInit {
         this.recetas = response.recetas;
         this.colecciones = response.colecciones;
 
+
+
         this.recetasMostradas = this.recetas.slice(0, this.recetasPerPage);
         this.coleccionesMostradas = this.colecciones.slice(0, this.coleccionesPerPage);
+      });
+      this.usuarioService.perfilBloqueado(id).subscribe((response) => {
+        this.perfilBloqueado = response as boolean;
+      });
+
+      this.usuarioService.fotoPerfilVisita(id).subscribe((response: any) => {
+        if (response !== 'sin foto') {
+          this.imagenPerfilUsuario = response;
+        }else {
+          this.imagenPerfilUsuario = 'https://ionicframework.com/docs/img/demos/avatar.svg';
+        }
       });
       this.esPerfilPropio = false;
     } else {
@@ -100,6 +111,14 @@ export class UsuarioComponent  implements OnInit {
         this.recetasMostradas = this.recetas.slice(0, this.recetasPerPage);
         this.coleccionesMostradas = this.colecciones.slice(0, this.coleccionesPerPage);
         this.recetasGuardadasMostradas = this.recetasGuardadas.slice(0, this.guardadasPerPage);
+      });
+
+      this.headerService.getFotoPerfil().subscribe((response: any) => {
+        if (response !== 'sin foto') {
+          this.imagenPerfilUsuario = response;
+        }else {
+          this.imagenPerfilUsuario = 'https://ionicframework.com/docs/img/demos/avatar.svg';
+        }
       });
     }
 
@@ -124,11 +143,7 @@ export class UsuarioComponent  implements OnInit {
       this.seguidores = response;
     });
 
-    this.headerService.getFotoPerfil().subscribe((response: any) => {
-      if (response !== 'sin foto') {
-        this.imagenPerfil = response;
-      }
-    });
+
   }
 
   passwordsIguales(form: FormGroup) {
@@ -230,7 +245,7 @@ export class UsuarioComponent  implements OnInit {
       this.usuarioService.subirFotoPerfil(formData).subscribe(
         (response) => {
           console.log(response);
-          this.imagenPerfil = response.urlFoto;
+          this.imagenPerfilUsuario = response.urlFoto;
           this.alertMessage = response.mensaje;
           this.alertType = 'success';
           this.isAlertVisible = true;

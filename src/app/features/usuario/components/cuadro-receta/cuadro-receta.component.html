@@ -1,6 +1,6 @@
 <div class="rounded-lg overflow-hidden relative aspect-square">
 
-  <div class="absolute top-2 right-2 color-verde-claro p-1.5 rounded-full flex" *ngIf="esPerfilPropio">
+  <div class="absolute top-2 right-2 color-verde-claro p-1.5 rounded-full flex" *ngIf="esPerfilPropio" (click)="toggleVisibilidad()">
     <ion-icon
       [name]="receta.esVisible ? 'eye-outline' : 'eye-off-outline'"
       class="text-xl text-white" >
