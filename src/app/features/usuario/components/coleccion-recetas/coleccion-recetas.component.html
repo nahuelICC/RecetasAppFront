@@ -19,6 +19,12 @@
         </ion-icon>
 
         <ion-icon
+          name="trash-outline"
+          class="text-xl cursor-pointer"
+          (click)="eliminarColeccion(coleccion); $event.stopPropagation()">
+        </ion-icon>
+
+        <ion-icon
           name="chevron-down-outline"
           class="text-xl"
           [ngClass]="{ 'rotate-180': coleccion.expandida }">

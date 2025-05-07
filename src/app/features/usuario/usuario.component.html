@@ -50,8 +50,9 @@
           <app-boton
             [color]="'var(--color-verde-boton)'"
             size="small"
-            [label]="'Seguir'"
-            *ngIf="!esPerfilPropio && !perfilBloqueado"></app-boton>
+            [label]="perfil.siguiendo ? 'Dejar de seguir' : 'Seguir'"
+            *ngIf="!esPerfilPropio && !perfilBloqueado"
+          (click)="toggleSeguirPerfil()"></app-boton>
           <app-boton
             [color]="'var(--color-verde-boton)'"
             size="small"
@@ -60,7 +61,8 @@
           <app-boton
             [color]="'var(--color-amarillo-boton)'"
             size="small"
-            [label]="'Bloquear'"
+            [label]="perfil.bloqueado ? 'Desbloquear' : 'Bloquear'"
+            (click)="toggleBloquearPerfil()"
             *ngIf="!esPerfilPropio"></app-boton>
         </div>
       </div>
@@ -259,9 +261,19 @@
 
   <!-- Colecciones -->
   <div *ngIf="activeTab === 'colecciones' && !perfilBloqueado" class="space-y-4">
+    <div class="flex gap-3.5 mb-4 justify-start ion-align-items-center" *ngIf="esPerfilPropio">
+      <p class="color-texto-blanco text-lg font-semibold ">Crear Colección</p>
+      <ion-icon
+        name="add-circle-outline"
+        class="text-2xl color-texto-blanco cursor-pointer"
+        (click)="toggleCrearColeccion()"
+       ></ion-icon>
+    </div>
+
     <app-coleccion-recetas
       [colecciones]="coleccionesMostradas"
-      [esPerfilPropio]="esPerfilPropio"></app-coleccion-recetas>
+      [esPerfilPropio]="esPerfilPropio"
+      (coleccionEliminada)="onEliminarColeccion($event)">></app-coleccion-recetas>
 
     <ion-infinite-scroll
       (ionInfinite)="loadMoreColecciones($event)"
@@ -269,6 +281,58 @@
       *ngIf="coleccionesMostradas.length < colecciones.length">
       <ion-infinite-scroll-content loadingSpinner="bubbles"></ion-infinite-scroll-content>
     </ion-infinite-scroll>
+  </div>
+
+  <!-- Crear colección -->
+
+  <div *ngIf="mostrarCrearColeccion" class="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center p-4">
+    <div class="bg-green-100 w-full sm:w-3/4 lg:w-1/2 max-h-[80vh] rounded-lg p-4 shadow-xl overflow-y-auto relative">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold color-texto">Crear Colección</h3>
+        <ion-icon
+          name="close-circle-outline"
+          class="text-2xl text-green-900 cursor-pointer"
+          (click)="toggleCrearColeccion()"
+        ></ion-icon>
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm font-medium mb-1">Título de la colección</label>
+        <input
+          type="text"
+          [(ngModel)]="nuevaColeccionTitulo"
+          class="w-full p-2 border rounded-lg text-black"
+          placeholder="Ej: Mis postres favoritos"
+        >
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm font-medium mb-2">Recetas</label>
+        <div class="grid grid-cols-1 gap-2">
+          <div
+            *ngFor="let receta of perfil.recetas"
+            class="flex items-center p-2 border rounded bg-white"
+          >
+            <input
+              type="checkbox"
+              [checked]="recetasSeleccionadas.has(receta.idReceta)"
+              (change)="toggleReceta(receta.idReceta)"
+              class="mr-2"
+            >
+            <span class="text-sm text-gray-800">{{ receta.nombre }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-center">
+        <app-boton
+          label="Guardar"
+          [color]="'var(--color-verde-boton)'"
+          size="small"
+          (click)="onGuardarColeccion()"
+        ></app-boton>
+      </div>
+    </div>
   </div>
 
 

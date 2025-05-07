@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -80,5 +80,35 @@ export class UsuarioService {
 
   fotoPerfilVisita(id:string) {
     return this.http.get(`${this.apiUrl}/foto/${id}`,  {responseType: 'text'});
+  }
+
+  changeBloqueo(id: string) {
+    const params = new HttpParams().set('idCooker', id);
+    return this.http.post(`${this.apiUrl}/bloquear`, null, {
+      params: params,
+      responseType: 'text'
+    });
+  }
+
+  changeSeguir(id: string) {
+    const params = new HttpParams().set('idCooker', id);
+    return this.http.post(`${this.apiUrl}/seguir`, null, {
+      params: params,
+      responseType: 'text'
+    });
+  }
+
+  crearColeccion(titulo: string, recetasIds: number[]) {
+    const params = new HttpParams().set('titulo', titulo);
+    return this.http.post(`${this.apiUrlColeccion}/crear`, recetasIds, {
+      params: params,
+      responseType: 'text'
+    });
+  }
+
+  eliminarColeccion(id: number) {
+    return this.http.delete(`${this.apiUrlColeccion}/eliminar/${id}`, {
+      responseType: 'text'
+    });
   }
 }

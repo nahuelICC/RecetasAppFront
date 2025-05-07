@@ -69,6 +69,9 @@ export class UsuarioComponent  implements OnInit {
   coleccionesMostradas: any[] = [];
   coleccionesPerPage = 4;
   perfilBloqueado = false;
+  mostrarCrearColeccion = false;
+  nuevaColeccionTitulo = '';
+  recetasSeleccionadas: Set<number> = new Set<number>();
 
 
 
@@ -82,8 +85,6 @@ export class UsuarioComponent  implements OnInit {
         this.perfil = response;
         this.recetas = response.recetas;
         this.colecciones = response.colecciones;
-
-
 
         this.recetasMostradas = this.recetas.slice(0, this.recetasPerPage);
         this.coleccionesMostradas = this.colecciones.slice(0, this.coleccionesPerPage);
@@ -318,6 +319,152 @@ export class UsuarioComponent  implements OnInit {
     if (this.coleccionesMostradas.length >= this.colecciones.length) {
       event.target.disabled = true;
     }
+  }
+
+  toggleBloquearPerfil() {
+    const id = this.route.snapshot.paramMap.get('id') || '';
+
+      this.usuarioService.changeBloqueo(id).subscribe((response) => {
+        this.alertMessage = "Estado de bloqueo cambiado";
+        console.log(response);
+        this.alertType = 'success';
+        this.isAlertVisible = true;
+        this.usuarioService.listaSeguidores(this.esPerfilPropio, this.route.snapshot.paramMap.get('id') || '').subscribe((response) => {
+          this.seguidores = response;
+        });
+        this.usuarioService.getPerfilId(id).subscribe((response) => {
+          this.perfil = response;
+        });
+      }, (error) => {
+        console.error('Error al cambiar el estado de bloqueo:', error);
+        this.alertMessage = error.error;
+        this.alertType = 'error';
+        this.isAlertVisible = true;
+      });
+
+    this.perfilBloqueado = !this.perfilBloqueado;
+    this.perfil.bloqueado  = !this.perfil.bloqueado;
+    setTimeout(() => {
+      this.isAlertVisible = false;
+    }, 2000);
+
+  }
+
+  toggleSeguirPerfil() {
+    const id = this.route.snapshot.paramMap.get('id') || '';
+    this.usuarioService.changeSeguir(id).subscribe((response) => {
+      this.perfil.siguiendo = !this.perfil.siguiendo;
+      this.alertMessage = response;
+      this.alertType = 'success';
+      this.isAlertVisible = true;
+      this.usuarioService.listaSeguidores(this.esPerfilPropio, this.route.snapshot.paramMap.get('id') || '').subscribe((response) => {
+        this.seguidores = response;
+      });
+      this.usuarioService.getPerfilId(id).subscribe((response) => {
+        this.perfil = response;
+      });
+    }, (error) => {
+      console.error('Error al cambiar el estado de seguimiento:', error);
+      this.alertMessage = error.error;
+      this.alertType = 'error';
+      this.isAlertVisible = true;
+    });
+
+    setTimeout(() => {
+      this.isAlertVisible = false;
+    }, 2000);
+  }
+
+  toggleCrearColeccion() {
+    this.mostrarCrearColeccion = !this.mostrarCrearColeccion;
+    if (this.mostrarCrearColeccion) {
+      this.nuevaColeccionTitulo = '';
+      this.recetasSeleccionadas.clear();
+    }
+  }
+
+  toggleReceta(idReceta: number) {
+    if (this.recetasSeleccionadas.has(idReceta)) {
+      this.recetasSeleccionadas.delete(idReceta);
+    } else {
+      this.recetasSeleccionadas.add(idReceta);
+    }
+  }
+
+  onGuardarColeccion() {
+    const titulo = this.nuevaColeccionTitulo.trim();
+
+    if (!titulo) {
+      this.alertMessage = 'El título es requerido';
+      this.alertType = 'error';
+      this.isAlertVisible = true;
+      setTimeout(() => {
+        this.isAlertVisible = false;
+      }, 2000);
+      return;
+    }
+
+    if (this.recetasSeleccionadas.size === 0) {
+      this.alertMessage = 'Selecciona al menos una receta';
+      this.alertType = 'error';
+      this.isAlertVisible = true;
+      setTimeout(() => {
+        this.isAlertVisible = false;
+      }, 2000);
+      return;
+    }
+
+    const recetasIds = Array.from(this.recetasSeleccionadas);
+
+    this.usuarioService.crearColeccion(titulo,recetasIds).subscribe(
+      (response) => {
+        this.usuarioService.getPerfil().subscribe((perfilResponse) => {
+          this.colecciones = perfilResponse.colecciones;
+        this.coleccionesMostradas = this.colecciones.slice(0, this.coleccionesPerPage);
+
+      this.mostrarCrearColeccion = false;
+      this.nuevaColeccionTitulo = '';
+      this.recetasSeleccionadas.clear();
+      this.alertMessage = response;
+      this.alertType = 'success';
+      this.isAlertVisible = true;
+
+          setTimeout(() => {
+            this.isAlertVisible = false;
+          }, 2000);
+        });
+      },
+      (error) => {
+      console.error('Error al crear la colección:', error);
+      this.alertMessage = error.error;
+      this.alertType = 'error';
+      this.isAlertVisible = true;
+
+      setTimeout(() => {
+        this.isAlertVisible = false;
+      }, 2000);
+  }
+    );
+  }
+
+  onEliminarColeccion(coleccion: any) {
+    this.usuarioService.eliminarColeccion(coleccion.id).subscribe(
+      (response) => {
+        this.colecciones = this.colecciones.filter(c => c.id !== coleccion.id);
+        this.coleccionesMostradas = this.colecciones.slice(0, this.coleccionesPerPage);
+        this.alertMessage = response;
+        this.alertType = 'success';
+        this.isAlertVisible = true;
+      },
+      (error) => {
+        this.alertMessage = error.error;
+        this.alertType = 'error';
+        this.isAlertVisible = true
+      }
+    );
+    setTimeout(() => {
+      this.isAlertVisible = false;
+    }, 2000);
   }
 
 
