@@ -526,7 +526,10 @@ export class UsuarioComponent  implements OnInit {
   }
 
 
-
-
-
+  actualizaGuardados($event: any) {
+    this.usuarioService.getPerfil().subscribe((response) => {
+      this.recetasGuardadas = response.recetasGuardadas;
+      this.recetasGuardadasMostradas = this.recetasGuardadas.slice(0, this.guardadasPerPage);
+    });
   }
+}

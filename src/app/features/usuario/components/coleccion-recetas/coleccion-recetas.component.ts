@@ -19,7 +19,7 @@ export class ColeccionRecetasComponent  implements OnInit {
 
   constructor(private usuarioService:UsuarioService) { }
 
-  ngOnInit() {}
+  ngOnInit() {this.inicializarEstadoExpandido()}
 
   @Input() colecciones: any[] = [];
 
@@ -31,10 +31,6 @@ export class ColeccionRecetasComponent  implements OnInit {
 
   toggleExpandida(coleccion: any) {
     coleccion.expandida = !coleccion.expandida;
-  }
-
-  toggleVerMas(coleccion: any) {
-    coleccion.verMas = !coleccion.verMas;
   }
 
   toggleVisibilidad(coleccion: any) {
@@ -49,6 +45,14 @@ export class ColeccionRecetasComponent  implements OnInit {
 
   editarColeccion(coleccion: any) {
     this.coleccionEditada.emit(coleccion);
+  }
+
+  private inicializarEstadoExpandido() {
+    if (this.colecciones?.length > 0) {
+      this.colecciones.forEach((coleccion, index) => {
+        coleccion.expandida = index === 0;
+      });
+    }
   }
 
 }

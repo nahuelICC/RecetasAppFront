@@ -3,19 +3,18 @@
     <div
       class="color-verde-claro text-black p-3 rounded-lg cursor-pointer flex justify-between"
       (click)="toggleExpandida(coleccion)"
-    *ngIf="coleccion.esVisible || esPerfilPropio">
+      *ngIf="coleccion.esVisible || esPerfilPropio">
 
       <p class="font-semibold">{{ coleccion.titulo }}</p>
 
       <div class="flex gap-3 items-center">
-
         <span class="text-sm">{{ coleccion.recetas.length }} recetas</span>
 
         <ion-icon
           [name]="coleccion.esVisible ? 'eye-outline' : 'eye-off-outline'"
           class="text-xl cursor-pointer"
           (click)="toggleVisibilidad(coleccion); $event.stopPropagation()"
-        *ngIf="esPerfilPropio">
+          *ngIf="esPerfilPropio">
         </ion-icon>
 
         <ion-icon
@@ -39,24 +38,29 @@
       </div>
     </div>
 
-    <div *ngIf="coleccion.expandida" class="color-verde-claro text-black p-3 rounded mt-1">
-      <ul>
-        <li *ngFor="let receta of coleccion.recetas.slice(0, coleccion.verMas ? coleccion.recetas.length : 5)">
-          <div class="flex justify-between border-b py-1">
-            <span>{{ receta.nombre }}</span>
-            <div class="flex gap-3">
-              <span class="text-sm">{{ receta.duracion }}</span>
-              <ion-icon name="time-outline" class="text-xl"></ion-icon>
+    <div *ngIf="coleccion.expandida" class="color-verde-claro text-black p-3 rounded-lg mt-1">
+
+      <div class="flex overflow-x-auto pb-4 scrollbar-hide">
+        <div class="flex gap-4 flex-nowrap">
+          <div *ngFor="let receta of coleccion.recetas"
+               class="relative flex-shrink-0 w-48 h-64 rounded-lg overflow-hidden cursor-pointer">
+
+            <img [src]="receta.fotoReceta" alt="Imagen receta" class="w-full h-full object-cover transition-transform duration-300 hover:scale-105">
+
+            <div class="absolute bottom-0 left-0 right-0 p-2 color-texto color-verde-claro-tranlucido backdrop-blur-sm">
+              <div class="flex justify-between items-center">
+                <div class="truncate">
+                  <p class="font-medium truncate">{{ receta.nombre }}</p>
+                  <div class="flex items-center gap-1 text-sm">
+                    <span>{{ receta.duracion }}</span>
+                    <ion-icon name="time-outline" class="text-sm"></ion-icon>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </li>
-      </ul>
-
-      <button
-        class="mt-2 text-sm color-texto font-bold"
-        (click)="toggleVerMas(coleccion)">
-        {{ coleccion.verMas ? 'Ver menos' : 'Ver más' }}
-      </button>
+        </div>
+      </div>
     </div>
   </div>
 </div>

@@ -245,7 +245,7 @@
   <div *ngIf="activeTab === 'recetas' && !perfilBloqueado" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
     <ng-container *ngFor="let receta of recetasMostradas">
       <div *ngIf="receta.esVisible || esPerfilPropio">
-        <app-cuadro-receta [receta]="receta" [esPerfilPropio]="esPerfilPropio"></app-cuadro-receta>
+        <app-cuadro-receta [receta]="receta" [esPerfilPropio]="esPerfilPropio" (editaGuardar)="actualizaGuardados($event)"></app-cuadro-receta>
       </div>
     </ng-container>
   </div>
