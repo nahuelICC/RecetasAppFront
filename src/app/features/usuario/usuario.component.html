@@ -248,6 +248,12 @@
         <app-cuadro-receta [receta]="receta" [esPerfilPropio]="esPerfilPropio" (editaGuardar)="actualizaGuardados($event)"></app-cuadro-receta>
       </div>
     </ng-container>
+
+    <div *ngIf="recetasMostradas.length === 0" class="col-span-full flex flex-col items-center justify-center gap-4 py-12">
+      <img src="assets/frutero.png" alt="Sin recetas"
+           class="w-1/2 md:w-1/4 opacity-75">
+      <p class="text-gray-300 text-center text-lg">No hay recetas para mostrar aún</p>
+    </div>
   </div>
 
   <ion-infinite-scroll
@@ -277,12 +283,20 @@
       (coleccionEditada)="iniciarEdicionColeccion($event)">
     </app-coleccion-recetas>
 
+    <div *ngIf="coleccionesMostradas.length === 0" class="flex flex-col items-center justify-center gap-4 py-12">
+      <img src="assets/frutero.png" alt="Sin colecciones"
+           class="w-1/2 md:w-1/4 opacity-75">
+      <p class="text-gray-300 text-center text-lg">No hay colecciones para mostrar aún</p>
+    </div>
+
     <ion-infinite-scroll
       (ionInfinite)="loadMoreColecciones($event)"
       threshold="100px"
       *ngIf="coleccionesMostradas.length < colecciones.length">
       <ion-infinite-scroll-content loadingSpinner="bubbles"></ion-infinite-scroll-content>
     </ion-infinite-scroll>
+
+
   </div>
 
   <!-- Crear colección -->
@@ -341,14 +355,24 @@
     <div *ngFor="let receta of recetasGuardadasMostradas">
       <app-cuadro-receta-guardada [receta]="receta"></app-cuadro-receta-guardada>
     </div>
+
+    <div *ngIf="recetasGuardadasMostradas.length === 0" class="col-span-full flex flex-col items-center justify-center gap-4 py-12">
+      <img src="assets/frutero.png" alt="Sin guardados"
+           class="w-1/2 md:w-1/4 opacity-75">
+      <p class="text-gray-300 text-center text-lg">No hay recetas guardadas para mostrar aún</p>
+    </div>
+
+    <ion-infinite-scroll
+      (ionInfinite)="loadMoreGuardadas($event)"
+      threshold="100px"
+      *ngIf="recetasGuardadasMostradas.length < recetasGuardadas.length">
+      <ion-infinite-scroll-content loadingSpinner="bubbles"></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
   </div>
 
-  <ion-infinite-scroll
-    (ionInfinite)="loadMoreGuardadas($event)"
-    threshold="100px"
-    *ngIf="recetasGuardadasMostradas.length < recetasGuardadas.length">
-    <ion-infinite-scroll-content loadingSpinner="bubbles"></ion-infinite-scroll-content>
-  </ion-infinite-scroll>
+
+
+
 </div>
 
 <app-alert-info
