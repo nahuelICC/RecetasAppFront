@@ -273,7 +273,9 @@
     <app-coleccion-recetas
       [colecciones]="coleccionesMostradas"
       [esPerfilPropio]="esPerfilPropio"
-      (coleccionEliminada)="onEliminarColeccion($event)">></app-coleccion-recetas>
+      (coleccionEliminada)="onEliminarColeccion($event)"
+      (coleccionEditada)="iniciarEdicionColeccion($event)">
+    </app-coleccion-recetas>
 
     <ion-infinite-scroll
       (ionInfinite)="loadMoreColecciones($event)"
@@ -285,51 +287,49 @@
 
   <!-- Crear colección -->
 
-  <div *ngIf="mostrarCrearColeccion" class="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center p-4">
+  <div *ngIf="mostrarCrearColeccion || mostrarEditarColeccion" class="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center p-4">
     <div class="bg-green-100 w-full sm:w-3/4 lg:w-1/2 max-h-[80vh] rounded-lg p-4 shadow-xl overflow-y-auto relative">
       <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-semibold color-texto">Crear Colección</h3>
+        <h3 class="text-lg font-semibold color-texto">
+          {{ modoEdicionColeccion ? 'Editar' : 'Crear' }} Colección
+        </h3>
         <ion-icon
           name="close-circle-outline"
           class="text-2xl text-green-900 cursor-pointer"
-          (click)="toggleCrearColeccion()"
+          (click)="modoEdicionColeccion ? toggleEditarColeccion() : toggleCrearColeccion()"
         ></ion-icon>
       </div>
 
       <div class="mb-4">
-        <label class="block text-sm font-medium mb-1">Título de la colección</label>
         <input
           type="text"
-          [(ngModel)]="nuevaColeccionTitulo"
+          [(ngModel)]="coleccionEditando.titulo"
           class="w-full p-2 border rounded-lg text-black"
           placeholder="Ej: Mis postres favoritos"
         >
       </div>
 
-      <div class="mb-4">
-        <label class="block text-sm font-medium mb-2">Recetas</label>
-        <div class="grid grid-cols-1 gap-2">
-          <div
-            *ngFor="let receta of perfil.recetas"
-            class="flex items-center p-2 border rounded bg-white"
+      <div class="grid grid-cols-1 gap-2 mb-4">
+        <div
+          *ngFor="let receta of perfil.recetas"
+          class="flex items-center p-2 border rounded bg-white"
+        >
+          <input
+            type="checkbox"
+            [checked]="recetasSeleccionadas.has(receta.idReceta)"
+            (change)="toggleReceta(receta.idReceta)"
+            class="mr-2"
           >
-            <input
-              type="checkbox"
-              [checked]="recetasSeleccionadas.has(receta.idReceta)"
-              (change)="toggleReceta(receta.idReceta)"
-              class="mr-2"
-            >
-            <span class="text-sm text-gray-800">{{ receta.nombre }}</span>
-          </div>
+          <span class="text-sm text-gray-800">{{ receta.nombre }}</span>
         </div>
       </div>
 
       <div class="flex justify-center">
         <app-boton
-          label="Guardar"
+          [label]="modoEdicionColeccion ? 'Guardar cambios' : 'Guardar'"
           [color]="'var(--color-verde-boton)'"
           size="small"
-          (click)="onGuardarColeccion()"
+          (click)="modoEdicionColeccion ? onEditarColeccion() : onGuardarColeccion()"
         ></app-boton>
       </div>
     </div>

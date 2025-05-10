@@ -23,6 +23,8 @@ export class CuadroRecetaComponent  implements OnInit {
     meGusta: number;
     guardados: number;
     idReceta: number;
+    cookerGusta: boolean;
+    cookerGuardada: boolean;
   };
   @Input() esPerfilPropio: boolean = true;
 

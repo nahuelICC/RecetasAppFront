@@ -72,6 +72,9 @@ export class UsuarioComponent  implements OnInit {
   mostrarCrearColeccion = false;
   nuevaColeccionTitulo = '';
   recetasSeleccionadas: Set<number> = new Set<number>();
+  mostrarEditarColeccion = false;
+  modoEdicionColeccion = false;
+  coleccionEditando: any = {};
 
 
 
@@ -377,6 +380,7 @@ export class UsuarioComponent  implements OnInit {
 
   toggleCrearColeccion() {
     this.mostrarCrearColeccion = !this.mostrarCrearColeccion;
+    this.modoEdicionColeccion = false;
     if (this.mostrarCrearColeccion) {
       this.nuevaColeccionTitulo = '';
       this.recetasSeleccionadas.clear();
@@ -392,7 +396,7 @@ export class UsuarioComponent  implements OnInit {
   }
 
   onGuardarColeccion() {
-    const titulo = this.nuevaColeccionTitulo.trim();
+    const titulo = this.coleccionEditando.titulo.trim();
 
     if (!titulo) {
       this.alertMessage = 'El título es requerido';
@@ -467,5 +471,62 @@ export class UsuarioComponent  implements OnInit {
     }, 2000);
   }
 
+  iniciarEdicionColeccion(coleccion: any) {
+    this.mostrarEditarColeccion = true;
+    this.modoEdicionColeccion = true;
+    this.coleccionEditando = { ...coleccion };
+    this.recetasSeleccionadas = new Set(coleccion.recetas.map((r: any) => r.idReceta));
+  }
 
-}
+  onEditarColeccion() {
+    const titulo = this.coleccionEditando.titulo.trim();
+    const recetasIds = Array.from(this.recetasSeleccionadas);
+
+    if (!titulo || recetasIds.length === 0) {
+      this.alertMessage = 'El título es requerido y debe seleccionar al menos una receta';
+      this.alertType = 'error';
+      this.isAlertVisible = true;
+      setTimeout(() => {
+        this.isAlertVisible = false;
+      }, 2000);
+
+      return;
+    }
+    this.usuarioService.editarColeccion(this.coleccionEditando.id, titulo, recetasIds).subscribe(
+      (response) => {
+        this.usuarioService.getPerfil().subscribe((perfilResponse) => {
+            this.usuarioService.getPerfil().subscribe((perfilResponse) => {
+              this.colecciones = perfilResponse.colecciones;
+              this.coleccionesMostradas = this.colecciones.slice(0, this.coleccionesPerPage);
+            });
+          this.alertMessage = response;
+          this.alertType = 'success';
+          this.isAlertVisible = true;
+        });
+      },
+      (error) => {
+        this.alertMessage = error.error;
+        this.alertType = 'error';
+        this.isAlertVisible = true;
+      }
+    );
+    setTimeout(() => {
+      this.isAlertVisible = false;
+    }, 2000);
+
+    this.mostrarEditarColeccion = false;
+    this.modoEdicionColeccion = false;
+    this.coleccionEditando = {};
+  }
+
+  toggleEditarColeccion() {
+    this.mostrarEditarColeccion = !this.mostrarEditarColeccion;
+    this.modoEdicionColeccion = false;
+    this.coleccionEditando = {};
+  }
+
+
+
+
+
+  }

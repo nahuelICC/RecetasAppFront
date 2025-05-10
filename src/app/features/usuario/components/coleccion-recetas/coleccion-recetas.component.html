@@ -19,6 +19,13 @@
         </ion-icon>
 
         <ion-icon
+          name="pencil-outline"
+          class="text-xl cursor-pointer"
+          (click)="editarColeccion(coleccion); $event.stopPropagation()"
+          *ngIf="esPerfilPropio">
+        </ion-icon>
+
+        <ion-icon
           name="trash-outline"
           class="text-xl cursor-pointer"
           (click)="eliminarColeccion(coleccion); $event.stopPropagation()">

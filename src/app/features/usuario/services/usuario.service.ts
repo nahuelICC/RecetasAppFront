@@ -111,4 +111,12 @@ export class UsuarioService {
       responseType: 'text'
     });
   }
+
+  editarColeccion(id: number, titulo: string, recetasIds: number[]) {
+    const params = new HttpParams().set('titulo', titulo).set('id', id.toString());
+    return this.http.put(`${this.apiUrlColeccion}/editar`, recetasIds, {
+      params: params,
+      responseType: 'text'
+    });
+  }
 }

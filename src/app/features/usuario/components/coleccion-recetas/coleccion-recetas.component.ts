@@ -27,6 +27,8 @@ export class ColeccionRecetasComponent  implements OnInit {
 
   @Output() coleccionEliminada = new EventEmitter<any>();
 
+  @Output() coleccionEditada = new EventEmitter<any>();
+
   toggleExpandida(coleccion: any) {
     coleccion.expandida = !coleccion.expandida;
   }
@@ -43,6 +45,10 @@ export class ColeccionRecetasComponent  implements OnInit {
 
   eliminarColeccion(coleccion: any) {
     this.coleccionEliminada.emit(coleccion);
+  }
+
+  editarColeccion(coleccion: any) {
+    this.coleccionEditada.emit(coleccion);
   }
 
 }

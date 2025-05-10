@@ -20,32 +20,32 @@ export class InicioService {
     return this.http.get<RecetaInicioDTO[]>(`${this.apiUrl}/recetasSiguiendo/${cookerId}`);
   }
 
-  darMeGustaAReceta(recetaId: number, cookerId: number): Observable<string> {
-    return this.http.post<string>(`${this.apiUrl}/meGusta`, { recetaId, cookerId }, { responseType: 'text' as 'json' });
+  darMeGustaAReceta(recetaId: number): Observable<string> {
+    return this.http.post<string>(`${this.apiUrl}/meGusta`, recetaId, { responseType: 'text' as 'json' });
   }
 
-  verificarMeGusta(recetaId: number, cookerId: number): Observable<boolean> {
-    return this.http.post<boolean>(`${this.apiUrl}/estado`, { recetaId, cookerId });
+  verificarMeGusta(recetaId: number): Observable<boolean> {
+    return this.http.post<boolean>(`${this.apiUrl}/estado`, recetaId);
   }
 
-  eliminarMeGusta(recetaId: number, cookerId: number): Observable<string> {
+  eliminarMeGusta(recetaId: number): Observable<string> {
     return this.http.request<string>('DELETE', `${this.apiUrl}/meGusta`, {
-      body: { recetaId, cookerId },
+      body: recetaId,
       responseType: 'text' as 'json'
     });
   }
 
-  guardarReceta(recetaId: number, cookerId: number): Observable<string> {
-    return this.http.post<string>(`${this.apiUrl}/guardar`, { recetaId, cookerId }, { responseType: 'text' as 'json' });
+  guardarReceta(recetaId: number): Observable<string> {
+    return this.http.post<string>(`${this.apiUrl}/guardar`, recetaId, { responseType: 'text' as 'json' });
   }
 
-  verificarRecetaGuardada(recetaId: number, cookerId: number): Observable<boolean> {
-    return this.http.post<boolean>(`${this.apiUrl}/estadoGuardado`, { recetaId, cookerId });
+  verificarRecetaGuardada(recetaId: number): Observable<boolean> {
+    return this.http.post<boolean>(`${this.apiUrl}/estadoGuardado`, recetaId);
   }
 
-  eliminarRecetaGuardada(recetaId: number, cookerId: number): Observable<string> {
+  eliminarRecetaGuardada(recetaId: number): Observable<string> {
     return this.http.request<string>('DELETE', `${this.apiUrl}/guardar`, {
-      body: { recetaId, cookerId },
+      body: recetaId,
       responseType: 'text' as 'json'
     });
   }

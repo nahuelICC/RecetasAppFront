@@ -86,7 +86,7 @@ export class PublicacionComponent  implements OnInit {
 
 
   verificarEstadoMeGusta() {
-    this.inicioService.verificarMeGusta(this.receta.id, this.cookerId).subscribe({
+    this.inicioService.verificarMeGusta(this.receta.id).subscribe({
       next: (estado) => {
         this.recetaLeGusta = estado;
       },
@@ -96,7 +96,7 @@ export class PublicacionComponent  implements OnInit {
     });
   }
   verificarEstadoGuardado() {
-    this.inicioService.verificarRecetaGuardada(this.receta.id, this.cookerId).subscribe({
+    this.inicioService.verificarRecetaGuardada(this.receta.id).subscribe({
       next: (estado) => {
         this.recetaGuardada = estado;
       },
@@ -109,7 +109,7 @@ export class PublicacionComponent  implements OnInit {
 
   toggleLike() {
     if (this.recetaLeGusta) {
-      this.inicioService.eliminarMeGusta(this.receta.id, this.cookerId).subscribe({
+      this.inicioService.eliminarMeGusta(this.receta.id).subscribe({
         next: (res) => {
           this.recetaLeGusta = false;
           console.log('Me gusta eliminado:', res);
@@ -119,7 +119,7 @@ export class PublicacionComponent  implements OnInit {
         }
       });
     } else {
-      this.inicioService.darMeGustaAReceta(this.receta.id, this.cookerId).subscribe({
+      this.inicioService.darMeGustaAReceta(this.receta.id).subscribe({
         next: (res) => {
           this.recetaLeGusta = true;
           this.mostrarAnimacionLike = true;
@@ -135,7 +135,7 @@ export class PublicacionComponent  implements OnInit {
 
   toggleGuardar() {
     if (this.recetaGuardada) {
-      this.inicioService.eliminarRecetaGuardada(this.receta.id, this.cookerId).subscribe({
+      this.inicioService.eliminarRecetaGuardada(this.receta.id).subscribe({
         next: (res) => {
           this.recetaGuardada = false;
           console.log('Receta eliminada de guardados:', res);
@@ -145,7 +145,7 @@ export class PublicacionComponent  implements OnInit {
         }
       });
     } else {
-      this.inicioService.guardarReceta(this.receta.id, this.cookerId).subscribe({
+      this.inicioService.guardarReceta(this.receta.id).subscribe({
         next: (res) => {
           this.recetaGuardada = true;
           this.mostrarAnimacionGuardar = true;
