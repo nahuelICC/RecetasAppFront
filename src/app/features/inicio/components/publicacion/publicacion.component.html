@@ -1,4 +1,4 @@
-<div class="bg-[var(--color-verde-cuadros)] rounded-lg overflow-hidden shadow-md group min-h-72">
+<div class="bg-[var(--color-verde-cuadros)] rounded-lg overflow-hidden shadow-md group min-h-72" routerLink="/receta/{{ receta.id}}">
   <!-- Imagen principal -->
   <div class="relative">
     <img [src]="receta.imagen" alt="{{ receta.titulo }}"
