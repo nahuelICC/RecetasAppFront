@@ -6,6 +6,7 @@ import {InicioService} from '../../services/inicio.service';
 import {BotonComponent} from '../../../../shared/components/boton/boton.component';
 import {AlertInfoComponent} from '../../../../shared/components/alert-info/alert-info.component';
 import {RouterLink} from '@angular/router';
+import {AuthService} from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-publicacion',
@@ -25,7 +26,7 @@ import {RouterLink} from '@angular/router';
 export class PublicacionComponent  implements OnInit {
 
   @Input() receta!: RecetaInicioDTO;
-  cookerId: number = 1;
+  cookerId!: number;
 
   recetaLeGusta: boolean = false;
   recetaGuardada: boolean = false;
@@ -36,15 +37,17 @@ export class PublicacionComponent  implements OnInit {
   alertMessage: string = '';
   alertType: 'success' | 'error' | 'warning' = 'success';
 
-  constructor(private inicioService: InicioService) {}
+  constructor(private inicioService: InicioService, private authService: AuthService) {}
 
   ngOnInit() {
-    this.verificarEstadoMeGusta();
-    this.verificarEstadoGuardado();
-  }
-  toggleMenu(event: Event) {
-    event.stopPropagation(); // Evita que se cierre el menú inmediatamente
-    this.menuAbierto = !this.menuAbierto;
+    const id = this.authService.getUserId();
+    if (id !== null) {
+      this.cookerId = id;
+      this.verificarEstadoMeGusta();
+      this.verificarEstadoGuardado();
+    } else {
+      console.error('No se pudo obtener el ID del usuario');
+    }
   }
 
   @HostListener('document:click', ['$event'])

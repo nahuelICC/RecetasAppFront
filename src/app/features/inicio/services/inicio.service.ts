@@ -13,11 +13,11 @@ export class InicioService {
 
   constructor(private http: HttpClient) {}
 
-  getTop10RecetasByCookerId(cookerId: number): Observable<RecetaInicioDTO[]> {
-    return this.http.get<RecetaInicioDTO[]>(`${this.apiUrl}/recetasInicio/${cookerId}`);
+  getTop10RecetasByCookerId(): Observable<RecetaInicioDTO[]> {
+    return this.http.get<RecetaInicioDTO[]>(`${this.apiUrl}/recetasInicio`);
   }
-  getRecetasSiguiendo(cookerId: number): Observable<RecetaInicioDTO[]> {
-    return this.http.get<RecetaInicioDTO[]>(`${this.apiUrl}/recetasSiguiendo/${cookerId}`);
+  getRecetasSiguiendo(): Observable<RecetaInicioDTO[]> {
+    return this.http.get<RecetaInicioDTO[]>(`${this.apiUrl}/recetasSiguiendo/`);
   }
 
   darMeGustaAReceta(recetaId: number): Observable<string> {
