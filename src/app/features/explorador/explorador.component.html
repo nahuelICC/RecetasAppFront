@@ -1,139 +1,234 @@
-<div class="mx-2 md:mx-12 lg:mx-24">
-  <div class="">
-    <div class="relative w-full max-w-md p-4">
+<div class="mx-2 md:mx-12 lg:mx-24 text-[#001e1d]">
+
+  <div class="w-full px-4 pt-4 pb-2">
+    <div class="relative w-full">
       <input
         type="text"
-        placeholder="Buscar..."
-        class="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm"
-      />
-      <svg
-        class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1010.5 3a7.5 7.5 0 006.15 12.65z" />
-      </svg>
+        placeholder="Buscar recetas, usuarios..."
+        class="w-full p-3 pl-10 pr-4 border border-gray-300 rounded-full focus:ring-2 focus:ring-[#abd1c6] focus:border-[#abd1c6] focus:outline-none shadow-sm transition duration-150 ease-in-out"
+        aria-label="Campo de búsqueda general"
+        [(ngModel)]="searchTerm"
+        (input)="onSearchTermChange()" />
+      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <svg class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1010.5 3a7.5 7.5 0 006.15 12.65z" />
+        </svg>
+      </div>
     </div>
   </div>
-  <!-- Sección de Usuarios -->
+
+  <div class="px-4 py-2 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <button
+        type="button"
+        class="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-medium shadow-sm transition-colors duration-150 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#f9bc60]"
+        [ngClass]="{
+            'bg-[#f9bc60] text-[#001e1d]': selectedRelevante,
+            'bg-[#abd1c6] text-[#004643] hover:bg-opacity-80': !selectedRelevante
+          }"
+        (click)="setActiveSort('relevantes')">
+        Relevantes
+        <svg class="ml-1.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+        </svg>
+      </button>
+
+      <button
+        type="button"
+        class="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-medium shadow-sm transition-colors duration-150 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#f9bc60]"
+        [ngClass]="{
+            'bg-[#f9bc60] text-[#001e1d]': selectedSeguidos,
+            'bg-[#abd1c6] text-[#004643] hover:bg-opacity-80': !selectedSeguidos
+          }"
+        (click)="setActiveSort('seguidos')">
+        Seguidos
+      </button>
+    </div>
+
+    <div>
+      <button
+      type="button"
+      class="inline-flex items-center px-4 py-1.5 border border-transparent text-sm font-medium rounded-full shadow-sm text-white bg-[#004643] hover:bg-opacity-80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#004643]"
+      (click)="toggleFilters()"
+      [attr.aria-expanded]="showFilters">
+      <svg class="-ml-0.5 mr-1.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"> <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L13 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" />
+      </svg>
+      Filtros
+      <svg *ngIf="!showFilters" class="ml-1.5 -mr-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"> <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+      </svg>
+      <svg *ngIf="showFilters" class="ml-1.5 -mr-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"> <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
+      </svg>
+    </button>
+    </div>
+  </div>
+
+  <div *ngIf="showFilters" class="bg-[#abd1c6] p-4 mt-1 rounded-lg shadow-md mx-4">
+    <div class="space-y-6">
+
+      <section>
+        <h3 class="text-lg font-semibold mb-3 text-[#004643]">Excluir Alérgenos:</h3>
+
+        <div *ngIf="isLoadingAlergenos" class="text-center text-gray-500 py-2">
+          Cargando alérgenos...
+        </div>
+
+        <div *ngIf="errorCarga && !isLoadingAlergenos && !isLoadingIngredientes" class="text-center text-red-600 bg-red-100 p-3 rounded-md mb-4">
+          {{ errorCarga }} </div>
+
+        <div *ngIf="!isLoadingAlergenos && !errorCarga && listaAlergenos.length > 0" class="flex flex-wrap gap-4">
+          <button
+            *ngFor="let alergeno of listaAlergenos"
+            type="button"
+            class="flex flex-col items-center text-center cursor-pointer group focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#f9bc60] rounded-full p-1"
+            [attr.aria-pressed]="isAlergenoSelected(alergeno.id)"
+            [title]="(isAlergenoSelected(alergeno.id) ? 'Incluir' : 'Excluir') + ' ' + alergeno.nombre"
+            (click)="toggleAlergeno(alergeno.id)"
+          >
+            <img
+              class="w-18 h-18 md:w-20 md:h-20 rounded-3xl object-contain group-hover:bg-[#ffffff] transition-all duration-200"
+              [src]="alergeno.imagen || 'https://via.placeholder.com/64/cccccc/999999?text=N/A'"
+              [alt]="alergeno.nombre"
+              [ngClass]="{
+                'grayscale opacity-60 border-gray-500': isAlergenoSelected(alergeno.id),
+                'border-gray-300': !isAlergenoSelected(alergeno.id)
+              }"
+            />
+
+          </button>
+        </div>
+        <div *ngIf="!isLoadingAlergenos && listaAlergenos.length === 0 && !errorCarga" class="text-gray-500 italic text-sm py-2">
+          No hay filtros de alérgenos disponibles.
+        </div>
+      </section>
+
+      <section>
+        <h3 class="text-lg font-semibold mb-3 text-[#004643]">Incluir Ingredientes:</h3>
+
+        <div *ngIf="isLoadingIngredientes" class="text-center text-gray-500 py-2">
+          Cargando ingredientes...
+        </div>
+        <div *ngIf="!isLoadingIngredientes" class="relative mb-2">
+          <input
+            type="text"
+            placeholder="Buscar y añadir ingrediente..."
+            class="w-full p-3 pl-10 pr-4 border border-gray-300 rounded-full focus:ring-2 focus:ring-[#abd1c6] focus:border-[#abd1c6] focus:outline-none shadow-sm transition duration-150 ease-in-out"
+            aria-label="Añadir ingrediente para filtrar"
+            #ingredientInput
+            (input)="onIngredientInput(ingredientInput.value)"
+            (focus)="onIngredientInputFocus()"
+            (blur)="onIngredientInputBlur()"
+            (keyup.enter)="addIngredientFromInput(ingredientInput)"
+            autocomplete="off"
+          />
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+            </svg>
+          </div>
+
+          <div
+            *ngIf="showIngredientSuggestions"
+            class="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg border border-gray-200 max-h-60 overflow-y-auto">
+            <ul role="listbox" [attr.aria-label]="'Sugerencias de ingredientes para ' + ingredientInput.value">
+              <li
+                *ngFor="let suggestion of ingredientSuggestions"
+                role="option"
+                [attr.aria-selected]="false"
+                class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                (mousedown)="selectSuggestion(suggestion)"
+              >
+                {{ suggestion.nombre }}
+              </li>
+              <li *ngIf="noResultsFound && ingredientSuggestions.length === 0"
+                  class="px-4 py-2 text-sm text-gray-500 italic"
+                  role="option" aria-disabled="true">
+                No se encontraron ingredientes que coincidan.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2 min-h-[2.5rem]">
+          <div
+            *ngFor="let ingrediente of selectedIngredients"
+            class="inline-flex items-center bg-[#e1f4f3] text-[#004643] rounded-full pl-3 pr-1 py-1 text-sm font-medium shadow-sm animate-fade-in">
+            <span>{{ ingrediente.nombre }}</span>
+            <button
+              type="button"
+              class="ml-1.5 flex-shrink-0 p-0.5 rounded-full text-[#004643] hover:bg-[#abd1c6] focus:outline-none focus-visible:ring-1 focus-visible:ring-offset-1 focus-visible:ring-[#004643]"
+              [title]="'Eliminar ' + ingrediente.nombre"
+              (click)="removeIngredient(ingrediente.id)"
+              [attr.aria-label]="'Eliminar ' + ingrediente.nombre"
+            >
+              <svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div *ngIf="!isLoadingIngredientes && listaIngredientes.length === 0 && !errorCarga" class="text-gray-500 italic text-sm py-2">
+          No se pueden buscar ingredientes en este momento.
+        </div>
+      </section>
+      <button
+        type="button"
+        class="bg-[#f9bc60] text-[#001e1d] inline-flex items-center px-4 py-1.5 rounded-full text-sm font-medium shadow-sm transition-colors duration-150 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#f9bc60]"
+        (click)="aplicarFiltros()">
+        Aplicar filtros
+      </button>
+    </div>
+  </div>
+
   <section class="px-4 py-4">
     <h2 class="text-xl font-bold mb-4">Usuarios</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <!-- Tarjeta de usuario 1 -->
-      <div class="p-4 bg-white rounded shadow">
-        <p class="font-semibold">Username</p>
-        <p>Rafael Dez Castro</p>
-      </div>
-      <!-- Tarjeta de usuario 2 -->
-      <div class="p-4 bg-white rounded shadow">
-        <p class="font-semibold">Username</p>
-        <p>Rafael Dez Castro</p>
-      </div>
-      <!-- Tarjeta de usuario 3 -->
-      <div class="p-4 bg-white rounded shadow">
-        <p class="font-semibold">Username</p>
-        <p>Rafael Dez Castro</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <app-usuario-explorador *ngFor="let usuario of filteredUsers" [userData]="usuario"></app-usuario-explorador>
+      <div *ngIf="!filteredUsers || filteredUsers.length === 0" class="col-span-full text-center text-gray-500 py-4">
+        No se encontraron usuarios con los criterios actuales.
       </div>
     </div>
   </section>
-  <!-- Sección de Recetas -->
-  <section class="px-4 py-4 w-full">
+
+  <section class="px-4 py-4">
     <h2 class="text-xl font-bold mb-4">Recetas</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
-      <!-- Tarjeta de receta 1 -->
-      <div class="col-4 w-full aspect-[4/3] bg-white rounded shadow flex flex-col">
-        <!-- Sección del usuario (20%) -->
-        <div class="flex flex-row justify-start h-[20%] p-4">
-          <span class="text-gray-500"><ion-icon name="ellipsis-horizontal-outline" class="text-black"></ion-icon></span>
-          <p class="font-semibold text-amber-700">CookingQueen</p>
-        </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
+      <app-recetas
+        *ngFor="let receta of allRecipes;"
+        [recipeData]="receta">
+      </app-recetas>
 
-        <!-- Sección de la imagen (60%) -->
-        <div class="h-[60%] bg-gray-300 flex items-center justify-center p-0">
-          <span class="text-gray-500">Imagen</span>
-        </div>
-
-        <!-- Sección del título (20%) -->
-        <div class="flex flex-row justify-between h-[20%] p-4">
-          <p class="font-bold text-amber-700">Arroz con pollo</p>
-          <p class="text-gray-600">30 min</p>
-        </div>
+      <div *ngIf="!isLoadingAlergenos && !isLoadingIngredientes && allRecipes.length === 0" class="col-span-full text-center text-gray-500 py-8 italic">
+        <p>No se encontraron recetas con los filtros seleccionados.</p>
+        <p class="mt-2 text-xs">Intenta ajustar los filtros o el término de búsqueda.</p>
       </div>
-      <!-- Repite o itera tantas tarjetas de receta como necesites -->
-      <div class="col-4 w-full aspect-[4/3] p-4 bg-white rounded shadow flex flex-col">
-        <!-- Sección del usuario (20%) -->
-        <div class="flex flex-col justify-center h-[20%]">
-          <p class="font-semibold">CookingQueen</p>
-          <p class="text-gray-500">123 <ion-icon name="heart"></ion-icon></p>
-        </div>
+    </div>
 
-        <!-- Sección de la imagen (60%) -->
-        <div class="h-[60%] bg-gray-300 flex items-center justify-center">
-          <span class="text-gray-500">Imagen</span>
-        </div>
+    <div *ngIf="!isLoadingAlergenos && !isLoadingIngredientes && numPaginas >= 1" class="flex justify-end items-center mt-6 space-x-3">
+      <button
+        type="button"
+        (click)="paginaAnterior()"
+        [disabled]="paginaActual === 1"
+        class="bg-[#f9bc60] p-1.5 rounded-md text-gray-500 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-[#004643] transition-colors"
+        aria-label="Página anterior">
+        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+        </svg>
+      </button>
 
-        <!-- Sección del título (20%) -->
-        <div class="flex flex-col justify-center h-[20%]">
-          <p class="font-bold">Arroz con pollo</p>
-          <p class="text-gray-600">30 min</p>
-        </div>
-      </div>
-      <div class="col-4 w-full aspect-[4/3] p-4 bg-white rounded shadow flex flex-col">
-        <!-- Sección del usuario (20%) -->
-        <div class="flex flex-col justify-center h-[20%]">
-          <p class="font-semibold">CookingQueen</p>
-          <p class="text-gray-500">123 <ion-icon name="heart"></ion-icon></p>
-        </div>
-
-        <!-- Sección de la imagen (60%) -->
-        <div class="h-[60%] bg-gray-300 flex items-center justify-center">
-          <span class="text-gray-500">Imagen</span>
-        </div>
-
-        <!-- Sección del título (20%) -->
-        <div class="flex flex-col justify-center h-[20%]">
-          <p class="font-bold">Arroz con pollo</p>
-          <p class="text-gray-600">30 min</p>
-        </div>
-      </div>
-      <div class="col-4 w-full aspect-[4/3] p-4 bg-white rounded shadow flex flex-col">
-        <!-- Sección del usuario (20%) -->
-        <div class="flex flex-col justify-center h-[20%]">
-          <p class="font-semibold">CookingQueen</p>
-          <p class="text-gray-500">123 <ion-icon name="heart"></ion-icon></p>
-        </div>
-
-        <!-- Sección de la imagen (60%) -->
-        <div class="h-[60%] bg-gray-300 flex items-center justify-center">
-          <span class="text-gray-500">Imagen</span>
-        </div>
-
-        <!-- Sección del título (20%) -->
-        <div class="flex flex-col justify-center h-[20%]">
-          <p class="font-bold">Arroz con pollo</p>
-          <p class="text-gray-600">30 min</p>
-        </div>
-      </div>
-      <div class="col-4 w-full aspect-[4/3] p-4 bg-white rounded shadow flex flex-col">
-        <!-- Sección del usuario (20%) -->
-        <div class="flex flex-col justify-center h-[20%]">
-          <p class="font-semibold">CookingQueen</p>
-          <p class="text-gray-500">123 <ion-icon name="heart"></ion-icon></p>
-        </div>
-
-        <!-- Sección de la imagen (60%) -->
-        <div class="h-[60%] bg-gray-300 flex items-center justify-center">
-          <span class="text-gray-500">Imagen</span>
-        </div>
-
-        <!-- Sección del título (20%) -->
-        <div class="flex flex-col justify-center h-[20%]">
-          <p class="font-bold">Arroz con pollo</p>
-          <p class="text-gray-600">30 min</p>
-        </div>
-      </div>
-      <!-- ... y así sucesivamente -->
+      <span class="text-sm font-medium text-gray-500 select-none">
+            Página {{ paginaActual }} de {{ numPaginas }}
+        </span>
+      <button
+        type="button"
+        (click)="siguientePagina()"
+        [disabled]="paginaActual === numPaginas"
+        class="bg-[#f9bc60] p-1.5 rounded-md text-gray-500 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-[#004643] transition-colors"
+        aria-label="Página siguiente">
+        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+        </svg>
+      </button>
     </div>
   </section>
+
 </div>

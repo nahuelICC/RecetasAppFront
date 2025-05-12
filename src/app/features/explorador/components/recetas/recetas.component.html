@@ -1,0 +1,20 @@
+<div class="w-full aspect-[4/3] bg-[#abd1c6] rounded-lg shadow flex flex-col overflow-hidden">
+  <div class="flex flex-row items-center h-[20%] p-3 space-x-2">
+    <img
+      class="w-8 h-8 rounded-full object-cover flex-shrink-0"
+      [src]="recipeData.imagenUsuario ? recipeData.imagenUsuario : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png' "
+      alt="Avatar de Cooker"
+    />
+    <p class=" text-sm truncate">{{recipeData.usuario}}</p>
+  </div>
+  <div class="h-[60%] bg-gray-300 flex items-center justify-center overflow-hidden">
+    <img
+      [src]="recipeData.imagen ? recipeData.imagen : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4E9PAFl4BSriEZrYxy5wZyhNVVZUcIseHVQ&s'"
+      alt="Imagen de receta"
+      class="w-full h-full object-cover">
+  </div>
+  <div class="flex flex-row justify-between items-center h-[20%] p-3">
+    <p class="text-sm truncate">{{recipeData.nombre}}</p>
+    <p class="text-gray-700 text-xs flex-shrink-0">{{ recipeData.duracion | duracionSinSegundos }}h</p>
+  </div>
+</div>

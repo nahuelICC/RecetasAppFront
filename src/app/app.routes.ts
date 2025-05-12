@@ -13,7 +13,7 @@ export const routes: Routes = [
   { path: 'activar-cuenta', component: ActivacionComponent },
   { path: 'login', component: LoginComponent},
   {path: 'main', component: InicioComponent},
-  {path: 'explorador', component: ExploradorComponent}
+  {path: 'explorador', component: ExploradorComponent},
   {path: '', redirectTo: 'main', pathMatch: 'full'},
   {path: 'perfil', component: UsuarioComponent},
   {path: 'perfil/:id', component: UsuarioComponent},
