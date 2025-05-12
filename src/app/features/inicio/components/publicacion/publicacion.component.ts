@@ -6,6 +6,7 @@ import {InicioService} from '../../services/inicio.service';
 import {BotonComponent} from '../../../../shared/components/boton/boton.component';
 import {AlertInfoComponent} from '../../../../shared/components/alert-info/alert-info.component';
 import {RouterLink} from '@angular/router';
+import {AuthService} from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-publicacion',
@@ -25,7 +26,7 @@ import {RouterLink} from '@angular/router';
 export class PublicacionComponent  implements OnInit {
 
   @Input() receta!: RecetaInicioDTO;
-  cookerId: number = 1;
+  cookerId!: number;
 
   recetaLeGusta: boolean = false;
   recetaGuardada: boolean = false;
@@ -36,15 +37,17 @@ export class PublicacionComponent  implements OnInit {
   alertMessage: string = '';
   alertType: 'success' | 'error' | 'warning' = 'success';
 
-  constructor(private inicioService: InicioService) {}
+  constructor(private inicioService: InicioService, private authService: AuthService) {}
 
   ngOnInit() {
-    this.verificarEstadoMeGusta();
-    this.verificarEstadoGuardado();
-  }
-  toggleMenu(event: Event) {
-    event.stopPropagation(); // Evita que se cierre el menú inmediatamente
-    this.menuAbierto = !this.menuAbierto;
+    const id = this.authService.getUserId();
+    if (id !== null) {
+      this.cookerId = id;
+      this.verificarEstadoMeGusta();
+      this.verificarEstadoGuardado();
+    } else {
+      console.error('No se pudo obtener el ID del usuario');
+    }
   }
 
   @HostListener('document:click', ['$event'])
@@ -86,7 +89,7 @@ export class PublicacionComponent  implements OnInit {
 
 
   verificarEstadoMeGusta() {
-    this.inicioService.verificarMeGusta(this.receta.id, this.cookerId).subscribe({
+    this.inicioService.verificarMeGusta(this.receta.id).subscribe({
       next: (estado) => {
         this.recetaLeGusta = estado;
       },
@@ -96,7 +99,7 @@ export class PublicacionComponent  implements OnInit {
     });
   }
   verificarEstadoGuardado() {
-    this.inicioService.verificarRecetaGuardada(this.receta.id, this.cookerId).subscribe({
+    this.inicioService.verificarRecetaGuardada(this.receta.id).subscribe({
       next: (estado) => {
         this.recetaGuardada = estado;
       },
@@ -109,7 +112,7 @@ export class PublicacionComponent  implements OnInit {
 
   toggleLike() {
     if (this.recetaLeGusta) {
-      this.inicioService.eliminarMeGusta(this.receta.id, this.cookerId).subscribe({
+      this.inicioService.eliminarMeGusta(this.receta.id).subscribe({
         next: (res) => {
           this.recetaLeGusta = false;
           console.log('Me gusta eliminado:', res);
@@ -119,7 +122,7 @@ export class PublicacionComponent  implements OnInit {
         }
       });
     } else {
-      this.inicioService.darMeGustaAReceta(this.receta.id, this.cookerId).subscribe({
+      this.inicioService.darMeGustaAReceta(this.receta.id).subscribe({
         next: (res) => {
           this.recetaLeGusta = true;
           this.mostrarAnimacionLike = true;
@@ -135,7 +138,7 @@ export class PublicacionComponent  implements OnInit {
 
   toggleGuardar() {
     if (this.recetaGuardada) {
-      this.inicioService.eliminarRecetaGuardada(this.receta.id, this.cookerId).subscribe({
+      this.inicioService.eliminarRecetaGuardada(this.receta.id).subscribe({
         next: (res) => {
           this.recetaGuardada = false;
           console.log('Receta eliminada de guardados:', res);
@@ -145,7 +148,7 @@ export class PublicacionComponent  implements OnInit {
         }
       });
     } else {
-      this.inicioService.guardarReceta(this.receta.id, this.cookerId).subscribe({
+      this.inicioService.guardarReceta(this.receta.id).subscribe({
         next: (res) => {
           this.recetaGuardada = true;
           this.mostrarAnimacionGuardar = true;

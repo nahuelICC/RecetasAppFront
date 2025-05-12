@@ -5,6 +5,7 @@ import {NgForOf, NgIf} from '@angular/common';
 import {PublicacionComponent} from './components/publicacion/publicacion.component';
 import {BotonAddRecetaComponent} from '../../shared/components/boton-add-receta/boton-add-receta.component';
 import {IonicModule} from '@ionic/angular';
+import {AuthService} from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-inicio',
@@ -22,7 +23,7 @@ import {IonicModule} from '@ionic/angular';
 export class InicioComponent implements OnInit {
 
   recetas: RecetaInicioDTO[] = [];// Controla qué vista se muestra
-  cookerId: number = 1;
+  cookerId!: number;
   ultimasRecetas: RecetaInicioDTO[] = [];
   topRecetas: RecetaInicioDTO[] = [];
   recetasParaTi: RecetaInicioDTO[] = [];
@@ -32,24 +33,30 @@ export class InicioComponent implements OnInit {
   cantidadInicialParaTi = 6;
   cantidadInicialSiguiendo = 6;
 
-  constructor(private inicioService: InicioService) {}
+  constructor(private inicioService: InicioService, private authService: AuthService) {}
 
   ngOnInit(): void {
-    this.cargarParaTi();
-    this.cargarSiguiendo();
-    this.cargarUltimasRecetas();
-    this.cargarRecetasTop();
+    const id = this.authService.getUserId();
+    if (id !== null) {
+      this.cookerId = id;
+      this.cargarParaTi();
+      this.cargarSiguiendo();
+      this.cargarUltimasRecetas();
+      this.cargarRecetasTop();
+    } else {
+      console.error('No se pudo obtener el ID del usuario');
+    }
   }
 
   cargarParaTi() {
-    this.inicioService.getTop10RecetasByCookerId(this.cookerId).subscribe(recetas => {
+    this.inicioService.getTop10RecetasByCookerId().subscribe(recetas => {
       this.recetasParaTi = recetas;
       this.recetasParaTiVisible = this.recetasParaTi.slice(0, 6);
     });
   }
 
   cargarSiguiendo() {
-    this.inicioService.getRecetasSiguiendo(this.cookerId).subscribe(recetas => {
+    this.inicioService.getRecetasSiguiendo().subscribe(recetas => {
       this.recetasSiguiendo = recetas;
       this.recetasSiguiendoVisible = this.recetasSiguiendo.slice(0, 6);
     });
