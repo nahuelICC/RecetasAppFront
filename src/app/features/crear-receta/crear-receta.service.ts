@@ -16,17 +16,20 @@ export class CrearRecetaService {
   registrarReceta(receta: Receta, imagen: File | null, video: File | null) {
     const formData = new FormData();
 
+    // Primero, procesamos los pasos para asegurar el orden correcto
+    const pasosOrdenados = [...receta.pasos].sort((a, b) => a.numero - b.numero);
+
     const recetaPlain = {
       nombre: receta.nombre,
       duracion: receta.duracion,
       descripcion: receta.descripcion,
       esVisible: receta.esVisible,
       ingredientes: receta.ingredientes,
-      pasos: receta.pasos.map(paso => ({
+      pasos: pasosOrdenados.map(paso => ({
         titulo: paso.titulo,
         descripcion: paso.descripcion,
         numero: paso.numero,
-        tieneFoto: !!paso.foto  // Indicamos si el paso tiene foto
+        // No incluimos la foto aquí, se envía aparte
       }))
     };
 
@@ -40,14 +43,15 @@ export class CrearRecetaService {
       formData.append('video', video);
     }
 
-    // Añadir fotos de pasos manteniendo el orden correcto
-    receta.pasos
-      .sort((a, b) => a.numero - b.numero)
-      .forEach((paso) => {
-        if (paso.foto) {
-          formData.append('fotos', paso.foto, `paso-${paso.numero}.jpg`);
-        }
-      });
+    // Añadir fotos de pasos en el orden correcto
+    pasosOrdenados.forEach(paso => {
+      if (paso.foto) {
+        formData.append('fotos', paso.foto, `paso-${paso.numero}.jpg`);
+      } else {
+        // Añadir un archivo vacío para mantener el orden
+        formData.append('fotos', new Blob(), `paso-${paso.numero}-empty`);
+      }
+    });
 
     return this.http.post('http://localhost:8081/receta/registro', formData, {
       responseType: 'text'
