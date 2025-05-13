@@ -5,8 +5,8 @@ export interface RecetasExploradorDTO {
   imagen: string;
   usuario: string;
   imagenUsuario: string;
-  numMeGusta: bigint;
-  numGuardados: bigint;
-  relevancia: bigint;
+  numMeGusta: number;
+  numGuardados: number;
+  relevancia: number;
 
 }

@@ -18,4 +18,8 @@ export class RecetaService {
   getNumRecetas(filtro: RecetasExploradorFiltroDTO): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/filtro/counter`, filtro);
   }
+
+  getIntereaccionesRecetasUsuario(): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/interacciones`, {});
+  }
 }

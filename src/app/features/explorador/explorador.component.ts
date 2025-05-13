@@ -15,7 +15,11 @@ import { NgClass, NgForOf, NgIf } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import {RecetasExploradorFiltroDTO} from './models/RecetasExploradorFiltroDTO';
 import {RecetaService} from './services/receta.service';
-import {RecetasExploradorDTO} from './models/RecetasExploradorDTO'; // Importar FormsModule
+import {RecetasExploradorDTO} from './models/RecetasExploradorDTO';
+import {UsuarioExploradorDTO} from './models/UsuarioExploradorDTO';
+import {UsuarioService} from './services/usuario.service';
+import {UsuarioExploradorFiltroDTO} from './models/UsuarioExploradorFiltroDTO';
+import {InteraccionesUsuarioDTO} from './models/InteraccionesUsuarioDTO'; // Importar FormsModule
 
 @Component({
   selector: 'app-explorador',
@@ -34,16 +38,14 @@ import {RecetasExploradorDTO} from './models/RecetasExploradorDTO'; // Importar 
 export class ExploradorComponent implements OnInit, OnDestroy {
   @ViewChild('ingredientInput') ingredientInputRef!: ElementRef<HTMLInputElement>;
 
-  // --- Propiedades existentes ---
   listaAlergenos: Alergeno[] = [];
   listaIngredientes: IngredienteListarDTO[] = [];
   allRecipes: RecetasExploradorDTO[] = [];
-  allUsers: any[] = [/* ... */];
-  filteredRecipes: any[] = [];
+  allUsers: UsuarioExploradorDTO[] = [];
   filteredUsers: any[] = [];
   searchTerm: string = '';
-  selectedAlergenos = new Set<number>(); //lista con los alergenos seleccionados
-  selectedIngredients: IngredienteListarDTO[] = []; // lista con los ingresientes seleccionados
+  selectedAlergenos = new Set<number>();
+  selectedIngredients: IngredienteListarDTO[] = [];
   ingredientSuggestions: IngredienteListarDTO[] = [];
   showIngredientSuggestions: boolean = false;
   noResultsFound: boolean = false;
@@ -53,7 +55,6 @@ export class ExploradorComponent implements OnInit, OnDestroy {
   private alergenosSub: Subscription | null = null;
   private ingredienteSub: Subscription | null = null;
   showFilters: boolean = false;
-  activeSort: 'relevantes' | 'seguidos' = 'relevantes';
   selectedRelevante: boolean = false;
   selectedSeguidos: boolean = false;
   recetaExploradorFiltroDTO: RecetasExploradorFiltroDTO = {
@@ -66,22 +67,38 @@ export class ExploradorComponent implements OnInit, OnDestroy {
     pagina: 1,
     numElementos: 12
   }
+  usuarioExploradorFiltroDTO: UsuarioExploradorFiltroDTO = {
+    buscador: '',
+    seguidos: -1,
+    pagina: 1,
+    numElementos: 3
+  }
+  interaccionesUsuarioDTO: InteraccionesUsuarioDTO = {
+    meGusta: [],
+    guardados: [],
+    seguidos: []
+  }
+  toltalRecetas: number = 0;
   paginaActual: number = 1;
   numPaginas: number = 1;
+  paginaActualUsuarios: number = 1;
+  numPaginasUsuarios: number = 1;
+
+
 
   constructor(
       private alergenoService: AlergenoService,
       private ingredienteService: IngredienteService,
-      private recetaService: RecetaService
-      // private recetaService: RecetaService,
-      // private usuarioService: UsuarioService
+      private recetaService: RecetaService,
+      private usuarioService: UsuarioService
   ) {}
 
   ngOnInit() {
     this.cargarAlergenos();
-    this.cargarIngredientesCompletos(); // Carga todos para las sugerencias
+    this.cargarIngredientesCompletos();
     this.cargarRecetas();
-    // this.cargarTodosLosUsuarios()
+    this.cargarUsuarios();
+    this.cargarRecetasInteracciones();
   }
 
   ngOnDestroy(): void {
@@ -111,7 +128,6 @@ export class ExploradorComponent implements OnInit, OnDestroy {
     this.recetaService.getRecetasFiltro(this.recetaExploradorFiltroDTO).subscribe({
       next: (data: any) =>{
         this.allRecipes = data;
-        // this.numPaginas = Math.ceil(this.allRecipes.length / 12);
       },
       error: err => {
         console.error('Error al cargar recetas:', err);
@@ -121,17 +137,53 @@ export class ExploradorComponent implements OnInit, OnDestroy {
     this.recetaService.getNumRecetas(this.recetaExploradorFiltroDTO).subscribe({
       next: (data: any) => {
         this.numPaginas = Math.ceil(data / this.recetaExploradorFiltroDTO.numElementos);
+        this.toltalRecetas = data;
       },
       error: err => {
         console.error('Error al cargar número de recetas:', err);
         this.numPaginas = 1;
+        this.toltalRecetas = 0;
+      }
+    });
+  }
+  cargarUsuarios(): void {
+    this.usuarioService.getUsuariosFiltro(this.usuarioExploradorFiltroDTO).subscribe({
+      next: (data: any) =>{
+        this.allUsers = data;
+      },
+      error: err => {
+        console.error('Error al cargar usuarios:', err);
+        this.allUsers = [];
+      }
+    });
+    this.usuarioService.getNumUsuarios(this.usuarioExploradorFiltroDTO).subscribe({
+      next: (data: any) => {
+        this.numPaginasUsuarios = Math.ceil(data / this.usuarioExploradorFiltroDTO.numElementos);
+      },
+      error: err => {
+        console.error('Error al cargar número de usuarios:', err);
+        this.numPaginasUsuarios = 1;
+      }
+    });
+  }
+
+  cargarRecetasInteracciones(): void {
+    this.recetaService.getIntereaccionesRecetasUsuario().subscribe({
+      next: (data: any) =>{
+        this.interaccionesUsuarioDTO = data;
+      },
+      error: err => {
+        console.error('Error al cargar recetas:', err);
+        this.interaccionesUsuarioDTO.meGusta = [];
+        this.interaccionesUsuarioDTO.guardados = [];
+        this.interaccionesUsuarioDTO.seguidos = [];
       }
     });
   }
 
   cargarAlergenos(): void {
     this.isLoadingAlergenos = true;
-    this.errorCarga = null; // Limpiar errores específicos si los hubiera
+    this.errorCarga = null;
 
     this.alergenosSub = this.alergenoService.getAlergenos().subscribe({
       next: (data: Alergeno[]) => {
@@ -140,11 +192,10 @@ export class ExploradorComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.error('Error al cargar los alérgenos:', error);
-        this.errorCarga = 'No se pudieron cargar los filtros de alérgenos.'; // Mensaje más específico
+        this.errorCarga = 'No se pudieron cargar los filtros de alérgenos.';
         this.isLoadingAlergenos = false;
         this.listaAlergenos = [];
       }
-      // No necesitas 'complete' generalmente para llamadas HTTP
     });
   }
 
@@ -152,7 +203,6 @@ export class ExploradorComponent implements OnInit, OnDestroy {
     this.isLoadingIngredientes = true;
     this.errorCarga = null;
 
-    // Asumiendo que getIngredientes() devuelve TODOS los ingredientes para el autocompletado
     this.ingredienteSub = this.ingredienteService.getIngredientes().subscribe({
       next: (data: IngredienteListarDTO[]) => {
         this.listaIngredientes = data;
@@ -160,7 +210,6 @@ export class ExploradorComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.error('Error al cargar los ingredientes:', error);
-        // Podrías tener un error específico para ingredientes si quieres
         this.errorCarga = 'No se pudieron cargar los ingredientes para el filtro.';
         this.isLoadingIngredientes = false;
         this.listaIngredientes = [];
@@ -168,12 +217,12 @@ export class ExploradorComponent implements OnInit, OnDestroy {
     });
   }
 
-  // --- Lógica de Filtros ---
 
   onSearchTermChange(): void {
     this.recetaExploradorFiltroDTO.buscador = this.searchTerm;
-    console.log('Search Term:', this.searchTerm);
+    this.usuarioExploradorFiltroDTO.buscador = this.searchTerm;
     this.cargarRecetas()
+    this.cargarUsuarios();
   }
 
   toggleAlergeno(alergenoId: number): void {
@@ -189,7 +238,6 @@ export class ExploradorComponent implements OnInit, OnDestroy {
   }
 
   onIngredientInputFocus(): void {
-    // Muestra sugerencias si ya hay texto al volver a hacer focus
     this.filterIngredientSuggestions(this.ingredientInputRef.nativeElement.value);
   }
 
@@ -230,22 +278,15 @@ export class ExploradorComponent implements OnInit, OnDestroy {
     this.noResultsFound = false;
   }
 
-  // Añadir ingrediente (reutilizado)
   addIngredient(ingrediente: IngredienteListarDTO): void {
-    // Verifica que el ingrediente exista y no esté ya seleccionado
     if (ingrediente && !this.selectedIngredients.some(selected => selected.id === ingrediente.id)) {
       this.selectedIngredients.push(ingrediente);
-      // Limpiar estado de sugerencias
       this.ingredientSuggestions = [];
       this.showIngredientSuggestions = false;
       this.noResultsFound = false;
-      // --- !!! Aquí llamarías a la función que filtra las recetas/usuarios si tuvieras esa lógica ---
-      // this.applyFilters();
-      console.log('Ingredientes seleccionados:', this.selectedIngredients);
     }
   }
 
-  // Añadir al presionar Enter
   addIngredientFromInput(inputElement: HTMLInputElement): void {
     const nombreBuscado = inputElement.value.trim();
     if (!nombreBuscado) {
@@ -263,14 +304,12 @@ export class ExploradorComponent implements OnInit, OnDestroy {
 
     if (ingredienteToAdd) {
       this.addIngredient(ingredienteToAdd);
-      inputElement.value = ''; // Limpiar input
-      // Limpiar estado de sugerencias
+      inputElement.value = '';
       this.ingredientSuggestions = [];
       this.showIngredientSuggestions = false;
       this.noResultsFound = false;
     } else {
       console.warn(`Ingrediente "${nombreBuscado}" no encontrado.`);
-      // Muestra el mensaje "No encontrado" en el dropdown
       this.ingredientSuggestions = [];
       this.showIngredientSuggestions = true;
       this.noResultsFound = true;
@@ -280,10 +319,6 @@ export class ExploradorComponent implements OnInit, OnDestroy {
   // Eliminar ingrediente de las píldoras
   removeIngredient(id: number): void {
     this.selectedIngredients = this.selectedIngredients.filter(ing => ing.id !== id);
-    // --- !!! Aquí llamarías a la función que filtra las recetas/usuarios si tuvieras esa lógica ---
-    // this.applyFilters();
-    console.log('Ingredientes seleccionados:', this.selectedIngredients);
-    // Opcional: re-filtrar sugerencias si el input tiene texto
     if (this.ingredientInputRef?.nativeElement?.value) {
       this.filterIngredientSuggestions(this.ingredientInputRef.nativeElement.value);
     }
@@ -297,78 +332,6 @@ export class ExploradorComponent implements OnInit, OnDestroy {
       // No limpiamos noResultsFound aquí, puede ser útil si el usuario vuelve
     }, 150); // Ajusta este tiempo si es necesario
   }
-
-  // --- Método Principal de Filtrado ---
-
-  // applyFilters(): void {
-  //   console.log('Applying filters...');
-  //   // 1. Empezar con la lista completa
-  //   let recipes = [...this.allRecipes];
-  //   let users = [...this.allUsers];
-  //
-  //   // 2. Filtrar por término de búsqueda (searchTerm)
-  //   const term = this.searchTerm.trim().toLowerCase();
-  //   if (term) {
-  //     recipes = recipes.filter(recipe =>
-  //         recipe.nombre?.toLowerCase().includes(term) || // Ajusta las propiedades a buscar
-  //         recipe.descripcion?.toLowerCase().includes(term)
-  //     );
-  //     users = users.filter(user =>
-  //         user.nombre?.toLowerCase().includes(term) || // Ajusta las propiedades a buscar
-  //         user.username?.toLowerCase().includes(term)
-  //     );
-  //   }
-  //
-  //   // 3. Filtrar recetas por alérgenos excluidos (selectedAlergenos)
-  //   if (this.selectedAlergenos.size > 0) {
-  //     recipes = recipes.filter(recipe => {
-  //       // Necesitas que cada 'recipe' tenga una lista de sus ingredientes
-  //       // y que cada ingrediente tenga su 'alergenoId' o información de alérgeno.
-  //       // Ejemplo: recipe.ingredientes = [{..., alergenoId: 1}, {..., alergenoId: 3}]
-  //       if (!recipe.ingredientes || recipe.ingredientes.length === 0) {
-  //         return true; // Si no tiene ingredientes, no puede tener el alérgeno excluido
-  //       }
-  //       // Comprobar si ALGUNO de sus ingredientes tiene un alergenoId que esté en selectedAlergenos
-  //       const tieneAlergenoExcluido = recipe.ingredientes.some((ing: any) =>
-  //           ing.alergenoId && this.selectedAlergenos.has(Number(ing.alergenoId)) // Asegúrate que alergenoId sea number
-  //       );
-  //       return !tieneAlergenoExcluido; // Devuelve true si NO tiene el alérgeno excluido
-  //     });
-  //   }
-  //
-  //   // 4. Filtrar recetas por ingredientes incluidos (selectedIngredients)
-  //   if (this.selectedIngredients.length > 0) {
-  //     recipes = recipes.filter(recipe => {
-  //       // Necesitas que cada 'recipe' tenga una lista de IDs de sus ingredientes.
-  //       // Ejemplo: recipe.ingredientIds = [10, 25, 30]
-  //       if (!recipe.ingredientIds || recipe.ingredientIds.length === 0) {
-  //         return false; // Si no tiene ingredientes, no puede tener los requeridos
-  //       }
-  //       // Comprobar si TODOS los ingredientes seleccionados están presentes en la receta
-  //       return this.selectedIngredients.every(selectedIng =>
-  //           recipe.ingredientIds.includes(selectedIng.id)
-  //       );
-  //     });
-  //   }
-  //
-  //   // 5. Actualizar las listas que usa el template
-  //   this.filteredRecipes = recipes;
-  //   this.filteredUsers = users;
-  //
-  //   console.log('Filtered Recipes Count:', this.filteredRecipes.length);
-  //   console.log('Filtered Users Count:', this.filteredUsers.length);
-  // }
-
-
-/*
-  cargarTodosLosUsuarios(): void {
-    // Llama a tu servicio de usuarios
-     this.usuarioService.getAllPublicUsers().subscribe(data => {
-      this.allUsers = data;
-      this.applyFilters(); // Aplica filtros una vez cargados los usuarios
-    });
-  }
-  */
 
   aplicarFiltros() {
     if (this.selectedAlergenos.size > 0) {
@@ -386,6 +349,17 @@ export class ExploradorComponent implements OnInit, OnDestroy {
     this.toggleFilters();
   }
 
+  guardada(idReceta: number): boolean {
+    return this.interaccionesUsuarioDTO.guardados?.includes(idReceta) || false;
+  }
+  meGusta(idReceta: number): boolean {
+    return this.interaccionesUsuarioDTO.meGusta?.includes(idReceta) || false;
+  }
+  seguido(idUsuario: number): boolean {
+    return this.interaccionesUsuarioDTO.seguidos?.includes(idUsuario) || false;
+  }
+
+
   paginaAnterior() {
     if (this.paginaActual > 1) {
       this.paginaActual--;
@@ -399,6 +373,22 @@ export class ExploradorComponent implements OnInit, OnDestroy {
       this.paginaActual++;
       this.recetaExploradorFiltroDTO.pagina = this.paginaActual;
       this.cargarRecetas();
+    }
+  }
+
+  paginaAnteriorUsuarios() {
+    if (this.paginaActualUsuarios > 1) {
+      this.paginaActualUsuarios--;
+      this.usuarioExploradorFiltroDTO.pagina = this.paginaActualUsuarios;
+      this.cargarUsuarios();
+    }
+  }
+
+  siguientePaginaUsuarios() {
+    if (this.paginaActualUsuarios < this.numPaginasUsuarios) {
+      this.paginaActualUsuarios++;
+      this.usuarioExploradorFiltroDTO.pagina = this.paginaActualUsuarios;
+      this.cargarUsuarios();
     }
   }
 }
