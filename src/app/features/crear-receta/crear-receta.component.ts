@@ -111,7 +111,7 @@ export class CrearRecetaComponent implements OnInit {
   }
 
   getStepForMeasure(measure: string): number {
-    return (measure === 'g' || measure === 'ml') ? 50 : 1;
+    return (measure === 'g' || measure === 'ml') ? 10 : 1;
   }
 
   getMaxForMeasure(measure: string): number {
