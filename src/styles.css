@@ -36,6 +36,10 @@ body {
   background-color: var(--color-verde-cuadros);
 }
 
+.color-verde-claro-tranlucido{
+  background-color: var(--color-verde-translucido);
+}
+
 .color-verde-oscuro{
   background-color: var(--color-verde-fondo);
 }

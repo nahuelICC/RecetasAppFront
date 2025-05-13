@@ -1,27 +1,129 @@
-<div class="container mx-auto px-4 py-8">
-  <div class="flex justify-center gap-6">
-    <div>
-      <button
-        (click)="mostrarParaTi()"
-        class="text-2xl font-bold mb-4 text-white pb-2 transition-all inline-block"
-        [class.text-decoration-underline]="vista === 'paraTi'">
-        Para ti
-      </button>
-    </div>
-    <div>
-      <button
-        (click)="mostrarSiguiendo()"
-        class="text-2xl font-bold mb-4 text-white pb-2 transition-all inline-block"
-        [class.text-decoration-underline]="vista === 'siguiendo'">
-        Siguiendo
-      </button>
-    </div>
-  </div>
-
-  <!-- Contenido dinámico -->
-  <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-4 pt-7 pl-12 pr-12">
-    <app-publicacion *ngFor="let receta of recetas" [receta]="receta"></app-publicacion>
+<!-- Hero principal con imagen destacada -->
+<div class="relative h-96 bg-gradient-to-r from-green-700 to-yellow-400 overflow-hidden">
+  <img src="assets/imagen-inicio-2.png" alt="Receta destacada" class="w-full h-full object-cover opacity-80">
+  <div class="absolute inset-0 flex flex-col items-center justify-center text-white p-6">
+    <h1 class="text-4xl sm:text-5xl font-bold mb-4 text-center">Descubre recetas deliciosas</h1>
+    <p class="text-lg sm:text-xl max-w-md text-center">Encuentra inspiración culinaria en cada bocado</p>
   </div>
 </div>
 
-<app-boton-add-receta></app-boton-add-receta>
+<!-- Carrusel de categorías -->
+<div class="container mx-auto px-8 py-8">
+  <!-- Botón flotante modificado -->
+  <app-boton-add-receta class="fixed bottom-6 right-6 z-50 transform transition-transform hover:scale-110"></app-boton-add-receta>
+
+  <!-- Carrusel horizontal de recetas -->
+  <div class="mb-12">
+    <h2 class="text-2xl text-white font-bold mb-4">Novedades</h2>
+    <div class="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide">
+      <app-publicacion
+        *ngFor="let receta of ultimasRecetas"
+        [receta]="receta"
+        class="flex-none w-64 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow"
+      >
+      </app-publicacion>
+
+    </div>
+  </div>
+  <div class="mb-12">
+    <h2 class="text-2xl text-white font-bold mb-4">Recetas Favoritas</h2>
+    <div class="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide">
+      <app-publicacion
+        *ngFor="let receta of topRecetas"
+        [receta]="receta"
+        class="flex-none w-64 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow"
+      >
+      </app-publicacion>
+    </div>
+  </div>
+
+  <!-- Sección de recetas por categorías -->
+  <!-- Recetas "Para ti" -->
+  <div class="mb-12">
+    <h2 class="text-2xl text-white font-bold mb-4">Para ti</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <app-publicacion
+        *ngFor="let receta of recetasParaTiVisible"
+        [receta]="receta">
+      </app-publicacion>
+    </div>
+    <div class="flex justify-center mt-4 space-x-4" *ngIf="recetasParaTiVisible.length !== recetasParaTi.length || recetasParaTiVisible.length > cantidadInicialParaTi">
+      <button
+        *ngIf="recetasParaTiVisible.length < recetasParaTi.length"
+        (click)="verMasParaTi()"
+        class="bg-yellow-400 text-white font-bold py-2 px-6 rounded hover:bg-yellow-500">
+        Ver más
+      </button>
+
+      <button
+        *ngIf="recetasParaTiVisible.length > cantidadInicialParaTi"
+        (click)="verMenosParaTi()"
+        class="bg-gray-500 text-white font-bold py-2 px-6 rounded hover:bg-gray-600">
+        Ver menos
+      </button>
+    </div>
+  </div>
+  <!-- Recetas "Siguiendo" -->
+  <div class="mb-12">
+    <h2 class="text-2xl text-white font-bold mb-4">Siguiendo</h2>
+
+    <div *ngIf="recetasSiguiendo.length === 0; else mostrarRecetasSiguiendo" class="text-white py-6">
+      Aún no sigues a ningún cooker.
+    </div>
+
+    <ng-template #mostrarRecetasSiguiendo>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <app-publicacion
+          *ngFor="let receta of recetasSiguiendoVisible"
+          [receta]="receta">
+        </app-publicacion>
+      </div>
+      <div class="flex justify-center mt-4 space-x-4" *ngIf="recetasSiguiendoVisible.length !== recetasSiguiendo.length || recetasSiguiendoVisible.length > cantidadInicialSiguiendo">
+        <button
+          *ngIf="recetasSiguiendoVisible.length < recetasSiguiendo.length"
+          (click)="verMasSiguiendo()"
+          class="bg-yellow-400 text-white font-bold py-2 px-6 rounded hover:bg-yellow-500">
+          Ver más
+        </button>
+
+        <button
+          *ngIf="recetasSiguiendoVisible.length > cantidadInicialSiguiendo"
+          (click)="verMenosSiguiendo()"
+          class="bg-gray-500 text-white font-bold py-2 px-6 rounded hover:bg-gray-600">
+          Ver menos
+        </button>
+      </div>
+    </ng-template>
+  </div>
+</div>
+
+
+
+
+<!--<div class="container mx-auto px-4 py-8">-->
+<!--  <div class="flex justify-center gap-6">-->
+<!--    <div>-->
+<!--      <button-->
+<!--        (click)="mostrarParaTi()"-->
+<!--        class="text-2xl font-bold mb-4 text-white pb-2 transition-all inline-block"-->
+<!--        [class.text-decoration-underline]="vista === 'paraTi'">-->
+<!--        Para ti-->
+<!--      </button>-->
+<!--    </div>-->
+<!--    <div>-->
+<!--      <button-->
+<!--        (click)="mostrarSiguiendo()"-->
+<!--        class="text-2xl font-bold mb-4 text-white pb-2 transition-all inline-block"-->
+<!--        [class.text-decoration-underline]="vista === 'siguiendo'">-->
+<!--        Siguiendo-->
+<!--      </button>-->
+<!--    </div>-->
+<!--  </div>-->
+
+<!--  &lt;!&ndash; Contenido dinámico &ndash;&gt;-->
+<!--  <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-4 pt-7 pl-12 pr-12">-->
+<!--    <app-publicacion *ngFor="let receta of recetas" [receta]="receta"></app-publicacion>-->
+<!--  </div>-->
+<!--</div>-->
+
+<!--<app-boton-add-receta></app-boton-add-receta>-->

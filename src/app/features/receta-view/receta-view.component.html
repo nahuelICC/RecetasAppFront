@@ -1,0 +1,52 @@
+<!--main--> 
+<div class="bg-[#004643] w-3/4 m-auto p-4 max-h-screen">
+  <!-- Info plato -->
+  <app-info-plato [receta]="receta"></app-info-plato>
+  <!--Alergenos -->
+  <div>
+    <h2 class="text-white uppercase">Alérgenos</h2>
+    <div class="flex flex-row flex-wrap gap-2">
+        <div *ngFor="let alergeno of receta.alergenos">
+            <app-alergeno [alergeno]="alergeno"></app-alergeno>
+        </div>
+    </div>
+</div>
+  <!-- Ingredientes -->
+  <div class="flex flex-col">
+      <h2 class="text-white uppercase">Ingredientes</h2>
+      <ul>
+          <li *ngFor="let ingrediente of receta.ingredientes" class="text-white uppercase">&#183; {{ingrediente.cantidad}} {{ingrediente.medida}} de {{ingrediente.nombre}}</li>
+      </ul>
+  </div>
+  <!-- Pasos -->
+  <div class="recipe-steps-container">
+      <h2 class="recipe-section-title text-white">Pasos</h2>
+      <ion-accordion-group class="custom-accordion" multiple="true">
+        <ion-accordion *ngFor="let paso of pasosReceta; let i = index" [value]="'paso_' + i" class="step-item">
+            <ion-item slot="header" class="step-header">
+                <div class="bg-[#CAC4D0] w-10 h-10 flex items-center justify-center rounded-full m-2">{{paso.numero}}</div>
+                <ion-label class="step-title">{{paso.titulo}}</ion-label>
+            </ion-item>
+            <div class="step-content" slot="content">
+                <p>{{paso.descripcion}}</p>
+                <div class="step-timing" *ngIf="paso.tiempoEstimado">
+                    <ion-icon name="time-outline"></ion-icon>
+                    <span>Tiempo estimado: {{paso.tiempoEstimado}} minutos</span>
+                </div>
+                <div class="step-tips" *ngIf="paso.consejo">
+                    <h4><ion-icon name="bulb-outline"></ion-icon> Consejo</h4>
+                    <p>{{paso.consejo}}</p>
+                </div>
+            </div>
+        </ion-accordion>
+    </ion-accordion-group>
+  </div>
+  <!-- Comentarios -->
+  <div>
+      <h2 class="text-white">Comentarios</h2>
+      <app-comentario></app-comentario>      
+      <app-comentario></app-comentario>      
+      <app-comentario></app-comentario>
+      <app-comentario></app-comentario>
+  </div>
+</div>
