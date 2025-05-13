@@ -1,4 +1,3 @@
-// crear-receta.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Receta, Ingrediente } from './models/receta';
@@ -22,7 +21,13 @@ export class CrearRecetaService {
       duracion: receta.duracion,
       descripcion: receta.descripcion,
       esVisible: receta.esVisible,
-      ingredientes: receta.ingredientes
+      ingredientes: receta.ingredientes,
+      pasos: receta.pasos.map(paso => ({
+        titulo: paso.titulo,
+        descripcion: paso.descripcion,
+        numero: paso.numero,
+        tieneFoto: !!paso.foto  // Indicamos si el paso tiene foto
+      }))
     };
 
     const recetaBlob = new Blob([JSON.stringify(recetaPlain)], { type: 'application/json' });
@@ -34,6 +39,15 @@ export class CrearRecetaService {
     if (video) {
       formData.append('video', video);
     }
+
+    // Añadir fotos de pasos manteniendo el orden correcto
+    receta.pasos
+      .sort((a, b) => a.numero - b.numero)
+      .forEach((paso) => {
+        if (paso.foto) {
+          formData.append('fotos', paso.foto, `paso-${paso.numero}.jpg`);
+        }
+      });
 
     return this.http.post('http://localhost:8081/receta/registro', formData, {
       responseType: 'text'
