@@ -1,7 +1,7 @@
 <div class="p-4 bg-[#abd1c6] rounded-3xl shadow flex items-center justify-between space-x-4 cursor-pointer group
             transition-transform duration-200 ease-in-out hover:scale-105">
 
-  <a [routerLink]="null" (click)="$event.stopPropagation()"
+  <a [routerLink]="['/perfil/', userData.id]" (click)="$event.stopPropagation()"
      class="flex items-center flex-grow min-w-0 space-x-4">
     <img
       class="w-12 h-12 rounded-full object-cover flex-shrink-0" [src]="userData?.imagenUsuario || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png'"
