@@ -373,9 +373,14 @@ export class ExploradorComponent implements OnInit, OnDestroy {
   aplicarFiltros() {
     if (this.selectedAlergenos.size > 0) {
       this.recetaExploradorFiltroDTO.excluirAlergenos = '(' + Array.from(this.selectedAlergenos).join(',') + ')';
+    } else {
+      this.recetaExploradorFiltroDTO.excluirAlergenos = '';
     }
     if (this.selectedIngredients.length > 0) {
       this.recetaExploradorFiltroDTO.ingredientes = '(' + this.selectedIngredients.map(ing => ing.id).join(',') + ')';
+      this.recetaExploradorFiltroDTO.numIngredientes = this.selectedIngredients.length;
+    } else {
+      this.recetaExploradorFiltroDTO.ingredientes = '';
     }
     this.cargarRecetas();
     this.toggleFilters();
