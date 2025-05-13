@@ -44,6 +44,11 @@ export class CrearRecetaComponent implements OnInit {
   };
   pasoFotoFile: File | null = null;
   pasoFotoPreview: string | ArrayBuffer | null = null;
+  mostrarPasos: boolean = false;
+
+
+
+
 
   constructor(private crearRecetaService: CrearRecetaService, private router: Router) {}
 
@@ -68,9 +73,11 @@ export class CrearRecetaComponent implements OnInit {
       this.filteredIngredientes = [];
       return;
     }
-    this.filteredIngredientes = this.allIngredientes.filter(ing =>
-      ing.nombre.toLowerCase().includes(this.ingredienteSearch.toLowerCase())
-    );
+    this.filteredIngredientes = this.allIngredientes
+      .filter(ing =>
+        ing.nombre.toLowerCase().includes(this.ingredienteSearch.toLowerCase()) &&
+        !this.receta.ingredientes.some(recIng => recIng.idIngrediente === ing.id)
+      );
   }
 
   selectIngrediente(ingrediente: Ingrediente): void {
@@ -80,7 +87,10 @@ export class CrearRecetaComponent implements OnInit {
   }
 
   addIngrediente(): void {
-    if (!this.selectedIngrediente || this.cantidad <= 0) return;
+    if (!this.selectedIngrediente || this.cantidad <= 0 ||
+      this.receta.ingredientes.some(ing => ing.idIngrediente === this.selectedIngrediente!.id)) {
+      return;
+    }
 
     const newIngrediente: RecetaIngredienteDTO = {
       idIngrediente: this.selectedIngrediente.id,
@@ -89,7 +99,7 @@ export class CrearRecetaComponent implements OnInit {
 
     this.receta.ingredientes.push(newIngrediente);
 
-    // Reset form
+
     this.selectedIngrediente = null;
     this.ingredienteSearch = '';
     this.cantidad = 0;
@@ -107,7 +117,16 @@ export class CrearRecetaComponent implements OnInit {
 
   getIngredienteMeasure(id: number): string {
     const ingrediente = this.allIngredientes.find(ing => ing.id === id);
-    return ingrediente ? ingrediente.categoria.medida : '';
+    if (!ingrediente) return '';
+
+    const medida = ingrediente.categoria.medida;
+    if (medida === 'unidad' && this.receta.ingredientes) {
+      const ingredienteEnReceta = this.receta.ingredientes.find(ing => ing.idIngrediente === id);
+      if (ingredienteEnReceta && ingredienteEnReceta.cantidad > 1) {
+        return 'unidades';
+      }
+    }
+    return medida;
   }
 
   getStepForMeasure(measure: string): number {
@@ -238,5 +257,8 @@ export class CrearRecetaComponent implements OnInit {
           alert('Error al registrar la receta');
         },
       });
+  }
+  togglePasos() {
+    this.mostrarPasos = !this.mostrarPasos;
   }
 }
