@@ -4,7 +4,7 @@ import { Alergeno } from '../../models/Alergeno';
 @Component({
   selector: 'app-alergeno',
   templateUrl: './alergeno.component.html',
-  styleUrls: ['./alergeno.component.scss'],
+  styleUrls: ['./alergeno.component.css'],
 })
 export class AlergenoComponent  implements OnInit {
 
