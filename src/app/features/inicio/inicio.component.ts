@@ -73,11 +73,13 @@ export class InicioComponent implements OnInit {
   }
 
   verMenosParaTi() {
-    this.recetasParaTiVisible = this.recetasParaTi.slice(0, this.cantidadInicialParaTi);
+    const nuevaCantidad = Math.max(this.cantidadInicialParaTi, this.recetasParaTiVisible.length - 3);
+    this.recetasParaTiVisible = this.recetasParaTi.slice(0, nuevaCantidad);
   }
 
   verMenosSiguiendo() {
-    this.recetasSiguiendoVisible = this.recetasSiguiendo.slice(0, this.cantidadInicialSiguiendo);
+    const nuevaCantidad = Math.max(this.cantidadInicialSiguiendo, this.recetasSiguiendoVisible.length - 3);
+    this.recetasSiguiendoVisible = this.recetasSiguiendo.slice(0, nuevaCantidad);
   }
 
   cargarUltimasRecetas() {
