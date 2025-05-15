@@ -43,7 +43,8 @@
       <div class="flex overflow-x-auto pb-4 scrollbar-hide">
         <div class="flex gap-4 flex-nowrap">
           <div *ngFor="let receta of coleccion.recetas"
-               class="relative flex-shrink-0 w-48 h-64 rounded-lg overflow-hidden cursor-pointer">
+               class="relative flex-shrink-0 w-48 h-64 rounded-lg overflow-hidden cursor-pointer"
+               [routerLink]="['/receta', receta.idReceta]">
 
             <img [src]="receta.fotoReceta" alt="Imagen receta" class="w-full h-full object-cover transition-transform duration-300 hover:scale-105">
 

@@ -1,6 +1,7 @@
-<div class="rounded-lg overflow-hidden relative aspect-square group">
+<div class="rounded-lg overflow-hidden relative aspect-square group"
+     [routerLink]="['/receta', receta.idReceta]">
 
-  <div class="absolute top-2 right-2 color-verde-claro p-1.5 rounded-full flex z-20" *ngIf="esPerfilPropio" (click)="toggleVisibilidad()">
+  <div class="absolute top-2 right-2 color-verde-claro p-1.5 rounded-full flex z-20 cursor-pointer" *ngIf="esPerfilPropio" (click)="toggleVisibilidad();$event.stopPropagation()">
     <ion-icon
       [name]="receta.esVisible ? 'eye-outline' : 'eye-off-outline'"
       class="text-xl text-white" >
@@ -19,7 +20,7 @@
         [name]="receta.cookerGusta ? 'heart' : 'heart-outline'"
         [class]="receta.cookerGusta ? 'text-red-500' : 'text-white'"
         class="text-3xl cursor-pointer hover:scale-110 transition-transform"
-        (click)="toggleLike()"></ion-icon>
+        (click)="toggleLike(); $event.stopPropagation()"></ion-icon>
       <span class="text-white text-sm mt-1" *ngIf="esPerfilPropio">{{ receta.meGusta }}</span>
     </div>
     <div class="flex flex-col items-center">
@@ -27,7 +28,7 @@
         [name]="receta.cookerGuardada ? 'bookmark' : 'bookmark-outline'"
         [class]="receta.cookerGuardada ? 'text-yellow-400' : 'text-white'"
         class="text-3xl cursor-pointer hover:scale-110 transition-transform"
-        (click)="toggleGuardar()"></ion-icon>
+        (click)="toggleGuardar();$event.stopPropagation()"></ion-icon>
       <span class="text-white text-sm mt-1" *ngIf="esPerfilPropio">{{ receta.guardados }}</span>
     </div>
   </div>

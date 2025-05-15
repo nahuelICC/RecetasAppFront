@@ -2,6 +2,7 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {IonIcon} from '@ionic/angular/standalone';
 import {NgClass, NgForOf, NgIf} from '@angular/common';
 import {UsuarioService} from '../../services/usuario.service';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-coleccion-recetas',
@@ -12,7 +13,8 @@ import {UsuarioService} from '../../services/usuario.service';
     IonIcon,
     NgClass,
     NgForOf,
-    NgIf
+    NgIf,
+    RouterLink
   ]
 })
 export class ColeccionRecetasComponent  implements OnInit {

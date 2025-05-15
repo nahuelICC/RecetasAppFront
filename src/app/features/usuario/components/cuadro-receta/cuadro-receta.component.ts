@@ -3,13 +3,14 @@ import {IonIcon} from '@ionic/angular/standalone';
 import {NgIf} from '@angular/common';
 import {UsuarioService} from '../../services/usuario.service';
 import {InicioService} from '../../../inicio/services/inicio.service';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-cuadro-receta',
   templateUrl: './cuadro-receta.component.html',
   styleUrls: ['./cuadro-receta.component.css'],
   standalone: true,
-  imports: [IonIcon, NgIf]
+  imports: [IonIcon, NgIf, RouterLink]
 })
 export class CuadroRecetaComponent  implements OnInit {
 
