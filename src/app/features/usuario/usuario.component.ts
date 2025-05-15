@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, ElementRef, NgZone, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, NgZone, OnInit, ViewChild} from '@angular/core';
 import {NgClass, NgForOf, NgIf} from '@angular/common';
 import {IonIcon, IonInfiniteScroll, IonInfiniteScrollContent} from '@ionic/angular/standalone';
 import {UsuarioService} from './services/usuario.service';
@@ -13,6 +13,7 @@ import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} fr
 import {AlertInfoComponent, AlertType} from '../../shared/components/alert-info/alert-info.component';
 import {AlertConfirmarComponent} from '../../shared/components/alert-confirmar/alert-confirmar.component';
 import {AuthService} from '../../core/services/auth.service';
+import {EncryptService} from '../../core/services/encrypt.service';
 
 @Component({
   selector: 'app-usuario',
@@ -78,13 +79,14 @@ export class UsuarioComponent  implements OnInit {
 
 
 
-  constructor(private usuarioService:UsuarioService,private headerService: HeaderService,private route: ActivatedRoute,private authService: AuthService,private zone: NgZone,private fb: FormBuilder, private router:Router) { }
+  constructor(private usuarioService:UsuarioService,private headerService: HeaderService,private route: ActivatedRoute,private authService: AuthService,private zone: NgZone,private fb: FormBuilder, private router:Router, private encryptService:EncryptService) { }
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
+    const idDecrypt = this.encryptService.desencriptar(id || '');
     this.idPropietario = this.authService.getUserId() || 0;
-    if (id && id !== this.idPropietario.toString()) {
-      this.usuarioService.getPerfilId(id).subscribe((response) => {
+    if (id && idDecrypt !== this.idPropietario.toString()) {
+      this.usuarioService.getPerfilId(idDecrypt).subscribe((response) => {
         this.perfil = response;
         this.recetas = response.recetas;
         this.colecciones = response.colecciones;
@@ -92,11 +94,11 @@ export class UsuarioComponent  implements OnInit {
         this.recetasMostradas = this.recetas.slice(0, this.recetasPerPage);
         this.coleccionesMostradas = this.colecciones.slice(0, this.coleccionesPerPage);
       });
-      this.usuarioService.perfilBloqueado(id).subscribe((response) => {
+      this.usuarioService.perfilBloqueado(idDecrypt).subscribe((response) => {
         this.perfilBloqueado = response as boolean;
       });
 
-      this.usuarioService.fotoPerfilVisita(id).subscribe((response: any) => {
+      this.usuarioService.fotoPerfilVisita(idDecrypt).subscribe((response: any) => {
         if (response !== 'sin foto') {
           this.imagenPerfilUsuario = response;
         }else {
@@ -139,11 +141,13 @@ export class UsuarioComponent  implements OnInit {
       repetir: ['', Validators.required]
     }, { validators: this.passwordsIguales });
 
-    this.usuarioService.listaSeguidos(this.esPerfilPropio, this.route.snapshot.paramMap.get('id') || '').subscribe((response) => {
+    const paramId = this.route.snapshot.paramMap.get('id') || '';
+
+    this.usuarioService.listaSeguidos(this.esPerfilPropio, idDecrypt).subscribe((response) => {
       this.seguidos = response;
     });
 
-    this.usuarioService.listaSeguidores(this.esPerfilPropio, this.route.snapshot.paramMap.get('id') || '').subscribe((response) => {
+    this.usuarioService.listaSeguidores(this.esPerfilPropio, idDecrypt).subscribe((response) => {
       this.seguidores = response;
     });
 
@@ -278,7 +282,8 @@ export class UsuarioComponent  implements OnInit {
 
   redireccionarPerfil(id: string): void {
     this.zone.run(() => {
-      this.router.navigate(['/perfil', id]).then(() => {
+      const idEncrypt = this.encryptService.encriptar(id);
+      this.router.navigate(['/perfil', idEncrypt]).then(() => {
         window.location.reload();
       });
     });
@@ -326,8 +331,9 @@ export class UsuarioComponent  implements OnInit {
 
   toggleBloquearPerfil() {
     const id = this.route.snapshot.paramMap.get('id') || '';
+    const idDecrypt = this.encryptService.desencriptar(id);
 
-      this.usuarioService.changeBloqueo(id).subscribe((response) => {
+      this.usuarioService.changeBloqueo(idDecrypt).subscribe((response) => {
         this.alertMessage = "Estado de bloqueo cambiado";
         console.log(response);
         this.alertType = 'success';
@@ -335,7 +341,7 @@ export class UsuarioComponent  implements OnInit {
         this.usuarioService.listaSeguidores(this.esPerfilPropio, this.route.snapshot.paramMap.get('id') || '').subscribe((response) => {
           this.seguidores = response;
         });
-        this.usuarioService.getPerfilId(id).subscribe((response) => {
+        this.usuarioService.getPerfilId(idDecrypt).subscribe((response) => {
           this.perfil = response;
         });
       }, (error) => {
@@ -355,15 +361,16 @@ export class UsuarioComponent  implements OnInit {
 
   toggleSeguirPerfil() {
     const id = this.route.snapshot.paramMap.get('id') || '';
-    this.usuarioService.changeSeguir(id).subscribe((response) => {
+    const idDecrypt = this.encryptService.desencriptar(id);
+    this.usuarioService.changeSeguir(idDecrypt).subscribe((response) => {
       this.perfil.siguiendo = !this.perfil.siguiendo;
       this.alertMessage = response;
       this.alertType = 'success';
       this.isAlertVisible = true;
-      this.usuarioService.listaSeguidores(this.esPerfilPropio, this.route.snapshot.paramMap.get('id') || '').subscribe((response) => {
+      this.usuarioService.listaSeguidores(this.esPerfilPropio, idDecrypt).subscribe((response) => {
         this.seguidores = response;
       });
-      this.usuarioService.getPerfilId(id).subscribe((response) => {
+      this.usuarioService.getPerfilId(idDecrypt).subscribe((response) => {
         this.perfil = response;
       });
     }, (error) => {
