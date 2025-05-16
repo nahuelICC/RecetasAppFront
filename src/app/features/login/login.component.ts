@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {AuthService} from '../../core/services/auth.service';
 import {LoginService} from './services/login.service';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
@@ -52,8 +52,8 @@ export class LoginComponent {
       next: (response) => {
         if (response.token) {
           this.authService.setToken(response.token);
-          const destino = this.authService.isAdmin() ? '/admin' : '/main';
-          this.router.navigate([destino]);
+          window.location.href = this.authService.isAdmin() ? '/admin' : '/main';
+
         } else {
           this.errorMessage = response.info;
           this.isAlertVisible = true;

@@ -1,4 +1,4 @@
-<div *ngIf="!isMobile" class="color-verde-claro rounded-full mx-6 mt-4 p-2 px-4 flex items-center justify-between fixed top-0 left-0 right-0 z-50">
+<div *ngIf="!isMobile" class="header rounded-full mx-6 mt-4 p-2 px-4 flex items-center justify-between fixed top-0 left-0 right-0 z-50">
   <div class="flex items-center gap-2">
     <img src="assets/logo.png" class="h-10 sm:h-12 w-auto max-w-[120px] sm:max-w-[160px] hidden lg:block">
     <span class="lg:text-2xl text-lg font-bold texto-logo">Cookers</span>
@@ -7,7 +7,7 @@
     <a class="color-texto font-semibold hover:text-white" href="/main">Home</a>
     <a class="color-texto font-semibold hover:text-white" href="/explorador">Buscador</a>
     <a class="color-texto font-semibold hover:text-white" href="/registro" *ngIf="!authService.isLogged()">Registro</a>
-    <a class="color-texto font-semibold hover:text-white" href="#" *ngIf="authService.isLogged()">Nutriscore</a>
+    <a class="color-texto font-semibold hover:text-white" href="/nutriscore" *ngIf="authService.isLogged()">Nutriscore</a>
     <a class="color-texto font-semibold hover:text-white" href="/login" *ngIf="!authService.isLogged()">Login</a>
     <ion-icon name="paper-plane-outline" class="text-2xl hover:cursor-pointer avion" *ngIf="authService.isLogged()"></ion-icon>
     <div class="relative" *ngIf="authService.isLogged()">

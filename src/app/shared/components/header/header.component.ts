@@ -39,7 +39,6 @@ export class HeaderComponent  implements OnInit {
         this.imagenPerfil = response;
       }
     });
-
   }
 
   /**
@@ -53,5 +52,6 @@ export class HeaderComponent  implements OnInit {
   toggleMenu(): void {
     this.menuOpen = !this.menuOpen;
   }
+
 
 }

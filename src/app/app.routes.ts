@@ -6,7 +6,8 @@ import { ActivacionComponent } from './features/registro/components/activacion/a
 import {LoginComponent} from './features/login/login.component';
 import {ExploradorComponent} from './features/explorador/explorador.component';
 import {UsuarioComponent} from './features/usuario/usuario.component';
-import { CrearRecetaComponent } from './features/crear-receta/crear-receta.component'; // Import added
+import { CrearRecetaComponent } from './features/crear-receta/crear-receta.component';
+import {NutriscoreComponent} from './features/nutriscore/nutriscore.component'; // Import added
 
 
 export const routes: Routes = [
@@ -22,6 +23,7 @@ export const routes: Routes = [
   {path: '', redirectTo: 'main', pathMatch: 'full'},
   {path: 'perfil', component: UsuarioComponent},
   {path: 'perfil/:id', component: UsuarioComponent},
-  {path: 'crear-receta', component: CrearRecetaComponent }
+  {path: 'crear-receta', component: CrearRecetaComponent },
+  {path: 'nutriscore', component: NutriscoreComponent }
 
 ];
