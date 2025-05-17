@@ -98,9 +98,15 @@
     </ion-infinite-scroll-content>
   </ion-infinite-scroll>
 
-  <div class="text-center text-gray-500 mt-4" *ngIf="productos.length === 0 && !loading">
+  <div class="text-center text-gray-500 mt-4 flex-col justify-items-center" *ngIf="productos.length === 0 && !loading">
+    <img src="assets/frutero.png" alt="Sin guardados"
+         class="w-2/3 md:w-1/2 opacity-75">
     No se encontraron resultados
   </div>
 </div>
+
+<app-boton-escaner></app-boton-escaner>
+
+<app-boton-add-receta></app-boton-add-receta>
 
 <app-pantalla-carga *ngIf="loading"></app-pantalla-carga>

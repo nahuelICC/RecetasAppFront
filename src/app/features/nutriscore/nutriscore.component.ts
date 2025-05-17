@@ -4,6 +4,8 @@ import { NgForOf, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PantallaCargaComponent } from '../../shared/components/pantalla-carga/pantalla-carga.component';
 import { IonInfiniteScroll, IonInfiniteScrollContent } from '@ionic/angular/standalone';
+import {BotonEscanerComponent} from './components/boton-escaner/boton-escaner.component';
+import {BotonAddRecetaComponent} from '../../shared/components/boton-add-receta/boton-add-receta.component';
 
 @Component({
   selector: 'app-nutriscore',
@@ -16,7 +18,9 @@ import { IonInfiniteScroll, IonInfiniteScrollContent } from '@ionic/angular/stan
     PantallaCargaComponent,
     NgIf,
     IonInfiniteScroll,
-    IonInfiniteScrollContent
+    IonInfiniteScrollContent,
+    BotonEscanerComponent,
+    BotonAddRecetaComponent
   ]
 })
 export class NutriscoreComponent {
@@ -67,17 +71,15 @@ export class NutriscoreComponent {
         this.productos = [...this.productos, ...nuevosProductos];
         this.totalProducts = res.count || this.totalProducts;
 
-        // Finaliza el scroll
         event.target.complete();
 
-        // Si ya se cargó todo, deshabilitar el infinite scroll
         if (this.productos.length >= this.totalProducts) {
           event.target.disabled = true;
         }
       },
       error: (err) => {
         console.error(err);
-        event.target.complete(); // detener scroll incluso si falla
+        event.target.complete();
       }
     });
   }
