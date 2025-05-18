@@ -13,4 +13,5 @@ export interface RecetaViewResponse {
     hidratos:     number;
     grasas:       number;
     alergenos:    Alergeno[];
+    video:       string;
 }

@@ -10,6 +10,8 @@ import { NgFor, NgIf } from '@angular/common';
 import { PasoResponse } from './models/PasoResponse';
 import { addIcons } from 'ionicons';
 import { chevronDown, timeOutline, bulbOutline } from 'ionicons/icons';
+import { ComentarioService } from '../../core/services/comentario.service';
+import { ComentarioResponse } from '../../core/models/ComentarioResponse';
 
 @Component({
   selector: 'app-receta-view',
@@ -21,7 +23,8 @@ export class RecetaViewComponent implements OnInit{
 
   constructor(
     private route: ActivatedRoute,
-    private recetaService: RecetaService
+    private recetaService: RecetaService,
+    private comentarioService: ComentarioService
   ) {
     addIcons({ chevronDown, timeOutline, bulbOutline });
   }
@@ -29,10 +32,12 @@ export class RecetaViewComponent implements OnInit{
   idReceta!: string;
   receta!: RecetaViewResponse;
   pasosReceta!: PasoResponse[];
+  comentariosReceta!: ComentarioResponse[];
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       this.idReceta = params.get('id')!;
+      this.obtenerComentariosReceta();
       this.obtenerInfoReceta();
       this.obtenerPasosReceta();
     })
@@ -59,6 +64,17 @@ export class RecetaViewComponent implements OnInit{
       (error) => {
         console.error('Error al obtener los pasos de la receta:', error);
       }
+    )
+  }
+
+  obtenerComentariosReceta(){
+    this.comentarioService.getComentariosReceta(this.idReceta).subscribe(
+      (response) => {
+        this.comentariosReceta = response;
+        console.log('Comentarios de la receta obtenidos:', this.comentariosReceta);
+      },
+      (error) =>  {
+        console.error('Error al obtener los comentarios de la receta:', error);}
     )
   }
 }

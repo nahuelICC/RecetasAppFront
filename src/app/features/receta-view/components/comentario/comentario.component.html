@@ -1,16 +1,34 @@
-<div class="h-32 bg-[#ABD1C6] mb-12 p-2 relative">
-  <!-- Parte superior-->
-  <div class="border border-[#ABD1C6] h-[45%] relative flex items-center">
-    <div class="w-14 h-14 rounded-full border-2 border-white mr-4">
-      <img src="https://cdn-icons-png.flaticon.com/512/6522/6522581.png" alt="Foto de perfil" class="w-full h-full object-cover rounded-full">
+<!-- Tarjeta de comentario responsive -->
+<div class="bg-[#ABD1C6] rounded-lg shadow-md mb-4 md:mb-8 p-2 md:p-4 w-full">
+  <!-- Parte superior con información del usuario -->
+  <div class="border border-[#ABD1C6] py-2 mb-2 flex items-center">
+    <!-- Avatar del usuario - tamaño responsive -->
+    <div class="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full border-2 border-white flex-shrink-0">
+      <img [src]="comentario.fotoPerfil" alt="Foto de perfil" class="w-full h-full object-cover rounded-full">
     </div>
-    <div class=" ml-2 flex justify-between w-full">
-      <p class="text-left">Nombre</p>
-      <p class="text-right">Fecha</p>
+  <!--https://cdn-icons-png.flaticon.com/512/6522/6522581.png-->
+    
+    <!-- Información del usuario - layout flexible -->
+    <div class="ml-2 md:ml-4 flex flex-col sm:flex-row sm:items-center w-full justify-between">
+      <div class="flex flex-col sm:flex-row sm:items-center">
+        <p class="text-sm md:text-base font-medium truncate">{{comentario.username}}</p>
+        <p class="text-xs text-gray-500 mt-1 sm:mt-0 sm:ml-5 md:ml-6">{{comentario.fecha | timeAgo}}</p>
+      </div>
+      <!-- Banderita para denunciar con tooltip -->
+      <div class="relative group cursor-pointer mt-2 sm:mt-0">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500 hover:text-red-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
+        </svg>
+        <!-- Tooltip -->
+        <div class="absolute hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 right-0 -mt-1 whitespace-nowrap">
+          Denunciar
+        </div>
+      </div>
     </div>
   </div>
-  <!-- Parte inferior-->
-  <div class="border border-[#ABD1C6] h-[55%] p-2">
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio aliquam culpa dolorum a! Autem esse eaque minus. Veniam mollitia nostrum quaerat possimus quas debitis, consectetur architecto quasi provident aperiam libero.</p>
+  
+  <!-- Parte inferior con el texto del comentario -->
+  <div class="border border-[#ABD1C6] p-2 md:p-3 min-h-[50px]">
+    <p class="text-sm md:text-base break-words">{{comentario.texto}}</p>
   </div>
 </div>

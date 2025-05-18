@@ -17,7 +17,6 @@ export const routes: Routes = [
   { path: 'registro', component: RegistroComponent },
   { path: 'receta/:id', component: RecetaViewComponent },
   { path: 'login', component: LoginComponent},
-  {path: 'main', component: InicioComponent},
   {path: 'explorador', component: ExploradorComponent},
   {path: '', redirectTo: 'main', pathMatch: 'full'},
   {path: 'perfil', component: UsuarioComponent},

@@ -29,24 +29,29 @@
             </ion-item>
             <div class="step-content" slot="content">
                 <p>{{paso.descripcion}}</p>
-                <div class="step-timing" *ngIf="paso.tiempoEstimado">
-                    <ion-icon name="time-outline"></ion-icon>
-                    <span>Tiempo estimado: {{paso.tiempoEstimado}} minutos</span>
-                </div>
-                <div class="step-tips" *ngIf="paso.consejo">
-                    <h4><ion-icon name="bulb-outline"></ion-icon> Consejo</h4>
-                    <p>{{paso.consejo}}</p>
+                <div class="step-timing" *ngIf="paso.foto">
+                    <img [src]="paso.foto" alt="">
                 </div>
             </div>
         </ion-accordion>
     </ion-accordion-group>
   </div>
+  <!-- Video -->
+   <div *ngIf="receta.video">
+        <h2 class="text-white">Video</h2>
+        <video controls width="640" height="360">
+            <source 
+              src="{{receta.video}}" 
+              type="video/mp4"
+              >
+          </video>
+   </div>
   <!-- Comentarios -->
   <div>
       <h2 class="text-white">Comentarios</h2>
-      <app-comentario></app-comentario>
-      <app-comentario></app-comentario>
-      <app-comentario></app-comentario>
-      <app-comentario></app-comentario>
+      <div class="flex flex-col gap-4">
+          <div *ngFor="let comentario of comentariosReceta">
+              <!-- Parte superior-->
+            <app-comentario [comentario]="comentario"></app-comentario>
   </div>
 </div>
