@@ -1,5 +1,5 @@
 <!-- Hero principal con imagen destacada -->
-<div class="relative h-96 bg-gradient-to-r from-green-700 to-yellow-400 overflow-hidden">
+<div class="relative h-96 bg-gradient-to-r from-green-700 to-yellow-400 overflow-hidden mt-4">
   <img src="assets/imagen-inicio-2.png" alt="Receta destacada" class="w-full h-full object-cover opacity-80">
   <div class="absolute inset-0 flex flex-col items-center justify-center text-white p-6">
     <h1 class="text-4xl sm:text-5xl font-bold mb-4 text-center">Descubre recetas deliciosas</h1>
@@ -22,7 +22,6 @@
         class="flex-none w-64 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow"
       >
       </app-publicacion>
-
     </div>
   </div>
   <div class="mb-12">
@@ -51,14 +50,14 @@
       <button
         *ngIf="recetasParaTiVisible.length < recetasParaTi.length"
         (click)="verMasParaTi()"
-        class="bg-yellow-400 text-white font-bold py-2 px-6 rounded hover:bg-yellow-500">
+        class="bg-[var(--color-verde-boton)] text-white font-bold py-2 px-6 rounded hover:brightness-110 transition">
         Ver más
       </button>
 
       <button
         *ngIf="recetasParaTiVisible.length > cantidadInicialParaTi"
         (click)="verMenosParaTi()"
-        class="bg-gray-500 text-white font-bold py-2 px-6 rounded hover:bg-gray-600">
+        class="bg-[var(--color-amarillo-boton)] text-white font-bold py-2 px-6 rounded hover:brightness-110 transition">
         Ver menos
       </button>
     </div>
@@ -97,33 +96,3 @@
   </div>
 </div>
 
-
-
-
-<!--<div class="container mx-auto px-4 py-8">-->
-<!--  <div class="flex justify-center gap-6">-->
-<!--    <div>-->
-<!--      <button-->
-<!--        (click)="mostrarParaTi()"-->
-<!--        class="text-2xl font-bold mb-4 text-white pb-2 transition-all inline-block"-->
-<!--        [class.text-decoration-underline]="vista === 'paraTi'">-->
-<!--        Para ti-->
-<!--      </button>-->
-<!--    </div>-->
-<!--    <div>-->
-<!--      <button-->
-<!--        (click)="mostrarSiguiendo()"-->
-<!--        class="text-2xl font-bold mb-4 text-white pb-2 transition-all inline-block"-->
-<!--        [class.text-decoration-underline]="vista === 'siguiendo'">-->
-<!--        Siguiendo-->
-<!--      </button>-->
-<!--    </div>-->
-<!--  </div>-->
-
-<!--  &lt;!&ndash; Contenido dinámico &ndash;&gt;-->
-<!--  <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-4 pt-7 pl-12 pr-12">-->
-<!--    <app-publicacion *ngFor="let receta of recetas" [receta]="receta"></app-publicacion>-->
-<!--  </div>-->
-<!--</div>-->
-
-<!--<app-boton-add-receta></app-boton-add-receta>-->

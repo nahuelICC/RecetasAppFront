@@ -1,9 +1,10 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, NgZone, OnInit, Output} from '@angular/core';
 import {RecetasExploradorDTO} from '../../models/RecetasExploradorDTO';
 import {DuracionSinSegundosPipe} from '../../pipes/duracion-sin-segundos.pipe';
-import {RouterLink} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {DecimalPipe, NgIf} from '@angular/common';
 import {RecetaService} from '../../services/receta.service';
+import {EncryptService} from '../../../../core/services/encrypt.service';
 
 @Component({
   selector: 'app-recetas',
@@ -27,7 +28,7 @@ export class RecetasComponent  implements OnInit {
   @Output() likeToggled = new EventEmitter<{ recipeId: number, newState: boolean }>();
   @Output() saveToggled = new EventEmitter<{ recipeId: number, newState: boolean }>();
 
-  constructor(private recetaService: RecetaService) { }
+  constructor(private recetaService: RecetaService, private router:Router,private zone: NgZone,private encryptService:EncryptService) { }
 
   ngOnInit() {}
   toggleLike(event: MouseEvent): void {
@@ -57,5 +58,14 @@ export class RecetasComponent  implements OnInit {
     } else {
       this.recetaService.eliminarRecetaGuardada(this.recipeData.id).subscribe();
     }
+  }
+
+  redireccionarPerfil(id: string): void {
+    this.zone.run(() => {
+      const idEncrypt = this.encryptService.encriptar(id);
+      this.router.navigate(['/perfil', idEncrypt]).then(() => {
+        window.location.reload();
+      });
+    });
   }
 }

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import { InfoPlatoComponent } from './components/info-plato/info-plato.component';
 import { AlergenoComponent } from "./components/alergeno/alergeno.component";
 import { IonAccordion, IonAccordionGroup, IonItem, IonLabel, IonIcon } from '@ionic/angular/standalone';
@@ -17,7 +17,7 @@ import { chevronDown, timeOutline, bulbOutline } from 'ionicons/icons';
   templateUrl: './receta-view.component.html',
   styleUrl: './receta-view.component.css'
 })
-export class RecetaViewComponent {
+export class RecetaViewComponent implements OnInit{
 
   constructor(
     private route: ActivatedRoute,

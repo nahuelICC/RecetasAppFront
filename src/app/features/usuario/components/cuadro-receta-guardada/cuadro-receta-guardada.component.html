@@ -1,4 +1,5 @@
-<div class="rounded-lg overflow-hidden relative aspect-square cursor-pointer">
+<div class="rounded-lg overflow-hidden relative aspect-square cursor-pointer"
+     [routerLink]="['/receta', receta.idReceta]">
   <!-- Imagen de receta -->
   <img [src]="receta.fotoReceta" alt="fotoReceta" class="w-full h-full object-cover transition-transform duration-300 hover:scale-105" />
 
@@ -7,8 +8,8 @@
     <div class="flex justify-between">
       <p class="font-semibold text-lg text-black">{{ receta.nombre }}</p>
       <div class="flex gap-3 items-center">
-        <ion-icon name="time-outline" class="text-lg"></ion-icon>
         <span class="text-md">{{ receta.tiempo }}</span>
+        <ion-icon name="time-outline" class="text-lg"></ion-icon>
       </div>
     </div>
   </div>

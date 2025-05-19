@@ -57,7 +57,8 @@
             [color]="'var(--color-verde-boton)'"
             size="small"
             [label]="'Mensaje'"
-            *ngIf="!esPerfilPropio && !perfilBloqueado"></app-boton>
+            *ngIf="!esPerfilPropio && !perfilBloqueado"
+            (click)="iniciarChat()"></app-boton>
           <app-boton
             [color]="'var(--color-amarillo-boton)'"
             size="small"
@@ -216,7 +217,7 @@
     <div class="bg-green-100 w-full sm:w-3/4 lg:w-1/2 max-h-[80vh] rounded-lg p-4 shadow-xl overflow-y-auto relative">
 
       <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-semibold color-texto">Seguidos</h3>
+        <h3 class="text-lg font-semibold color-texto">Seguidores</h3>
         <ion-icon name="close-circle-outline" class="text-2xl text-green-900 cursor-pointer"
                   (click)="toggleSeguidores()"></ion-icon>
       </div>
@@ -239,7 +240,119 @@
     </div>
   </div>
 
+  <!-- Panel de edición de perfil -->
+  <div *ngIf="editarPerfil"
+       class="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center p-4">
+    <div class="bg-green-100 w-full sm:w-3/4 lg:w-1/2 max-h-[80vh] rounded-lg p-6 shadow-xl overflow-y-auto relative">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold color-texto">Editar Perfil</h3>
+        <ion-icon name="close-circle-outline" class="text-2xl text-green-900 cursor-pointer"
+                  (click)="toggleEditarPerfil()"></ion-icon>
+      </div>
 
+      <!-- Nombre y Apellidos -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        <div>
+          <label class="block text-sm font-medium mb-1 text-black">Nombre</label>
+          <input
+            type="text"
+            [(ngModel)]="perfil.nombre"
+            placeholder="Nombre"
+            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-black"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1 text-black">Apellidos</label>
+          <input
+            type="text"
+            [(ngModel)]="perfil.apellidos"
+            placeholder="Apellidos"
+            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-black"
+          />
+        </div>
+      </div>
+
+      <!-- Descripción -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium mb-1 text-black">Descripción</label>
+        <textarea
+          [(ngModel)]="perfil.descripcion"
+          rows="3"
+          placeholder="Escribe aquí tu descripción..."
+          class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-black"
+        ></textarea>
+      </div>
+
+      <!-- Alergenos -->
+      <div class="mb-4 text-black">
+        <label class="block text-sm font-medium mb-1 text-black">Alergenos</label>
+        <div class="grid grid-cols-7 gap-2">
+          <div *ngFor="let alergeno of alergenos" class="cursor-pointer">
+            <img
+              [src]="alergeno.imagen"
+              alt="{{ alergeno.nombre }}"
+              class="w-full h-auto border rounded shadow"
+              [class.border-yellow-400]="esAlergenoSeleccionado(alergeno)"
+              (click)="toggleAlergeno(alergeno)"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-4 text-black">
+        <div class="flex flex-wrap">
+          <label class="block text-sm font-medium mb-1 text-black">Ingredientes favoritos</label>
+          <label class="block text-sm font-medium mb-1 text-black pl-2">(Selecciona un máximo de 3)</label>
+        </div>
+
+        <!-- Buscador y chips -->
+        <div class="flex bg-white items-center border rounded-lg p-2 flex-grow">
+        <span class="text-gray-500 mr-2 flex">
+          <ion-icon name="search"></ion-icon>
+        </span>
+          <input
+            type="text"
+            placeholder="Buscar"
+            class="w-full outline-none bg-transparent text-black"
+            (input)="filtrarIngredientes($event)"
+          />
+        </div>
+
+        <!-- Resultados de búsqueda -->
+        <div *ngIf="ingredientesFiltrados.length > 0"
+             class="bg-white border rounded-lg shadow-md max-h-40 overflow-y-auto mt-2 p-2">
+          <div *ngFor="let ingrediente of ingredientesFiltrados"
+               class="cursor-pointer hover:bg-gray-100 p-2 rounded"
+               (click)="seleccionarIngrediente(ingrediente)">
+            {{ ingrediente.nombre }}
+          </div>
+        </div>
+
+        <!-- Chips seleccionados -->
+        <div class="flex gap-2 flex-wrap mt-3">
+          <ion-chip *ngFor="let ingrediente of ingredientesSeleccionados; let i = index">
+            <ion-label>{{ ingrediente.nombre }}</ion-label>
+            <ion-icon name="close-circle" (click)="eliminarIngrediente(i)"></ion-icon>
+          </ion-chip>
+        </div>
+      </div>
+
+      <!-- Mensaje de error -->
+      <div *ngIf="validadorConflictoAlergenos()" class="text-red-500 text-sm p-2 mt-2 border border-red-300 rounded bg-red-50">
+        Existe un conflicto entre tus ingredientes seleccionados y alérgenos. Por favor, revisa que ningún ingrediente contenga un alérgeno que hayas seleccionado.
+      </div>
+
+      <!-- Botón Guardar -->
+      <div class="flex justify-end">
+        <app-boton
+          [color]="'var(--color-verde-boton)'"
+          size="small"
+          [label]="'Guardar Cambios'"
+          (click)="guardarCambios()"
+        ></app-boton>
+      </div>
+    </div>
+  </div>
 
 
   <div *ngIf="activeTab === 'recetas' && !perfilBloqueado" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
