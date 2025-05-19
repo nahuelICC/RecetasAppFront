@@ -609,4 +609,10 @@ export class UsuarioComponent  implements OnInit {
   esIngredienteSeleccionado(ingrediente: any): boolean {
     return this.ingredientesSeleccionados.some(i => i.id === ingrediente.id);
   }
+
+  iniciarChat() {
+    const id = this.route.snapshot.paramMap.get('id') || '';
+    const idDecrypt = this.encryptService.desencriptar(id);
+    this.router.navigate(['/chat', idDecrypt]);
+  }
 }
