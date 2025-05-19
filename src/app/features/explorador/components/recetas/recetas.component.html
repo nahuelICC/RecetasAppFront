@@ -16,7 +16,7 @@
       [src]="recipeData?.imagenUsuario || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png'"
       [alt]="'Avatar de ' + (recipeData?.usuario || 'usuario')"
     />
-    <a [routerLink]="null" (click)="$event.stopPropagation()" class="text-white text-sm font-semibold truncate hover:underline">
+    <a [routerLink]="null" (click)="$event.stopPropagation()" class="text-white text-sm  truncate">
       {{ recipeData?.usuario || 'Usuario' }}
     </a>
   </div>

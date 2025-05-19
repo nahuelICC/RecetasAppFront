@@ -22,4 +22,33 @@ export class RecetaService {
   getIntereaccionesRecetasUsuario(): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/interacciones`, {});
   }
+
+  darMeGustaAReceta(recetaId: number): Observable<string> {
+    return this.http.post<string>(`${this.apiUrl}/meGusta`, recetaId, { responseType: 'text' as 'json' });
+  }
+
+  verificarMeGusta(recetaId: number): Observable<boolean> {
+    return this.http.post<boolean>(`${this.apiUrl}/estado`, recetaId);
+  }
+  eliminarMeGusta(recetaId: number): Observable<string> {
+    return this.http.request<string>('DELETE', `${this.apiUrl}/meGusta`, {
+      body: recetaId,
+      responseType: 'text' as 'json'
+    });
+  }
+
+  guardarReceta(recetaId: number): Observable<string> {
+    return this.http.post<string>(`${this.apiUrl}/guardar`, recetaId, { responseType: 'text' as 'json' });
+  }
+
+  verificarRecetaGuardada(recetaId: number): Observable<boolean> {
+    return this.http.post<boolean>(`${this.apiUrl}/estadoGuardado`, recetaId);
+  }
+
+  eliminarRecetaGuardada(recetaId: number): Observable<string> {
+    return this.http.request<string>('DELETE', `${this.apiUrl}/guardar`, {
+      body: recetaId,
+      responseType: 'text' as 'json'
+    });
+  }
 }

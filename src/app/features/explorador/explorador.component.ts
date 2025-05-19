@@ -1,16 +1,11 @@
 import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import { IonContent } from '@ionic/angular/standalone'; // IonIcon no se usa en el template, se puede quitar si no lo necesitas en otro lado
 import { RecetasComponent } from "./components/recetas/recetas.component";
 import { UsuarioExploradorComponent } from "./components/usuario-explorador/usuario-explorador.component";
 import { AlergenoService } from "./services/alergeno.service";
-import { IngredienteService } from "./services/ingrediente.service"; // Asumiendo que tienes este servicio
-// Importa tus modelos/interfaces reales para Receta y Usuario si los tienes
-// import { Receta } from './models/Receta';
-// import { User } from './models/User';
+import { IngredienteService } from "./services/ingrediente.service";
 import { Alergeno } from "./models/Alergeno";
 import { Subscription } from "rxjs";
-import { debounceTime, distinctUntilChanged, filter, switchMap } from 'rxjs/operators'; // Para input de ingredientes
-import { IngredienteListarDTO } from "./models/IngredienteListarDTO"; // Usando tu interfaz
+import { IngredienteListarDTO } from "./models/IngredienteListarDTO";
 import { NgClass, NgForOf, NgIf } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import {RecetasExploradorFiltroDTO} from './models/RecetasExploradorFiltroDTO';
@@ -19,7 +14,7 @@ import {RecetasExploradorDTO} from './models/RecetasExploradorDTO';
 import {UsuarioExploradorDTO} from './models/UsuarioExploradorDTO';
 import {UsuarioService} from './services/usuario.service';
 import {UsuarioExploradorFiltroDTO} from './models/UsuarioExploradorFiltroDTO';
-import {InteraccionesUsuarioDTO} from './models/InteraccionesUsuarioDTO'; // Importar FormsModule
+import {InteraccionesUsuarioDTO} from './models/InteraccionesUsuarioDTO';
 
 @Component({
   selector: 'app-explorador',
@@ -102,7 +97,6 @@ export class ExploradorComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // Cancelar todas las suscripciones
     this.alergenosSub?.unsubscribe();
     this.ingredienteSub?.unsubscribe();
     // this.recetasSub?.unsubscribe();
@@ -123,7 +117,6 @@ export class ExploradorComponent implements OnInit, OnDestroy {
     this.showFilters = !this.showFilters;
   }
 
-  // --- Carga de Datos ---
   cargarRecetas(): void {
     this.recetaService.getRecetasFiltro(this.recetaExploradorFiltroDTO).subscribe({
       next: (data: any) =>{
@@ -255,24 +248,22 @@ export class ExploradorComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Filtra la lista COMPLETA de ingredientes cargada
+
     this.ingredientSuggestions = this.listaIngredientes.filter(ing =>
         ing.nombre.toLowerCase().includes(searchTerm) &&
-        !this.selectedIngredients.some(selected => selected.id === ing.id) // No sugerir si ya está seleccionado
-    ).slice(0, 10); // Limita resultados
+        !this.selectedIngredients.some(selected => selected.id === ing.id)
+    ).slice(0, 10);
 
-    // Actualiza flags para mostrar dropdown y mensaje "no encontrado"
     this.noResultsFound = this.ingredientSuggestions.length === 0;
     this.showIngredientSuggestions = true; // Mostrar contenedor porque hay texto
   }
 
-  // Se llama al hacer clic en una sugerencia
+
   selectSuggestion(ingrediente: IngredienteListarDTO): void {
     this.addIngredient(ingrediente);
     if (this.ingredientInputRef) {
       this.ingredientInputRef.nativeElement.value = ''; // Limpia el input
     }
-    // Limpia y oculta el dropdown
     this.ingredientSuggestions = [];
     this.showIngredientSuggestions = false;
     this.noResultsFound = false;
@@ -296,7 +287,6 @@ export class ExploradorComponent implements OnInit, OnDestroy {
       return;
     };
 
-    // Intenta encontrar en sugerencias o lista completa
     let ingredienteToAdd = this.ingredientSuggestions.find(ing => ing.nombre.toLowerCase() === nombreBuscado.toLowerCase());
     if (!ingredienteToAdd) {
       ingredienteToAdd = this.listaIngredientes.find(ing => ing.nombre.toLowerCase() === nombreBuscado.toLowerCase());
@@ -316,7 +306,6 @@ export class ExploradorComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Eliminar ingrediente de las píldoras
   removeIngredient(id: number): void {
     this.selectedIngredients = this.selectedIngredients.filter(ing => ing.id !== id);
     if (this.ingredientInputRef?.nativeElement?.value) {
@@ -324,13 +313,11 @@ export class ExploradorComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Ocultar sugerencias al perder el foco (con delay para permitir clic)
+
   onIngredientInputBlur(): void {
-    // Usamos setTimeout para dar tiempo a que el evento (mousedown) de la sugerencia se procese
     setTimeout(() => {
       this.showIngredientSuggestions = false;
-      // No limpiamos noResultsFound aquí, puede ser útil si el usuario vuelve
-    }, 150); // Ajusta este tiempo si es necesario
+    }, 150);
   }
 
   aplicarFiltros() {
@@ -364,6 +351,7 @@ export class ExploradorComponent implements OnInit, OnDestroy {
     if (this.paginaActual > 1) {
       this.paginaActual--;
       this.recetaExploradorFiltroDTO.pagina = this.paginaActual;
+      this.cargarRecetasInteracciones();
       this.cargarRecetas();
     }
   }
@@ -372,6 +360,7 @@ export class ExploradorComponent implements OnInit, OnDestroy {
     if (this.paginaActual < this.numPaginas) {
       this.paginaActual++;
       this.recetaExploradorFiltroDTO.pagina = this.paginaActual;
+      this.cargarRecetasInteracciones();
       this.cargarRecetas();
     }
   }
