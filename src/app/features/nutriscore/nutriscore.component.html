@@ -1,0 +1,112 @@
+<div class="mb-6 max-w-4xl mx-auto px-4">
+  <!-- Buscador -->
+  <div class="relative w-full mb-4 mt-12">
+    <input
+      [(ngModel)]="terminoBusqueda"
+      (keyup.enter)="buscar()"
+      type="text"
+      placeholder="Buscar productos"
+      class="w-full p-3 pl-10 pr-4 border border-gray-300 rounded-full focus:ring-2 focus:ring-[#abd1c6] focus:border-[#abd1c6] focus:outline-none shadow-sm transition duration-150 ease-in-out"
+      aria-label="Campo de búsqueda general"
+    />
+    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+      <svg class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1010.5 3a7.5 7.5 0 006.15 12.65z" />
+      </svg>
+    </div>
+  </div>
+
+  <!-- Listado de productos -->
+  <div class="space-y-3">
+    <div *ngFor="let p of productos" class="bg-[#abd1c6] rounded-lg p-3">
+      <!-- Fila superior - Nombre -->
+      <h3 class="text-lg font-bold mb-2 truncate">{{ p.product_name }}</h3>
+
+      <!-- Contenido grid responsive -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-start">
+        <!-- Imagen -->
+        <div class="md:col-span-2">
+          <div class="aspect-square relative">
+            <img
+              [src]="p.image_front_small_url || 'assets/placeholder.webp'"
+              alt="Imagen producto"
+              loading="lazy"
+              class="w-full h-full object-cover rounded-lg"
+            />
+          </div>
+        </div>
+
+        <!-- Datos nutricionales -->
+        <div class="md:col-span-8">
+
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-1.5">
+            <p class="text-xs md:text-sm">
+              <span class="font-semibold">Marca: </span>
+              <span class="font-semibold italic">{{ p.brands || 'Desconocida' }}</span>
+            </p>
+            <!-- Repetir para cada dato nutricional -->
+            <p class="text-xs md:text-sm">
+              <span class="font-semibold">Calorías:</span>
+              {{ p['energy-kcal_100g'] ?? 'N/D' }} kcal
+            </p>
+            <p class="text-xs md:text-sm">
+              <span class="font-semibold">Proteínas:</span>
+              {{ p['proteins_100g'] ?? 'N/D' }}g
+            </p>
+            <p class="text-xs md:text-sm">
+              <span class="font-semibold">Grasas:</span>
+              {{ p['fat_100g'] ?? 'N/D' }}g
+            </p>
+            <p class="text-xs md:text-sm">
+              <span class="font-semibold">Carbohidratos:</span>
+              {{ p['carbohydrates_100g'] ?? 'N/D' }}g
+            </p>
+            <p class="text-xs md:text-sm">
+              <span class="font-semibold">Azúcares:</span>
+              {{ p['sugars_100g'] ?? 'N/D' }}g
+            </p>
+          </div>
+
+          <p class="text-xs md:text-sm text-start mt-2 mb-4">
+            <em>Datos por cada 100gr</em>
+          </p>
+
+        </div>
+
+
+        <!-- Nutri-Score -->
+        <div class="md:col-span-2 flex items-center justify-center mt-2 md:mt-0">
+          <div class="text-center w-20 md:w-24">
+            <img
+              [src]="'assets/nutriscore/grade' + p.nutriscore_grade?.toUpperCase() + '.png'"
+              alt="Nutri-Score"
+              class="w-full h-auto"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Infinite Scroll -->
+  <ion-infinite-scroll
+    threshold="100px"
+    (ionInfinite)="cargarMas($event)"
+    *ngIf="productos.length < totalProducts && !loading"
+  >
+    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Cargando más productos..." class="mt-12">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+  <div class="text-center text-gray-500 mt-4 flex-col justify-items-center" *ngIf="productos.length === 0 && !loading">
+    <img src="assets/frutero.png" alt="Sin guardados"
+         class="w-2/3 md:w-1/2 opacity-75">
+    No se encontraron resultados
+  </div>
+</div>
+
+<app-boton-escaner></app-boton-escaner>
+
+<app-boton-add-receta></app-boton-add-receta>
+
+<app-pantalla-carga *ngIf="loading"></app-pantalla-carga>

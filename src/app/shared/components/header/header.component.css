@@ -1,3 +1,15 @@
 .avion:hover {
   color: white;
 }
+
+.header {
+  transition: all 0.3s;
+  backdrop-filter: blur(4px);
+  background-color: var(--color-verde-cuadros)
+}
+
+.header:not(:hover) {
+  backdrop-filter: none;
+  background-color: var(--color-verde-translucido);
+}
+

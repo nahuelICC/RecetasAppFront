@@ -1,12 +1,13 @@
-import {Component, HostListener, Input, OnInit} from '@angular/core';
+import {Component, HostListener, Input, NgZone, OnInit} from '@angular/core';
 import {RecetaInicioDTO} from '../../models/RecetaInicioDTO';
 import {IonicModule} from '@ionic/angular';
 import {NgClass, NgForOf, NgIf} from '@angular/common';
 import {InicioService} from '../../services/inicio.service';
 import {BotonComponent} from '../../../../shared/components/boton/boton.component';
 import {AlertInfoComponent} from '../../../../shared/components/alert-info/alert-info.component';
-import {RouterLink} from '@angular/router';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {AuthService} from '../../../../core/services/auth.service';
+import {EncryptService} from '../../../../core/services/encrypt.service';
 
 @Component({
   selector: 'app-publicacion',
@@ -37,7 +38,7 @@ export class PublicacionComponent  implements OnInit {
   alertMessage: string = '';
   alertType: 'success' | 'error' | 'warning' = 'success';
 
-  constructor(private inicioService: InicioService, private authService: AuthService) {}
+  constructor(private inicioService: InicioService, private authService: AuthService,private router:Router,private zone: NgZone,private encryptService:EncryptService) {}
 
   ngOnInit() {
     const id = this.authService.getUserId();
@@ -166,6 +167,15 @@ export class PublicacionComponent  implements OnInit {
     if (!this.recetaLeGusta) {
       this.toggleLike();
     }
+  }
+
+  redireccionarPerfil(id: string): void {
+    this.zone.run(() => {
+      const idEncrypt = this.encryptService.encriptar(id);
+      this.router.navigate(['/perfil', idEncrypt]).then(() => {
+        window.location.reload();
+      });
+    });
   }
 
 

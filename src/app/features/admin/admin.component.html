@@ -1,0 +1,12 @@
+<div class="flex h-screen bg-gray-50 text-gray-800">
+  <app-sidebar-nav
+    class="w-60 flex-shrink-0 bg-[#004643] text-white shadow-lg"
+    [navItems]="sidebarNavItems">
+  </app-sidebar-nav>
+
+  <div class="flex-1 flex flex-col overflow-hidden">
+    <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-4 md:p-6 lg:p-8">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

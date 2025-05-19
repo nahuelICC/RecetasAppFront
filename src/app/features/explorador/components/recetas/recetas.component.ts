@@ -1,8 +1,10 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, NgZone, OnInit, Output} from '@angular/core';
 import {RecetasExploradorDTO} from '../../models/RecetasExploradorDTO';
 import {DuracionSinSegundosPipe} from '../../pipes/duracion-sin-segundos.pipe';
-import {RouterLink} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {DecimalPipe, NgIf} from '@angular/common';
+import {RecetaService} from '../../services/receta.service';
+import {EncryptService} from '../../../../core/services/encrypt.service';
 
 @Component({
   selector: 'app-recetas',
@@ -26,7 +28,7 @@ export class RecetasComponent  implements OnInit {
   @Output() likeToggled = new EventEmitter<{ recipeId: number, newState: boolean }>();
   @Output() saveToggled = new EventEmitter<{ recipeId: number, newState: boolean }>();
 
-  constructor() { }
+  constructor(private recetaService: RecetaService, private router:Router,private zone: NgZone,private encryptService:EncryptService) { }
 
   ngOnInit() {}
   toggleLike(event: MouseEvent): void {
@@ -34,22 +36,36 @@ export class RecetasComponent  implements OnInit {
     console.log('Like clicked for recipe:', this.recipeData?.id);
 
     this.isLiked = !this.isLiked;
-    // 2. Emite el evento para que el componente padre maneje la lógica (llamada API, etc.)
     this.likeToggled.emit({ recipeId: this.recipeData?.id, newState: this.isLiked });
     this.recipeData.numMeGusta = this.isLiked ? this.recipeData.numMeGusta + 1 : this.recipeData.numMeGusta - 1;
-    // O: Llama a un servicio directamente desde aquí si prefieres
-    // this.recipeService.toggleLike(this.recipeData.id).subscribe(...)
+
+    if (this.isLiked) {
+      this.recetaService.darMeGustaAReceta(this.recipeData.id).subscribe();
+    } else {
+      this.recetaService.eliminarMeGusta(this.recipeData.id).subscribe();
+    }
   }
 
   toggleSave(event: MouseEvent): void {
     event.stopPropagation();
     console.log('Save clicked for recipe:', this.recipeData?.id);
-    // 1. Cambia estado local (opcional)
     this.isSaved = !this.isSaved;
-    // 2. Emite evento
     this.saveToggled.emit({ recipeId: this.recipeData?.id, newState: this.isSaved });
     this.recipeData.numGuardados = this.isSaved ? this.recipeData.numGuardados + 1 : this.recipeData.numGuardados - 1;
-    // O: Llama a un servicio
-    // this.recipeService.toggleSave(this.recipeData.id).subscribe(...)
+
+    if (this.isSaved) {
+      this.recetaService.guardarReceta(this.recipeData.id).subscribe();
+    } else {
+      this.recetaService.eliminarRecetaGuardada(this.recipeData.id).subscribe();
+    }
+  }
+
+  redireccionarPerfil(id: string): void {
+    this.zone.run(() => {
+      const idEncrypt = this.encryptService.encriptar(id);
+      this.router.navigate(['/perfil', idEncrypt]).then(() => {
+        window.location.reload();
+      });
+    });
   }
 }

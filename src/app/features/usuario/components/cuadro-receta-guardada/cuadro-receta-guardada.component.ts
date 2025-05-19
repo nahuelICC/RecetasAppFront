@@ -1,12 +1,13 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {IonIcon} from '@ionic/angular/standalone';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-cuadro-receta-guardada',
   templateUrl: './cuadro-receta-guardada.component.html',
   styleUrls: ['./cuadro-receta-guardada.component.css'],
   standalone: true,
-  imports: [IonIcon]
+  imports: [IonIcon, RouterLink]
 })
 export class CuadroRecetaGuardadaComponent  implements OnInit {
 
@@ -18,6 +19,7 @@ export class CuadroRecetaGuardadaComponent  implements OnInit {
     nombre: string;
     fotoReceta: string;
     tiempo: string;
+    idReceta: string;
   };
 
 }
