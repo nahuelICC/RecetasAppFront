@@ -1,4 +1,19 @@
 <div class="max-w-4xl mx-auto px-4 py-8">
+  <app-alert-info
+    [message]="alertMessage"
+    [type]="alertType"
+    [isVisible]="showAlert">
+  </app-alert-info>
+
+  <app-alert-confirmar
+    *ngIf="showConfirm"
+    [message]="'¿Estás seguro de registrar la receta?'"
+    [confirmLabel]="'Registrar'"
+    (confirm)="onConfirm()"
+    (cancel)="onCancel()">
+  </app-alert-confirmar>
+
+
   <h1 class="text-3xl font-bold mb-6 text-center" style="color: var(--color-texto-blanco)">Crear Receta</h1>
   <form (ngSubmit)="registrarReceta()" class="bg-white p-6 rounded-lg shadow-md space-y-6" style="background-color: var(--color-verde-cuadros)">
     <!-- Nombre de la receta -->
