@@ -57,7 +57,8 @@
             [color]="'var(--color-verde-boton)'"
             size="small"
             [label]="'Mensaje'"
-            *ngIf="!esPerfilPropio && !perfilBloqueado"></app-boton>
+            *ngIf="!esPerfilPropio && !perfilBloqueado"
+            (click)="iniciarChat()"></app-boton>
           <app-boton
             [color]="'var(--color-amarillo-boton)'"
             size="small"
