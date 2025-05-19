@@ -55,10 +55,21 @@ export class RecetaViewComponent implements OnInit{
     )
   }
 
+  get columnasIngredientes(): any[][] {
+    const columnas = [];
+    const ingredientes = this.receta.ingredientes;
+    const itemsPorColumna = 5;
+    
+    for (let i = 0; i < ingredientes.length; i += itemsPorColumna) {
+        columnas.push(ingredientes.slice(i, i + itemsPorColumna));
+    }
+    
+    return columnas;
+}
   obtenerPasosReceta() {
     this.recetaService.getPasosReceta(this.idReceta).subscribe(
       (response) => {
-        this.pasosReceta = response;
+        this.pasosReceta = response.sort((a, b) => a.numero - b.numero);
         console.log('Pasos de la receta obtenidos:', this.pasosReceta);
       },
       (error) => {

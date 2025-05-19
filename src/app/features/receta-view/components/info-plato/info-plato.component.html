@@ -1,24 +1,23 @@
 <!-- Main container -->
-<div class="w-full max-w-4xl mx-auto overflow-hidden px-4 sm:px-6 mt-8 sm:mt-16">
-    <!-- Fotografia del plato -->
-    <div class="w-full h-60 sm:h-80 overflow-hidden rounded-2xl sm:rounded-3xl">
-        <img [src]="receta.imagen" [alt]="receta.nombre" class="w-full h-full object-cover rounded-2xl sm:rounded-3xl">
+<div class="w-full max-w-none mx-auto overflow-hidden px-0 mt-8 sm:mt-16">
+    <div class="w-full h-60 sm:h-80 md:h-96 overflow-hidden rounded-2xl">
+        <img [src]="receta.imagen" [alt]="receta.nombre" class="w-full h-full object-cover">
     </div>
 
     <!-- Informacion del plato -->
-    <div class="mt-6 sm:mt-8">
+    <div class="w-full max-w-4xl mx-auto px-4 sm:px-6 mt-6 sm:mt-8">
         <h2 class="text-center text-white text-xl sm:text-2xl md:text-3xl">{{receta.nombre}}</h2>
         <p class="text-center text-white mt-3 text-sm sm:text-base px-2 sm:px-8 md:px-16">
             {{receta.descripcion}}
         </p>
     </div>
     <!--Informacion de la receta-->
-    <div class="w-full max-w-3xl mx-auto mt-6">
+    <div class="w-full max-w-3xl mx-auto mt-6 px-4 sm:px-6">
         <ul class="flex flex-wrap justify-between gap-4">
 
             <!-- Elemento 2 -->
             <li class="flex flex-col items-center w-1/6 min-w-[100px] text-white">
-                <div class="border-2 border-[#003836] rounded-full w-20 h-20 bg-[#003836] flex items-center justify-center p-1">
+                <div class="border-2 rounded-full w-20 h-20 color-verde-detalles flex items-center justify-center p-1">
                     <svg id="eSzakTAhfg31" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                         viewBox="0 0 32 32" shape-rendering="geometricPrecision" text-rendering="geometricPrecision"
                         width="14" height="14" class="w-12 h-12" project-id="142a13c0e5fa455fadc05c9c2939a7a2" export-id="dd517fcbc5cc4761980c92a2006d336d"
@@ -36,7 +35,7 @@
             <!-- Elemento 3 -->
             <li class="flex flex-col items-center w-1/6 min-w-[100px] text-white">
                 <div
-                    class="border-2 border-[#003836] rounded-full w-20 h-20 bg-[#003836] flex items-center justify-center p-1">
+                    class="border-2 rounded-full w-20 h-20 color-verde-detalles flex items-center justify-center p-1">
                     <p class="text-center text-xs sm:text-sm  leading-tight">Grasas</p>
                 </div>
                 <p class="text-center mt-2 font-medium">
@@ -47,7 +46,7 @@
             <!-- Elemento 4 -->
             <li class="flex flex-col items-center w-1/6 min-w-[100px] text-white">
                 <div
-                    class="border-2 border-[#003836] rounded-full w-20 h-20 bg-[#003836] flex items-center justify-center p-1">
+                    class="border-2   rounded-full w-20 h-20 color-verde-detalles flex items-center justify-center p-1">
                     <p class="text-center text-xs sm:text-sm  leading-tight">Proteínas</p>
                 </div>
                 <p class="text-center mt-2 font-medium">
@@ -58,7 +57,7 @@
             <!-- Elemento 5 -->
             <li class="flex flex-col items-center w-1/6 min-w-[100px] text-white">
                 <div
-                    class="border-2 border-[#003836] rounded-full w-20 h-20 bg-[#003836] flex items-center justify-center p-1">
+                    class="border-2 rounded-full w-20 h-20 color-verde-detalles flex items-center justify-center p-1">
                     <p class="text-center text-xs sm:text-sm  leading-tight">Hidratos</p>
                 </div>
                 <p class="text-center mt-2 font-medium">
