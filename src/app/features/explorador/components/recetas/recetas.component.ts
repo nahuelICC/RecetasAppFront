@@ -68,4 +68,13 @@ export class RecetasComponent  implements OnInit {
       });
     });
   }
+
+  redireccionarReceta(id: string): void {
+    this.zone.run(() => {
+      const idEncrypt = this.encryptService.encriptar(id);
+      this.router.navigate(['/receta', idEncrypt]).then(() => {
+        window.location.reload();
+      });
+    });
+  }
 }

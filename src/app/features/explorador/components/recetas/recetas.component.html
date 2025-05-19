@@ -2,7 +2,7 @@
   class="relative w-full aspect-[4/3] rounded-lg shadow flex flex-col overflow-hidden
          bg-cover bg-center bg-gray-400  cursor-pointer group
          transition-transform duration-200 ease-in-out hover:scale-105"
-  [routerLink]="['/receta', recipeData.id]"
+  (click)="redireccionarReceta(recipeData.id.toString())"
   [style.background-image]="'url(' + (recipeData?.imagen || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4E9PAFl4BSriEZrYxy5wZyhNVVZUcIseHVQ&s') + ')'"  role="link"
   tabindex="0"
   [attr.aria-label]="'Ver receta ' + recipeData?.nombre">

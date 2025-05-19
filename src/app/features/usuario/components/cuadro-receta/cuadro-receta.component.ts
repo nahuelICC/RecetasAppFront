@@ -1,9 +1,10 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, NgZone, OnInit, Output} from '@angular/core';
 import {IonIcon} from '@ionic/angular/standalone';
 import {NgIf} from '@angular/common';
 import {UsuarioService} from '../../services/usuario.service';
 import {InicioService} from '../../../inicio/services/inicio.service';
-import {RouterLink} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
+import { EncryptService } from '../../../../core/services/encrypt.service';
 
 @Component({
   selector: 'app-cuadro-receta',
@@ -14,7 +15,7 @@ import {RouterLink} from '@angular/router';
 })
 export class CuadroRecetaComponent  implements OnInit {
 
-  constructor(private usuarioService:UsuarioService, private inicioService:InicioService) { }
+  constructor(private usuarioService:UsuarioService, private inicioService:InicioService, private zone: NgZone, private router: Router, private encryptService: EncryptService) { }
 
   ngOnInit() {}
 
@@ -86,6 +87,15 @@ export class CuadroRecetaComponent  implements OnInit {
       });
     }
     this.editaGuardar.emit();
+  }
+
+  redireccionarReceta(id: string): void {
+    this.zone.run(() => {
+      const idEncrypt = this.encryptService.encriptar(id);
+      this.router.navigate(['/receta', idEncrypt]).then(() => {
+        window.location.reload();
+      });
+    });
   }
 
 }

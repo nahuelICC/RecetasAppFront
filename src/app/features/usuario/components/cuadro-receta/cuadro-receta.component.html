@@ -1,5 +1,5 @@
 <div class="rounded-lg overflow-hidden relative aspect-square group"
-     [routerLink]="['/receta', receta.idReceta]">
+     (click)="redireccionarReceta(receta.idReceta.toString())">
 
   <div class="absolute top-2 right-2 color-verde-claro p-1.5 rounded-full flex z-20 cursor-pointer" *ngIf="esPerfilPropio" (click)="toggleVisibilidad();$event.stopPropagation()">
     <ion-icon

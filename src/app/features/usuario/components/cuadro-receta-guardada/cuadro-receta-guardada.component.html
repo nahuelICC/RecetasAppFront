@@ -1,5 +1,5 @@
 <div class="rounded-lg overflow-hidden relative aspect-square cursor-pointer"
-     [routerLink]="['/receta', receta.idReceta]">
+     (click)="redireccionarReceta(receta.idReceta.toString())">
   <!-- Imagen de receta -->
   <img [src]="receta.fotoReceta" alt="fotoReceta" class="w-full h-full object-cover transition-transform duration-300 hover:scale-105" />
 

@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, NgZone, OnInit} from '@angular/core';
 import { InfoPlatoComponent } from './components/info-plato/info-plato.component';
 import { AlergenoComponent } from "./components/alergeno/alergeno.component";
 import { IonAccordion, IonAccordionGroup, IonItem, IonLabel, IonIcon } from '@ionic/angular/standalone';
@@ -12,10 +12,21 @@ import { addIcons } from 'ionicons';
 import { chevronDown, timeOutline, bulbOutline } from 'ionicons/icons';
 import { ComentarioService } from '../../core/services/comentario.service';
 import { ComentarioResponse } from '../../core/models/ComentarioResponse';
+import { EncryptService } from '../../core/services/encrypt.service';
 
 @Component({
   selector: 'app-receta-view',
-  imports: [InfoPlatoComponent, AlergenoComponent, IonAccordion, IonAccordionGroup, IonItem, IonLabel, IonIcon, ComentarioComponent, NgFor, NgIf],
+  imports: [
+    InfoPlatoComponent,
+     AlergenoComponent,
+      IonAccordion,
+      IonAccordionGroup,
+      IonItem,
+      IonLabel,
+      IonIcon,
+      ComentarioComponent,
+      NgFor,
+      NgIf],
   templateUrl: './receta-view.component.html',
   styleUrl: './receta-view.component.css'
 })
@@ -24,7 +35,10 @@ export class RecetaViewComponent implements OnInit{
   constructor(
     private route: ActivatedRoute,
     private recetaService: RecetaService,
-    private comentarioService: ComentarioService
+    private comentarioService: ComentarioService,
+    private zone: NgZone,
+    private encryptService: EncryptService,
+    private router: Router
   ) {
     addIcons({ chevronDown, timeOutline, bulbOutline });
   }
@@ -36,7 +50,9 @@ export class RecetaViewComponent implements OnInit{
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
-      this.idReceta = params.get('id')!;
+      const id = this.route.snapshot.paramMap.get('id');
+      const idDecrypt = this.encryptService.desencriptar(id || '');
+      this.idReceta = idDecrypt;
       this.obtenerComentariosReceta();
       this.obtenerInfoReceta();
       this.obtenerPasosReceta();
@@ -87,5 +103,14 @@ export class RecetaViewComponent implements OnInit{
       (error) =>  {
         console.error('Error al obtener los comentarios de la receta:', error);}
     )
+  }
+
+  redireccionarPerfil(id: string): void {
+    this.zone.run(() => {
+      const idEncrypt = this.encryptService.encriptar(id);
+      this.router.navigate(['/receta/', idEncrypt]).then(() => {
+        window.location.reload();
+      });
+    });
   }
 }

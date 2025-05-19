@@ -615,4 +615,6 @@ export class UsuarioComponent  implements OnInit {
     const idDecrypt = this.encryptService.desencriptar(id);
     this.router.navigate(['/chat', idDecrypt]);
   }
+
+  
 }
