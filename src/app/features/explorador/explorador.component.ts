@@ -369,6 +369,7 @@ export class ExploradorComponent implements OnInit, OnDestroy {
     if (this.paginaActualUsuarios > 1) {
       this.paginaActualUsuarios--;
       this.usuarioExploradorFiltroDTO.pagina = this.paginaActualUsuarios;
+      this.cargarRecetasInteracciones();
       this.cargarUsuarios();
     }
   }
@@ -377,6 +378,7 @@ export class ExploradorComponent implements OnInit, OnDestroy {
     if (this.paginaActualUsuarios < this.numPaginasUsuarios) {
       this.paginaActualUsuarios++;
       this.usuarioExploradorFiltroDTO.pagina = this.paginaActualUsuarios;
+      this.cargarRecetasInteracciones();
       this.cargarUsuarios();
     }
   }
