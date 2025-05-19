@@ -27,7 +27,8 @@
         <ion-icon
           name="trash-outline"
           class="text-xl cursor-pointer"
-          (click)="eliminarColeccion(coleccion); $event.stopPropagation()">
+          (click)="eliminarColeccion(coleccion); $event.stopPropagation()"
+          *ngIf="esPerfilPropio">
         </ion-icon>
 
         <ion-icon
