@@ -4,12 +4,14 @@ import { Receta, RecetaIngredienteDTO, Ingrediente, RecetaPasoDTO } from './mode
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AlertInfoComponent} from '../../shared/components/alert-info/alert-info.component';
+import { AlertConfirmarComponent} from '../../shared/components/alert-confirmar/alert-confirmar.component';
 
 @Component({
   selector: 'app-crear-receta',
   templateUrl: './crear-receta.component.html',
   standalone: true,
-  imports: [FormsModule, CommonModule]
+  imports: [FormsModule, CommonModule, AlertInfoComponent, AlertConfirmarComponent]
 })
 export class CrearRecetaComponent implements OnInit {
   receta: Receta = {
@@ -29,14 +31,12 @@ export class CrearRecetaComponent implements OnInit {
   video: File | null = null;
   imagenPreview: string | ArrayBuffer | null = null;
 
-  // Para la gestión de ingredientes
   allIngredientes: Ingrediente[] = [];
   filteredIngredientes: Ingrediente[] = [];
   ingredienteSearch: string = '';
   selectedIngrediente: Ingrediente | null = null;
   cantidad: number = 0;
 
-  // Para la gestión de pasos
   nuevoPaso: RecetaPasoDTO = {
     titulo: '',
     descripcion: '',
@@ -46,9 +46,11 @@ export class CrearRecetaComponent implements OnInit {
   pasoFotoPreview: string | ArrayBuffer | null = null;
   mostrarPasos: boolean = false;
 
+  alertMessage: string = '';
+  alertType: 'success' | 'error' | 'warning' = 'success';
+  showAlert: boolean = false;
 
-
-
+  showConfirm: boolean = false;
 
   constructor(private crearRecetaService: CrearRecetaService, private router: Router) {}
 
@@ -63,7 +65,9 @@ export class CrearRecetaComponent implements OnInit {
         this.filteredIngredientes = [...ingredientes];
       },
       error: (error) => {
-        console.error('Error al cargar ingredientes:', error);
+        this.alertMessage = 'Error al cargar ingredientes';
+        this.alertType = 'error';
+        this.showAlert = true;
       }
     });
   }
@@ -98,7 +102,6 @@ export class CrearRecetaComponent implements OnInit {
     };
 
     this.receta.ingredientes.push(newIngrediente);
-
 
     this.selectedIngrediente = null;
     this.ingredienteSearch = '';
@@ -156,7 +159,6 @@ export class CrearRecetaComponent implements OnInit {
     if (type === 'imagen') {
       this.imagen = file;
 
-      // Crear vista previa de la imagen
       const reader = new FileReader();
       reader.onload = () => {
         this.imagenPreview = reader.result;
@@ -174,7 +176,9 @@ export class CrearRecetaComponent implements OnInit {
 
   addPaso(): void {
     if (!this.nuevoPaso.titulo || !this.nuevoPaso.descripcion) {
-      alert('El título y descripción del paso son obligatorios');
+      this.alertMessage = 'El título y descripción del paso son obligatorios';
+      this.alertType = 'warning';
+      this.showAlert = true;
       return;
     }
 
@@ -185,7 +189,6 @@ export class CrearRecetaComponent implements OnInit {
       foto: this.pasoFotoFile || undefined
     };
 
-    // Guardamos la previsualización como string
     if (this.pasoFotoPreview) {
       paso.fotoPreview = this.pasoFotoPreview.toString();
     }
@@ -196,7 +199,6 @@ export class CrearRecetaComponent implements OnInit {
 
   removePaso(index: number): void {
     this.receta.pasos.splice(index, 1);
-    // Reordenar los números de los pasos
     this.receta.pasos.forEach((paso, i) => {
       paso.numero = i + 1;
     });
@@ -208,7 +210,6 @@ export class CrearRecetaComponent implements OnInit {
 
     this.pasoFotoFile = file;
 
-    // Crear vista previa de la imagen
     const reader = new FileReader();
     reader.onload = () => {
       this.pasoFotoPreview = reader.result;
@@ -242,23 +243,38 @@ export class CrearRecetaComponent implements OnInit {
 
   registrarReceta(): void {
     if (!this.isFormValid()) {
-      alert('Por favor, completa todos los campos obligatorios');
+      this.alertMessage = 'Por favor, completa todos los campos obligatorios';
+      this.alertType = 'warning';
+      this.showAlert = true;
       return;
     }
 
+    this.showConfirm = true;
+  }
+
+  onConfirm(): void {
+    this.showConfirm = false;
     this.crearRecetaService.registrarReceta(this.receta, this.imagen, this.video)
       .subscribe({
-        next: (response) => {
-          alert('Receta registrada con éxito');
+        next: () => {
+          this.alertMessage = 'Receta registrada con éxito';
+          this.alertType = 'success';
+          this.showAlert = true;
           this.router.navigate(['/main']);
         },
-        error: (error) => {
-          console.error(error);
-          alert('Error al registrar la receta');
+        error: () => {
+          this.alertMessage = 'Error al registrar la receta';
+          this.alertType = 'error';
+          this.showAlert = true;
         },
       });
   }
-  togglePasos() {
+
+  onCancel(): void {
+    this.showConfirm = false;
+  }
+
+  togglePasos(): void {
     this.mostrarPasos = !this.mostrarPasos;
   }
 }
