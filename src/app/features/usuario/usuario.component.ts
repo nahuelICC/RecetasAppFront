@@ -612,7 +612,8 @@ export class UsuarioComponent  implements OnInit {
 
   iniciarChat() {
     const id = this.route.snapshot.paramMap.get('id') || '';
-    const idDecrypt = this.encryptService.desencriptar(id);
-    this.router.navigate(['/chat', idDecrypt]);
+    const idDecrypt = this.encryptService.desencriptar(id); // Desencripta el ID actual
+    const idEncrypt = this.encryptService.encriptar(idDecrypt); // Encripta el ID nuevamente
+    this.router.navigate(['/chat', idEncrypt]); // Redirige con el ID encriptado
   }
 }
