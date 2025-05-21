@@ -17,10 +17,7 @@ export class ChatService {
     private authService: AuthService,
     private http: HttpClient
   ) {
-    const userId = this.authService.getUserId();
-    if (userId) {
-      this.websocketService.connect(userId);
-    }
+
   }
 
   getConversaciones(): Observable<ConversacionDTO[]> {
@@ -52,12 +49,7 @@ export class ChatService {
     return new Observable(observer => {
       this.http.post<ChatDTO>(`${this.apiUrl}/enviar`, mensaje).subscribe({
         next: (mensajeGuardado) => {
-          if (this.websocketService.getConnectionStatusValue()) {
-            this.websocketService.sendMessage(
-              '/app/chat/enviar',
-              mensajeGuardado
-            );
-          }
+          // El backend se encargará de enviar via WebSocket
           observer.next(mensajeGuardado);
           observer.complete();
         },

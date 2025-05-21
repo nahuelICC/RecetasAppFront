@@ -10,27 +10,31 @@ export class WebsocketService {
   private stompClient: Client | null = null;
   private messageSubject = new BehaviorSubject<ChatDTO | null>(null);
   private connectionStatus = new BehaviorSubject<boolean>(false);
-  private reconnectAttempts = 0;
-  private maxReconnectAttempts = 5;
   private userId: number | null = null;
+  private reconnectInterval = 5000;
+  private maxReconnectAttempts = 5;
+  private reconnectAttempts = 0;
+  private debug = true; // Habilitar logs
 
   connect(userId: number): void {
-    this.userId = userId;
+    if (this.stompClient?.connected) return;
 
-    if (this.stompClient?.connected) {
-      return;
-    }
-
-    console.log('Conectando a WebSocket...');
-
-    // Usar WebSocket nativo
     const socket = new WebSocket('ws://localhost:8081/ws-postman');
     this.stompClient = over(socket);
 
-    this.stompClient.connect(
-      {},
-      () => this.onConnectSuccess(),
-      (error) => this.onConnectError(error)
+    this.stompClient.debug = (str) => console.log('[STOMP]', str);
+
+    this.stompClient.connect({},
+      () => {
+        console.log('STOMP conectado');
+        this.stompClient?.subscribe(`/user/queue/mensajes`,
+          (message) => {
+            console.log('Mensaje recibido:', message.body);
+            this.messageSubject.next(JSON.parse(message.body));
+          }
+        );
+      },
+      (error) => console.error('Error STOMP:', error)
     );
   }
 
@@ -40,17 +44,20 @@ export class WebsocketService {
     console.log('WebSocket conectado correctamente');
 
     if (this.userId) {
-      this.stompClient?.subscribe(
-        `/user/${this.userId}/queue/mensajes`,
+      // Suscribirse usando la notación correcta para user destinations
+      const subscription = this.stompClient?.subscribe(
+        `/user/queue/mensajes`,
         (message) => {
           try {
             const chatMessage: ChatDTO = JSON.parse(message.body);
+            console.log('Mensaje recibido via WebSocket:', chatMessage);
             this.messageSubject.next(chatMessage);
           } catch (e) {
             console.error('Error al parsear mensaje:', e);
           }
         }
       );
+      console.log(`Suscrito a cola personal para usuario ${this.userId}`);
     }
   }
 
@@ -63,7 +70,7 @@ export class WebsocketService {
   private handleReconnect(): void {
     if (this.reconnectAttempts < this.maxReconnectAttempts && this.userId) {
       this.reconnectAttempts++;
-      const delay = Math.min(5000 * this.reconnectAttempts, 30000);
+      const delay = this.reconnectInterval * Math.pow(1.5, this.reconnectAttempts);
       console.log(`Reintentando conexión en ${delay}ms...`);
       setTimeout(() => this.connect(this.userId!), delay);
     } else {

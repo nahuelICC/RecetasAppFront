@@ -48,16 +48,25 @@ export class ChatComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.cargarConversaciones();
 
+
+
+
+    console.log('Iniciando chat para usuario:', this.usuarioActualId);
+
+    // 1. Conectar WebSocket (se suscribirá automáticamente)
+    this.websocketService.connect(this.usuarioActualId);
+
+    // 2. Escuchar mensajes entrantes
     this.subscriptions.push(
       this.chatService.getMessagesObservable().subscribe({
-        next: (mensaje) => {
-          if (mensaje && this.usuarioDestinoId &&
-            ((mensaje.remitenteId === this.usuarioDestinoId && mensaje.destinatarioId === this.usuarioActualId) ||
-              (mensaje.destinatarioId === this.usuarioDestinoId && mensaje.remitenteId === this.usuarioActualId))) {
-            this.mensajes.push(mensaje);
+        next: (msg) => {
+          console.log('Mensaje recibido en UI:', msg);
+          if (msg &&
+            (msg.destinatarioId === this.usuarioActualId ||
+              msg.remitenteId === this.usuarioDestinoId)) {
+            this.mensajes.push(msg);
           }
-        },
-        error: (err: any) => console.error('Error en mensajes:', err)
+        }
       })
     );
 
@@ -78,6 +87,8 @@ export class ChatComponent implements OnInit, OnDestroy {
       }
     });
   }
+
+
 
   cargarConversaciones(): void {
     this.loading = true;
