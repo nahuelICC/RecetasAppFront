@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {Observable} from 'rxjs';
 import {RecetaInicioDTO} from '../models/RecetaInicioDTO';
@@ -60,12 +60,16 @@ export class InicioService {
     });
   }
 
-  getUltimasRecetas(): Observable<RecetaInicioDTO[]> {
-    return this.http.get<RecetaInicioDTO[]>(`${this.apiUrl}/nuevas`);
+  getUltimasRecetas(cookerId: number): Observable<RecetaInicioDTO[]> {
+    return this.http.get<RecetaInicioDTO[]>(`${this.apiUrl}/nuevas`, {
+      params: new HttpParams().set('cookerId', cookerId.toString()) // Envía el parámetro
+    });
   }
 
-  getTop10RecetasFavoritas(): Observable<RecetaInicioDTO[]> {
-    return this.http.get<RecetaInicioDTO[]>(`${this.apiUrl}/favoritas`);  // Endpoint del backend para recetas más gustadas
+  getTop10RecetasFavoritas(cookerId: number): Observable<RecetaInicioDTO[]> {
+    return this.http.get<RecetaInicioDTO[]>(`${this.apiUrl}/favoritas`, {
+      params: new HttpParams().set('cookerId', cookerId.toString()) // Envía el parámetro
+    });
   }
 
 

@@ -164,12 +164,6 @@ export class PublicacionComponent  implements OnInit {
     }
   }
 
-  handleDobleClick() {
-    if (!this.recetaLeGusta) {
-      this.toggleLike();
-    }
-  }
-
   redireccionarPerfil(id: string): void {
     this.zone.run(() => {
       const idEncrypt = this.encryptService.encriptar(id);
