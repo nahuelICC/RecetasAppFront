@@ -111,7 +111,8 @@
       [color]="'var(--color-verde-boton)'"
       size="small"
       [label]="'Lista de la compra'"
-      class="w-full max-w-xs">
+      class="w-full max-w-xs"
+      (click)="toggleListaCompra()">
     </app-boton>
     <app-boton
       [color]="'var(--color-amarillo-boton)'"
@@ -484,8 +485,6 @@
   </div>
 
 
-
-
 </div>
 
 <app-alert-info
@@ -493,6 +492,13 @@
   [isVisible]="isAlertVisible"
   [type]="alertType">
 </app-alert-info>
+
+<app-lista-compra
+  *ngIf="mostrarListaCompra"
+  [isOpen]="mostrarListaCompra"
+  [cookerId]="idPropietario"
+  (close)="toggleListaCompra()"> <!-- Asegurar que tenemos este output -->
+</app-lista-compra>
 
 <app-alert-confirmar
   *ngIf="showConfirmPassword" [message]="'¿Estás seguro de que quieres cambiar tu contraseña?'"

@@ -8,6 +8,7 @@ import {AlertInfoComponent} from '../../../../shared/components/alert-info/alert
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {AuthService} from '../../../../core/services/auth.service';
 import {EncryptService} from '../../../../core/services/encrypt.service';
+import {ellipsisHorizontalOutline, ellipsisVertical} from 'ionicons/icons';
 
 @Component({
   selector: 'app-publicacion',
@@ -179,5 +180,6 @@ export class PublicacionComponent  implements OnInit {
   }
 
 
-
+  protected readonly ellipsisVertical = ellipsisVertical;
+  protected readonly ellipsisHorizontalOutline = ellipsisHorizontalOutline;
 }

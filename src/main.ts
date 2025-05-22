@@ -45,7 +45,7 @@ import {
   cameraOutline,
   sendOutline,
   checkmarkSharp,
-  checkmarkDone
+  checkmarkDone,
 } from "ionicons/icons";
 
 addIcons({

@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
+import {ListaCompraDTO} from '../models/ListaCompraDTO';
+import {Observable} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +12,8 @@ export class UsuarioService {
   private apiUrlUsuario = '/api/usuario';
   private apiUrlReceta = '/api/receta';
   private apiUrlColeccion = '/api/coleccion';
+  private apiUrlListaCompra = '/api/listaCompra';
+
 
 
   constructor(private http: HttpClient) { }
@@ -119,4 +123,9 @@ export class UsuarioService {
       responseType: 'text'
     });
   }
+
+  ListaCompraByCooker(cookerId: number): Observable<ListaCompraDTO[]> {
+    return this.http.get<ListaCompraDTO[]>(`${this.apiUrlListaCompra}/personal/${cookerId}`);
+  }
+
 }
