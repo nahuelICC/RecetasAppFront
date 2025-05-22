@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ChatService } from './chat.service';
 import { AuthService } from '../../core/services/auth.service';
-import { UsuarioService} from '../usuario/services/usuario.service';
+import { UsuarioService } from '../usuario/services/usuario.service';
 import { Subscription } from 'rxjs';
 import { ChatDTO, ConversacionDTO } from './models/chat.dto';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -32,6 +32,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   loading = true;
   error = '';
   private subscriptions: Subscription[] = [];
+  private currentRoomId: string | null = null;
 
   constructor(
     private chatService: ChatService,
@@ -46,54 +47,79 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.cargarConversaciones();
-
-    this.subscriptions.push(
-      this.chatService.getMessagesObservable().subscribe({
-        next: (mensaje) => {
-          if (mensaje && this.usuarioDestinoId &&
-            ((mensaje.remitenteId === this.usuarioDestinoId && mensaje.destinatarioId === this.usuarioActualId) ||
-              (mensaje.destinatarioId === this.usuarioDestinoId && mensaje.remitenteId === this.usuarioActualId))) {
-            this.mensajes.push(mensaje);
-          }
-        },
-        error: (err: any) => console.error('Error en mensajes:', err)
-      })
-    );
-
-    this.route.params.subscribe({
-      next: (params) => {
-        if (params['id']) {
-          const decryptedId = this.encryptService.desencriptar(params['id']);
-          this.usuarioDestinoId = +decryptedId;
-          this.cargarMensajes();
-        } else {
-          this.usuarioDestinoId = null;
-          this.mensajes = [];
-        }
-      },
-      error: (err) => {
-        console.error('Error en parámetros de ruta:', err);
-        this.error = 'Error al cargar la conversación';
-      }
-    });
+    this.initConversaciones();
+    this.initRouteListening();
+    this.initWebSocket();
   }
 
-  cargarConversaciones(): void {
+  private initConversaciones(): void {
     this.loading = true;
     this.subscriptions.push(
-      this.chatService.getConversaciones().subscribe({
-        next: (data: ConversacionDTO[]) => {
-          this.conversaciones = data;
+      this.chatService.conversaciones$.subscribe({
+        next: (conversaciones) => {
+          this.conversaciones = conversaciones;
           this.loading = false;
+          // Si hay un usuarioDestinoId pero no está en conversaciones, forzamos carga
+          if (this.usuarioDestinoId && !this.conversaciones.some(c => c.otroUsuarioId === this.usuarioDestinoId)) {
+            this.chatService.refreshConversaciones();
+          }
         },
-        error: (err: any) => {
+        error: (err) => {
           console.error('Error al cargar conversaciones:', err);
           this.error = 'Error al cargar las conversaciones';
           this.loading = false;
         }
       })
     );
+  }
+
+  private initRouteListening(): void {
+    this.subscriptions.push(
+      this.route.params.subscribe({
+        next: (params) => {
+          if (params['id']) {
+            const decryptedId = this.encryptService.desencriptar(params['id']);
+            this.usuarioDestinoId = +decryptedId;
+            this.handleNewConversation();
+          } else {
+            this.usuarioDestinoId = null;
+            this.mensajes = [];
+          }
+        },
+        error: (err) => {
+          console.error('Error en parámetros de ruta:', err);
+          this.error = 'Error al cargar la conversación';
+        }
+      })
+    );
+  }
+
+  private initWebSocket(): void {
+    this.subscriptions.push(
+      this.chatService.getMessagesObservable().subscribe({
+        next: (msg) => {
+          if (msg && (msg.destinatarioId === this.usuarioActualId || msg.remitenteId === this.usuarioDestinoId)) {
+            this.mensajes.push(msg);
+            this.marcarMensajesComoLeidos();
+            this.chatService.refreshConversaciones(); // Actualizar lista de conversaciones
+          }
+        },
+        error: (err) => console.error('Error en mensajes WebSocket:', err)
+      })
+    );
+  }
+
+  private handleNewConversation(): void {
+    if (!this.usuarioDestinoId) return;
+
+    this.currentRoomId = this.getRoomId(this.usuarioActualId, this.usuarioDestinoId);
+    this.websocketService.connect(this.currentRoomId);
+    this.cargarMensajes();
+    this.chatService.refreshConversaciones(); // Forzar actualización de conversaciones
+  }
+
+  private getRoomId(user1Id: number, user2Id: number): string {
+    return [user1Id, user2Id].sort().join('_');
   }
 
   cargarMensajes(): void {
@@ -132,13 +158,12 @@ export class ChatComponent implements OnInit, OnDestroy {
   enviarMensaje(): void {
     if (!this.nuevoMensaje.trim() || !this.usuarioDestinoId) return;
 
-    // Obtener datos del usuario actual
     this.usuarioService.getPerfil().subscribe({
       next: (perfil) => {
         const mensaje: ChatDTO = {
           texto: this.nuevoMensaje,
           remitenteId: this.usuarioActualId,
-          destinatarioId: this.usuarioDestinoId!, // Non-null assertion
+          destinatarioId: this.usuarioDestinoId!,
           fecha: new Date(),
           leido: false,
           remitenteNombre: perfil.nombre || 'Usuario',
@@ -173,11 +198,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     );
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
-    this.websocketService.disconnect();
-  }
-
   getFotoUsuarioDestino(): string {
     const conversacion = this.conversaciones.find(c => c.otroUsuarioId === this.usuarioDestinoId);
     return conversacion?.otroUsuarioFoto || 'assets/images/default-avatar.png';
@@ -186,5 +206,10 @@ export class ChatComponent implements OnInit, OnDestroy {
   getNombreUsuarioDestino(): string {
     const conversacion = this.conversaciones.find(c => c.otroUsuarioId === this.usuarioDestinoId);
     return conversacion?.otroUsuarioNombre || 'Usuario desconocido';
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.websocketService.disconnect();
   }
 }

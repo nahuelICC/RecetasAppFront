@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
+import { Client } from '@stomp/stompjs';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Client, over } from 'stompjs';
 import { ChatDTO } from '../../features/chat/models/chat.dto';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,65 +11,78 @@ export class WebsocketService {
   private stompClient: Client | null = null;
   private messageSubject = new BehaviorSubject<ChatDTO | null>(null);
   private connectionStatus = new BehaviorSubject<boolean>(false);
-  private reconnectAttempts = 0;
-  private maxReconnectAttempts = 5;
-  private userId: number | null = null;
+  private currentRoomId: string | null = null;
 
-  connect(userId: number): void {
-    this.userId = userId;
+  constructor(private authService: AuthService) {}
 
-    if (this.stompClient?.connected) {
+  connect(roomId: string): void {
+    if (this.stompClient?.connected && this.currentRoomId === roomId) {
       return;
     }
 
-    console.log('Conectando a WebSocket...');
+    this.currentRoomId = roomId;
+    const token = this.authService.getToken();
 
-    // Usar WebSocket nativo
-    const socket = new WebSocket('ws://localhost:8081/ws-postman');
-    this.stompClient = over(socket);
+    if (!token) {
+      console.error('No hay token disponible');
+      return;
+    }
 
-    this.stompClient.connect(
-      {},
-      () => this.onConnectSuccess(),
-      (error) => this.onConnectError(error)
+    const socketUrl = `ws://localhost:8081/ws-native?token=${encodeURIComponent(token)}`;
+
+    this.stompClient = new Client({
+      brokerURL: socketUrl,
+      reconnectDelay: 5000,
+      debug: (str) => console.log('[STOMP]', str),
+      onConnect: () => {
+        console.log('Conectado al servidor WebSocket');
+        this.onConnectSuccess(roomId);
+      },
+      onStompError: (frame) => {
+        console.error('Error en WebSocket:', frame.headers['message']);
+        this.connectionStatus.next(false);
+      }
+    });
+
+    this.stompClient.activate();
+  }
+
+  private onConnectSuccess(roomId: string): void {
+    this.connectionStatus.next(true);
+
+    this.stompClient?.subscribe(
+      `/topic/messages/${roomId}`,
+      (message) => {
+        try {
+          const chatMessage: ChatDTO = JSON.parse(message.body);
+          console.log('Mensaje recibido via WebSocket:', chatMessage);
+          this.messageSubject.next(chatMessage);
+        } catch (e) {
+          console.error('Error al parsear mensaje:', e);
+        }
+      }
     );
   }
 
-  private onConnectSuccess(): void {
-    this.reconnectAttempts = 0;
-    this.connectionStatus.next(true);
-    console.log('WebSocket conectado correctamente');
-
-    if (this.userId) {
-      this.stompClient?.subscribe(
-        `/user/${this.userId}/queue/mensajes`,
-        (message) => {
-          try {
-            const chatMessage: ChatDTO = JSON.parse(message.body);
-            this.messageSubject.next(chatMessage);
-          } catch (e) {
-            console.error('Error al parsear mensaje:', e);
-          }
-        }
-      );
-    }
-  }
-
-  private onConnectError(error: any): void {
-    console.error('Error en WebSocket:', error);
-    this.connectionStatus.next(false);
-    this.handleReconnect();
-  }
-
-  private handleReconnect(): void {
-    if (this.reconnectAttempts < this.maxReconnectAttempts && this.userId) {
-      this.reconnectAttempts++;
-      const delay = Math.min(5000 * this.reconnectAttempts, 30000);
-      console.log(`Reintentando conexión en ${delay}ms...`);
-      setTimeout(() => this.connect(this.userId!), delay);
+  sendMessage(destination: string, body: any): void {
+    if (this.stompClient?.connected) {
+      this.stompClient.publish({
+        destination: `/app/chat/${this.currentRoomId}`,
+        body: JSON.stringify(body)
+      });
     } else {
-      console.error('Máximo de intentos de reconexión alcanzado');
+      console.warn('WebSocket no conectado, mensaje no enviado');
     }
+  }
+
+  disconnect(): void {
+    if (this.stompClient?.active) {
+      this.stompClient.deactivate();
+      console.log('WebSocket desconectado');
+      this.connectionStatus.next(false);
+    }
+    this.stompClient = null;
+    this.currentRoomId = null;
   }
 
   getMessages(): Observable<ChatDTO | null> {
@@ -77,31 +91,5 @@ export class WebsocketService {
 
   getConnectionStatus(): Observable<boolean> {
     return this.connectionStatus.asObservable();
-  }
-
-  getConnectionStatusValue(): boolean {
-    return this.connectionStatus.getValue();
-  }
-
-  sendMessage(destination: string, body: any): void {
-    if (this.stompClient?.connected) {
-      try {
-        this.stompClient.send(destination, {}, JSON.stringify(body));
-      } catch (e) {
-        console.error('Error al enviar mensaje:', e);
-      }
-    } else {
-      console.warn('WebSocket no conectado, mensaje no enviado');
-      this.connectionStatus.next(false);
-    }
-  }
-
-  disconnect(): void {
-    if (this.stompClient?.connected) {
-      this.stompClient.disconnect(() => {
-        console.log('WebSocket desconectado');
-        this.connectionStatus.next(false);
-      });
-    }
   }
 }
