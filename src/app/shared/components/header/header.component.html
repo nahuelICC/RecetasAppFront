@@ -8,6 +8,11 @@
     <a class="color-texto font-semibold hover:text-white" href="/registro" *ngIf="!authService.isLogged()">Registro</a>
     <a class="color-texto font-semibold hover:text-white" href="/nutriscore" *ngIf="authService.isLogged()">Nutriscore</a>
     <a class="color-texto font-semibold hover:text-white" href="/login" *ngIf="!authService.isLogged()">Login</a>
+    <ion-icon
+      [name]="isLightMode ? 'sunny' : 'moon'"
+      class="text-2xl hover:cursor-pointer"
+      (click)="toggleTheme()">
+    </ion-icon>
     <ion-icon name="paper-plane-outline" class="text-2xl hover:cursor-pointer avion" *ngIf="authService.isLogged()" [routerLink]="'/chat'"></ion-icon>    <div class="relative" *ngIf="authService.isLogged()">
       <ion-avatar (click)="toggleMenu()" class="cursor-pointer w-10 h-10">
         <img alt="Avatar" [src]="imagenPerfil" class="w-full h-full rounded-full" />
