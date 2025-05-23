@@ -1,0 +1,10 @@
+<ion-fab horizontal="end" vertical="bottom" slot="fixed"  [style.padding-right]="'16px'" [style.margin-bottom]="'130px'">
+  <ion-fab-button>
+    <ion-icon
+      [name]="isLightMode ? 'sunny' : 'moon'"
+      class="text-2xl hover:cursor-pointer"
+      (click)="toggleTheme()">
+    </ion-icon>
+  </ion-fab-button>
+</ion-fab>
+

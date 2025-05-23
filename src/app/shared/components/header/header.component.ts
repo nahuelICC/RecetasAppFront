@@ -25,7 +25,6 @@ export class HeaderComponent  implements OnInit {
   isMobile: boolean;
   menuOpen: boolean = false;
   imagenPerfil: string = 'https://ionicframework.com/docs/img/demos/avatar.svg';
-  isLightMode = false;
 
   constructor(private platform: Platform,public authService: AuthService, private headerService: HeaderService) {
     this.isMobile = this.platform.width() < 768;
@@ -41,9 +40,6 @@ export class HeaderComponent  implements OnInit {
         this.imagenPerfil = response;
       }
     });
-    const savedTheme = localStorage.getItem('theme');
-    this.isLightMode = savedTheme === 'light';
-    this.applyTheme();
   }
 
   /**
@@ -58,23 +54,7 @@ export class HeaderComponent  implements OnInit {
     this.menuOpen = !this.menuOpen;
   }
 
-  toggleTheme() {
-    this.isLightMode = !this.isLightMode;
-    localStorage.setItem('theme', this.isLightMode ? 'light' : 'dark');
-    this.applyTheme();
-  }
 
-
-  applyTheme() {
-    const classList = document.documentElement.classList;
-    if (this.isLightMode) {
-      classList.add('light-theme');
-      classList.remove('dark-theme');
-    } else {
-      classList.remove('light-theme');
-      classList.add('dark-theme');
-    }
-  }
 
 
 }
