@@ -1,4 +1,4 @@
-<div class="p-4 bg-[#abd1c6] rounded-3xl shadow flex items-center justify-between space-x-4 cursor-pointer group
+<div class="p-4 color-verde-claro rounded-3xl shadow flex items-center justify-between space-x-4 cursor-pointer group
             transition-transform duration-200 ease-in-out hover:scale-105">
 
   <a (click)="$event.stopPropagation();redireccionarPerfil(userData.id.toString())"
@@ -12,7 +12,7 @@
     </div>
   </a>
 
-  <button class="flex-shrink-0 px-4 py-1 bg-[#004643] text-white rounded-full text-xs font-semibold hover:bg-opacity-80 transition duration-150 ease-in-out"
+  <button class="flex-shrink-0 px-4 py-1 color-verde-oscuro text-white rounded-full text-xs font-semibold hover:bg-opacity-80 transition duration-150 ease-in-out color-texto-blanco"
           (click)="toggleFollow($event)">
     {{ seguido ? '✔' : 'Seguir' }}
   </button>

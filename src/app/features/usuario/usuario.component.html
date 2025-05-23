@@ -30,7 +30,7 @@
     <div class="flex-1">
       <div class="flex flex-col sm:flex-row gap-3.5">
         <div *ngIf="!editandoPerfil">
-          <h2 class="font-semibold text-xl mb-1">{{ perfil.nombre }} {{ perfil.apellidos }}</h2>
+          <h2 class="font-semibold color-texto-blanco text-xl mb-1">{{ perfil.nombre }} {{ perfil.apellidos }}</h2>
         </div>
         <div *ngIf="editandoPerfil" class="flex flex-col sm:flex-row gap-3.5 mb-2 mt-8">
           <input
@@ -69,9 +69,9 @@
       </div>
       <div class="flex gap-3.5 items-start mb-4">
         <ng-container *ngIf="!editandoPerfil">
-          <p class="text-sm text-gray-300">{{ perfil.descripcion }}</p>
+          <p class="text-sm text-gray-500">{{ perfil.descripcion }}</p>
           <button *ngIf="esPerfilPropio" (click)="toggleEditarPerfil()">
-            <ion-icon name="pencil-outline" class="text-xl"></ion-icon>
+            <ion-icon name="pencil-outline" class="text-xl color-texto-blanco"></ion-icon>
           </button>
         </ng-container>
         <ng-container *ngIf="editandoPerfil">
@@ -91,16 +91,16 @@
       </div>
       <div class="flex gap-4 text-sm">
         <div class="flex items-center gap-1">
-          <span class="font-medium">{{ perfil.numeroRecetas }}</span>
-          <span class="text-gray-400">Recetas</span>
+          <span class="font-medium color-texto-blanco">{{ perfil.numeroRecetas }}</span>
+          <span class="text-gray-500">Recetas</span>
         </div>
         <div class="flex items-center gap-1">
-          <span class="font-medium">{{ perfil.seguidores }}</span>
-          <span class="text-gray-400 cursor-pointer hover:underline" (click)="!perfilBloqueado && toggleSeguidores()">Seguidores</span>
+          <span class="font-medium color-texto-blanco">{{ perfil.seguidores }}</span>
+          <span class="text-gray-500 cursor-pointer hover:underline" (click)="!perfilBloqueado && toggleSeguidores()">Seguidores</span>
         </div>
         <div class="flex items-center gap-1">
-          <span class="font-medium">{{ perfil.seguidos }}</span>
-          <span class="text-gray-400 cursor-pointer hover:underline" (click)="!perfilBloqueado && toggleSeguidos()">Seguidos</span>
+          <span class="font-medium color-texto-blanco">{{ perfil.seguidos }}</span>
+          <span class="text-gray-500 cursor-pointer hover:underline" (click)="!perfilBloqueado && toggleSeguidos()">Seguidos</span>
         </div>
       </div>
     </div>
@@ -126,9 +126,9 @@
   <div *ngIf="mostrandoCambioContrasena" class="max-w-screen-sm mb-10">
     <form [formGroup]="cambioContrasenaForm" (ngSubmit)="onGuardarContrasena()">
       <div>
-        <label class="block text-sm font-medium mb-1">Contraseña Actual</label>
+        <label class="block text-sm font-medium mb-1 color-texto-blanco">Contraseña Actual</label>
         <input type="password" formControlName="actual"
-               class="w-full p-2 border rounded-lg text-black"
+               class="w-full p-2 border border-gray-500 rounded-lg text-black"
                [class.border-red-500]="cambioContrasenaForm.get('actual')?.invalid && cambioContrasenaForm.get('actual')?.touched">
         <div *ngIf="cambioContrasenaForm.get('actual')?.invalid && cambioContrasenaForm.get('actual')?.touched"
              class="text-red-500 text-sm mt-1">
@@ -137,9 +137,9 @@
       </div>
 
       <div>
-        <label class="block text-sm font-medium mb-1">Nueva Contraseña</label>
+        <label class="block text-sm font-medium mb-1 color-texto-blanco">Nueva Contraseña</label>
         <input type="password" formControlName="nueva"
-               class="w-full p-2 border rounded-lg text-black"
+               class="w-full p-2 border border-gray-500 rounded-lg text-black"
                [class.border-red-500]="nuevaContrasena?.invalid && nuevaContrasena?.touched">
         <div *ngIf="nuevaContrasena?.invalid && nuevaContrasena?.touched" class="text-red-500 text-sm mt-1">
           <div *ngIf="nuevaContrasena?.errors?.['required']">Este campo es requerido</div>
@@ -151,9 +151,9 @@
       </div>
 
       <div>
-        <label class="block text-sm font-medium mb-1">Repetir Contraseña</label>
+        <label class="block text-sm font-medium mb-1 color-texto-blanco">Repetir Contraseña</label>
         <input type="password" formControlName="repetir"
-               class="w-full p-2 border rounded-lg text-black"
+               class="w-full p-2 border border-gray-500 rounded-lg text-black"
                [class.border-red-500]="cambioContrasenaForm.hasError('noCoinciden') && cambioContrasenaForm.get('repetir')?.touched">
         <div *ngIf="cambioContrasenaForm.hasError('noCoinciden') && cambioContrasenaForm.get('repetir')?.touched"
              class="text-red-500 text-sm mt-1">
@@ -171,11 +171,11 @@
 
   <div class="flex justify-between gap-10 text-2xl mb-6 pb-4 w-3/4 sm:w-1/2 justify-self-center" *ngIf="!perfilBloqueado">
     <ion-icon [name]="activeTab === 'recetas' ? 'grid' : 'grid-outline'"
-              class="cursor-pointer color-hover transition-colors" (click)="activeTab = 'recetas'"></ion-icon>
+              class="cursor-pointer color-hover transition-colors color-texto-blanco" (click)="activeTab = 'recetas'"></ion-icon>
     <ion-icon [name]="activeTab === 'colecciones' ? 'albums' : 'albums-outline'"
-              class="cursor-pointer color-hover transition-colors" (click)="activeTab = 'colecciones'"></ion-icon>
+              class="cursor-pointer color-hover transition-colors color-texto-blanco" (click)="activeTab = 'colecciones'"></ion-icon>
     <ion-icon [name]="activeTab === 'guardadas' ? 'bookmarks' : 'bookmarks-outline'"
-              class="cursor-pointer color-hover transition-colors" (click)="activeTab = 'guardadas'"
+              class="cursor-pointer color-hover transition-colors color-texto-blanco" (click)="activeTab = 'guardadas'"
               *ngIf="esPerfilPropio"></ion-icon>
   </div>
 
@@ -185,7 +185,7 @@
   <div *ngIf="mostrarSeguidos"
        class="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center p-4">
 
-    <div class="bg-green-100 w-full sm:w-3/4 lg:w-1/2 max-h-[80vh] rounded-lg p-4 shadow-xl overflow-y-auto relative">
+    <div class="color-verde-claro w-full sm:w-3/4 lg:w-1/2 max-h-[80vh] rounded-lg p-4 shadow-xl overflow-y-auto relative">
 
       <div class="flex justify-between items-center mb-4">
         <h3 class="text-lg font-semibold color-texto">Seguidos</h3>
@@ -195,7 +195,7 @@
 
       <div class="grid grid-cols-1 gap-4">
         <div *ngFor="let seguido of seguidos"
-             class="flex items-start p-3 gap-3 border border-gray-300 shadow transition hover:shadow-lg cursor-pointer"
+             class="flex items-start p-3 gap-3 border border-gray-500 shadow transition hover:shadow-lg cursor-pointer"
         (click)="redireccionarPerfil(seguido.idUsuario)">
           <img [src]="seguido.fotoPerfil || 'https://ionicframework.com/docs/img/demos/avatar.svg'"
                alt="avatar"
@@ -215,7 +215,7 @@
   <div *ngIf="mostrarSeguidores"
        class="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center p-4">
 
-    <div class="bg-green-100 w-full sm:w-3/4 lg:w-1/2 max-h-[80vh] rounded-lg p-4 shadow-xl overflow-y-auto relative">
+    <div class="color-verde-claro w-full sm:w-3/4 lg:w-1/2 max-h-[80vh] rounded-lg p-4 shadow-xl overflow-y-auto relative">
 
       <div class="flex justify-between items-center mb-4">
         <h3 class="text-lg font-semibold color-texto">Seguidores</h3>
@@ -225,7 +225,7 @@
 
       <div class="grid grid-cols-1 gap-4">
         <div *ngFor="let seguidor of seguidores"
-             class="flex items-start p-3 gap-3 border border-gray-300 shadow transition hover:shadow-lg cursor-pointer"
+             class="flex items-start p-3 gap-3 border border-gray-500 shadow transition hover:shadow-lg cursor-pointer"
              (click)="redireccionarPerfil(seguidor.idUsuario)">
           <img [src]="seguidor.fotoPerfil || 'https://ionicframework.com/docs/img/demos/avatar.svg'"
                alt="avatar"
@@ -244,7 +244,7 @@
   <!-- Panel de edición de perfil -->
   <div *ngIf="editarPerfil"
        class="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center p-4">
-    <div class="bg-green-100 w-full sm:w-3/4 lg:w-1/2 max-h-[80vh] rounded-lg p-6 shadow-xl overflow-y-auto relative">
+    <div class="color-verde-claro w-full sm:w-3/4 lg:w-1/2 max-h-[80vh] rounded-lg p-6 shadow-xl overflow-y-auto relative">
       <div class="flex justify-between items-center mb-4">
         <h3 class="text-lg font-semibold color-texto">Editar Perfil</h3>
         <ion-icon name="close-circle-outline" class="text-2xl text-green-900 cursor-pointer"

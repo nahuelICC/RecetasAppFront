@@ -9,8 +9,10 @@ import { Observable } from 'rxjs';
 export class CrearRecetaService {
   constructor(private http: HttpClient) {}
 
+  private apiUrl = 'api/';
+
   getIngredientes(): Observable<Ingrediente[]> {
-    return this.http.get<Ingrediente[]>('http://localhost:8081/ingrediente/listar');
+    return this.http.get<Ingrediente[]>(this.apiUrl + 'ingrediente/listar');
   }
 
   registrarReceta(receta: Receta, imagen: File | null, video: File | null) {
@@ -53,7 +55,7 @@ export class CrearRecetaService {
       }
     });
 
-    return this.http.post('http://localhost:8081/receta/registro', formData, {
+    return this.http.post(this.apiUrl + 'receta/registro', formData, {
       responseType: 'text'
     });
   }
