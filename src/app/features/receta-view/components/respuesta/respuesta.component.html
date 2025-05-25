@@ -1,0 +1,37 @@
+<div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 overflow-hidden mt-5">
+  <!-- Header con gradiente sutil -->
+  <div class="bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 p-4 border-b border-gray-200">
+    <div class="flex items-center justify-between">
+      <!-- Información del usuario -->
+      <div class="flex items-center space-x-4">
+        <!-- Avatar con indicador online -->
+        <div class="relative">
+          <div class="w-14 h-14 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 p-0.5">
+            <img [src]="respuesta.fotoPerfil || 'https://cdn-icons-png.flaticon.com/512/6522/6522581.png'" 
+                 [alt]="respuesta.username" 
+                 class="w-full h-full object-cover rounded-full border-2 border-white">
+          </div>
+        </div>
+        <div class="flex-1">
+          <h3 class="text-lg font-semibold text-gray-800">{{ respuesta.username }}</h3>
+          <!-- Fecha y tiempo -->
+          <div class="flex items-center space-x-2 mt-1">
+            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span class="text-sm text-gray-500 font-medium">{{ respuesta.fecha | timeAgo }}</span>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+  <!-- Contenido del comentario -->
+  <div class="px-6 py-4">
+    <div class="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-4 mb-4 border border-gray-100">
+      <p class="text-gray-800 leading-relaxed text-sm md:text-base break-words">
+        {{ respuesta.texto }}
+      </p>
+    </div>
+    
