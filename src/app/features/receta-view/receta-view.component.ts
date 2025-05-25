@@ -1,4 +1,4 @@
-import { Component, NgZone, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, NgZone, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { InfoPlatoComponent } from './components/info-plato/info-plato.component';
 import { AlergenoComponent } from "./components/alergeno/alergeno.component";
 import { IonAccordion, IonAccordionGroup, IonItem, IonLabel, IonIcon } from '@ionic/angular/standalone';
@@ -36,7 +36,7 @@ import { Alergeno } from './models/Alergeno';
     FormsModule
   ],
   templateUrl: './receta-view.component.html',
-  styleUrls: ['./receta-view.component.css']
+  styleUrls: ['./receta-view.component.css'],
 })
 export class RecetaViewComponent implements OnInit {
 
@@ -123,11 +123,9 @@ obtenerAlergenos() {
   obtenerComentariosReceta() {
     this.comentarioService.getComentariosReceta(this.idReceta).subscribe(
       (response) => {
-        this.zone.run(() => {
-          this.comentariosReceta = [...response];
-          this.cdr.detectChanges();
-          console.log('Comentarios de la receta obtenidos:', this.comentariosReceta);
-        });
+        this.comentariosReceta = [...response];
+        this.cdr.markForCheck();
+        console.log('Comentarios de la receta obtenidos:', this.comentariosReceta);
       },
       (error) => {
         console.error('Error al obtener los comentarios de la receta:', error);
@@ -148,22 +146,20 @@ obtenerAlergenos() {
     return this.authService.isLogged();
   }
 
-  responderReceta() {
-    if (!this.textoComentario.trim()) return;
-
-    this.comentarioService.comentarReceta({ texto: this.textoComentario }, this.idReceta).subscribe({
-      next: () => {
-        this.obtenerComentariosReceta();
-        this.textoComentario = '';
-        this.cuadroComentarioOn = false;
-        this.cdr.detectChanges();
-      },
-      error: (error) => {
-        console.error('Error al publicar comentario:', error);
-        this.cuadroComentarioOn = false;
-      }
-    });
-  }
+responderReceta() {
+this.comentarioService.comentarReceta({ texto: this.textoComentario }, this.idReceta).subscribe({
+    next: (nuevoComentario) => {
+      this.textoComentario = '';
+      this.cuadroComentarioOn = false;
+      console.log("carga");
+      this.obtenerComentariosReceta(); 
+    },
+    error: (error) => {
+      console.error('Error al publicar comentario:', error);
+      this.cuadroComentarioOn = false;
+    }
+  });
+}
   mostrarCuadro() {
     this.cuadroComentarioOn = !this.cuadroComentarioOn;
   }

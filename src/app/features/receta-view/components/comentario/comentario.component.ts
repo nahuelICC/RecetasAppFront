@@ -91,16 +91,20 @@ export class ComentarioComponent implements OnInit {
   mostrarCuadroRespuesta() {
     this.cuadroRespuestaOn = !this.cuadroRespuestaOn;
   }
-
   responderComentario() {
     this.respNueva.texto = this.textoRespuesta;
     this.respNueva.idComentario = this.comentario.id;
     this.respuestaService.ResponderComentario(this.respNueva).subscribe(
       (respuesta) => {
-      });
-    this.cuadroRespuestaOn = false;
-    this.textoRespuesta = '';
-    this.obtenerRespuestasComentario();
+        this.respuestas.unshift(respuesta);
+        this.respuestasVisibles.unshift(respuesta);
+        this.cuadroRespuestaOn = false;
+        this.textoRespuesta = '';
+      },
+      (error) => {
+        console.error('Error al enviar respuesta:', error);
+      }
+    );
   }
 
   obtenerNombreUsuario() {
