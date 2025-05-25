@@ -8,7 +8,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { WebsocketService } from '../../core/services/websocket.service';
 import { EncryptService } from '../../core/services/encrypt.service';
 import { IonIcon } from "@ionic/angular/standalone";
-import { DatePipe, NgForOf, NgIf } from "@angular/common";
+import { DatePipe, NgClass, NgForOf, NgIf } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 
 @Component({
@@ -19,7 +19,8 @@ import { FormsModule } from "@angular/forms";
     DatePipe,
     NgForOf,
     NgIf,
-    FormsModule
+    FormsModule,
+    NgClass
   ],
   styleUrls: ['./chat.component.css']
 })
@@ -29,10 +30,13 @@ export class ChatComponent implements OnInit, OnDestroy {
   nuevoMensaje = '';
   usuarioActualId: number;
   usuarioDestinoId: number | null = null;
+  nombreUsuarioDestino: string = 'Usuario';
+  fotoUsuarioDestino: string = 'assets/frutero.png';
   loading = true;
   error = '';
   private subscriptions: Subscription[] = [];
   private currentRoomId: string | null = null;
+  private isFetchingProfile = false;
 
   constructor(
     private chatService: ChatService,
@@ -59,10 +63,6 @@ export class ChatComponent implements OnInit, OnDestroy {
         next: (conversaciones) => {
           this.conversaciones = conversaciones;
           this.loading = false;
-          // Si hay un usuarioDestinoId pero no está en conversaciones, forzamos carga
-          if (this.usuarioDestinoId && !this.conversaciones.some(c => c.otroUsuarioId === this.usuarioDestinoId)) {
-            this.chatService.refreshConversaciones();
-          }
         },
         error: (err) => {
           console.error('Error al cargar conversaciones:', err);
@@ -71,6 +71,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         }
       })
     );
+    this.chatService.refreshConversaciones();
   }
 
   private initRouteListening(): void {
@@ -79,8 +80,12 @@ export class ChatComponent implements OnInit, OnDestroy {
         next: (params) => {
           if (params['id']) {
             const decryptedId = this.encryptService.desencriptar(params['id']);
-            this.usuarioDestinoId = +decryptedId;
-            this.handleNewConversation();
+            const nuevoDestinoId = +decryptedId;
+
+            if (this.usuarioDestinoId !== nuevoDestinoId) {
+              this.usuarioDestinoId = nuevoDestinoId;
+              this.handleNewConversation();
+            }
           } else {
             this.usuarioDestinoId = null;
             this.mensajes = [];
@@ -101,7 +106,7 @@ export class ChatComponent implements OnInit, OnDestroy {
           if (msg && (msg.destinatarioId === this.usuarioActualId || msg.remitenteId === this.usuarioDestinoId)) {
             this.mensajes.push(msg);
             this.marcarMensajesComoLeidos();
-            this.chatService.refreshConversaciones(); // Actualizar lista de conversaciones
+            this.chatService.refreshConversaciones();
           }
         },
         error: (err) => console.error('Error en mensajes WebSocket:', err)
@@ -112,10 +117,83 @@ export class ChatComponent implements OnInit, OnDestroy {
   private handleNewConversation(): void {
     if (!this.usuarioDestinoId) return;
 
-    this.currentRoomId = this.getRoomId(this.usuarioActualId, this.usuarioDestinoId);
-    this.websocketService.connect(this.currentRoomId);
+    const nuevaRoomId = this.getRoomId(this.usuarioActualId, this.usuarioDestinoId);
+
+    if (this.currentRoomId !== nuevaRoomId) {
+      if (this.currentRoomId) {
+        this.websocketService.disconnect();
+      }
+      this.currentRoomId = nuevaRoomId;
+      this.websocketService.connect(this.currentRoomId);
+    }
+
     this.cargarMensajes();
-    this.chatService.refreshConversaciones(); // Forzar actualización de conversaciones
+
+    const conversacionExistente = this.conversaciones.find(c => c.otroUsuarioId === this.usuarioDestinoId);
+
+    if (conversacionExistente) {
+      this.nombreUsuarioDestino = conversacionExistente.otroUsuarioNombre;
+      this.fotoUsuarioDestino = conversacionExistente.otroUsuarioFoto;
+    } else {
+      this.cargarInformacionUsuarioDestino();
+    }
+  }
+
+  private cargarInformacionUsuarioDestino(): void {
+    const usuarioDestinoId = this.usuarioDestinoId;
+
+    if (!usuarioDestinoId || this.isFetchingProfile) return;
+
+    this.isFetchingProfile = true;
+
+    this.usuarioService.getPerfilId(usuarioDestinoId.toString()).subscribe({
+      next: (perfil) => {
+        this.nombreUsuarioDestino = perfil?.nombre || 'Usuario';
+
+        if (perfil?.fotoPerfil) {
+          this.fotoUsuarioDestino = perfil.fotoPerfil;
+          this.actualizarConversacion(perfil.nombre, perfil.fotoPerfil);
+        } else {
+          this.usuarioService.fotoPerfilVisita(usuarioDestinoId.toString()).subscribe({
+            next: (foto) => {
+              this.fotoUsuarioDestino = foto || 'assets/frutero.png';
+              this.actualizarConversacion(perfil?.nombre || 'Usuario', foto || 'assets/frutero.png');
+            },
+            error: (err) => {
+              console.error('Error loading profile picture:', err);
+              this.fotoUsuarioDestino = 'assets/frutero.png';
+              this.actualizarConversacion(perfil?.nombre || 'Usuario', 'assets/frutero.png');
+            }
+          });
+        }
+        this.isFetchingProfile = false;
+      },
+      error: (err) => {
+        console.error('Error loading user profile:', err);
+        this.nombreUsuarioDestino = 'Usuario';
+        this.fotoUsuarioDestino = 'assets/frutero.png';
+        this.actualizarConversacion('Usuario', 'assets/frutero.png');
+        this.isFetchingProfile = false;
+      }
+    });
+  }
+
+  private actualizarConversacion(nombre: string, foto: string): void {
+    const nuevaConversacion: ConversacionDTO = {
+      otroUsuarioId: this.usuarioDestinoId!,
+      otroUsuarioNombre: nombre,
+      otroUsuarioFoto: foto,
+      ultimoMensaje: '',
+      fechaUltimoMensaje: new Date(),
+      noLeidos: false
+    };
+
+    const index = this.conversaciones.findIndex(c => c.otroUsuarioId === this.usuarioDestinoId);
+    if (index !== -1) {
+      this.conversaciones[index] = nuevaConversacion;
+    } else {
+      this.conversaciones = [nuevaConversacion, ...this.conversaciones];
+    }
   }
 
   private getRoomId(user1Id: number, user2Id: number): string {
@@ -151,6 +229,11 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.error = 'No puedes chatear contigo mismo';
       return;
     }
+
+    if (this.usuarioDestinoId === usuarioId) {
+      return;
+    }
+
     const encryptedId = this.encryptService.encriptar(usuarioId.toString());
     this.router.navigate(['/chat', encryptedId]);
   }
@@ -167,13 +250,14 @@ export class ChatComponent implements OnInit, OnDestroy {
           fecha: new Date(),
           leido: false,
           remitenteNombre: perfil.nombre || 'Usuario',
-          remitenteFoto: perfil.fotoPerfil || 'assets/images/default-avatar.png'
+          remitenteFoto: perfil.fotoPerfil || 'assets/frutero.png'
         };
 
         this.chatService.enviarMensaje(mensaje).subscribe({
           next: (mensajeGuardado) => {
             this.mensajes.push(mensajeGuardado);
             this.nuevoMensaje = '';
+            this.chatService.refreshConversaciones();
           },
           error: (err) => {
             console.error('Error al enviar mensaje:', err);
@@ -198,14 +282,16 @@ export class ChatComponent implements OnInit, OnDestroy {
     );
   }
 
-  getFotoUsuarioDestino(): string {
-    const conversacion = this.conversaciones.find(c => c.otroUsuarioId === this.usuarioDestinoId);
-    return conversacion?.otroUsuarioFoto || 'assets/images/default-avatar.png';
+  getNombreUsuario(usuarioId: number | null): string {
+    if (!usuarioId) return 'Chat';
+    const conversacion = this.conversaciones.find(c => c.otroUsuarioId === usuarioId);
+    return conversacion?.otroUsuarioNombre || this.nombreUsuarioDestino || 'Usuario desconocido';
   }
 
-  getNombreUsuarioDestino(): string {
-    const conversacion = this.conversaciones.find(c => c.otroUsuarioId === this.usuarioDestinoId);
-    return conversacion?.otroUsuarioNombre || 'Usuario desconocido';
+  getFotoUsuario(usuarioId: number | null): string {
+    if (!usuarioId) return 'assets/frutero.png';
+    const conversacion = this.conversaciones.find(c => c.otroUsuarioId === usuarioId);
+    return conversacion?.otroUsuarioFoto || this.fotoUsuarioDestino || 'assets/frutero.png';
   }
 
   ngOnDestroy(): void {
