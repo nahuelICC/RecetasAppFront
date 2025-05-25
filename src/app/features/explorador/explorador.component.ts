@@ -15,6 +15,7 @@ import {UsuarioExploradorDTO} from './models/UsuarioExploradorDTO';
 import {UsuarioService} from './services/usuario.service';
 import {UsuarioExploradorFiltroDTO} from './models/UsuarioExploradorFiltroDTO';
 import {InteraccionesUsuarioDTO} from './models/InteraccionesUsuarioDTO';
+import {BotonAddRecetaComponent} from '../../shared/components/boton-add-receta/boton-add-receta.component';
 
 @Component({
   selector: 'app-explorador',
@@ -27,7 +28,8 @@ import {InteraccionesUsuarioDTO} from './models/InteraccionesUsuarioDTO';
     NgForOf,
     NgIf,
     NgClass,
-    FormsModule
+    FormsModule,
+    BotonAddRecetaComponent
   ]
 })
 export class ExploradorComponent implements OnInit, OnDestroy {

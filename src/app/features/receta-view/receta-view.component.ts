@@ -12,6 +12,8 @@ import { addIcons } from 'ionicons';
 import { chevronDown, timeOutline, bulbOutline } from 'ionicons/icons';
 import { ComentarioService } from '../../core/services/comentario.service';
 import { ComentarioResponse } from '../../core/models/ComentarioResponse';
+import {BotonAddRecetaComponent} from '../../shared/components/boton-add-receta/boton-add-receta.component';
+
 import { EncryptService } from '../../core/services/encrypt.service';
 
 @Component({
@@ -26,7 +28,8 @@ import { EncryptService } from '../../core/services/encrypt.service';
       IonIcon,
       ComentarioComponent,
       NgFor,
-      NgIf],
+      NgIf,
+      BotonAddRecetaComponent],
   templateUrl: './receta-view.component.html',
   styleUrl: './receta-view.component.css'
 })
@@ -75,11 +78,11 @@ export class RecetaViewComponent implements OnInit{
     const columnas = [];
     const ingredientes = this.receta.ingredientes;
     const itemsPorColumna = 5;
-    
+
     for (let i = 0; i < ingredientes.length; i += itemsPorColumna) {
         columnas.push(ingredientes.slice(i, i + itemsPorColumna));
     }
-    
+
     return columnas;
 }
   obtenerPasosReceta() {

@@ -15,6 +15,7 @@ import {AlertConfirmarComponent} from '../../shared/components/alert-confirmar/a
 import {AuthService} from '../../core/services/auth.service';
 import {EncryptService} from '../../core/services/encrypt.service';
 import {RegistroService} from '../registro/services/registro.service';
+import {ListaCompraComponent} from './components/lista-compra/lista-compra.component';
 
 @Component({
   selector: 'app-usuario',
@@ -39,7 +40,8 @@ import {RegistroService} from '../registro/services/registro.service';
     IonInfiniteScroll,
     IonInfiniteScrollContent,
     IonChip,
-    IonLabel
+    IonLabel,
+    ListaCompraComponent
   ]
 })
 export class UsuarioComponent  implements OnInit {
@@ -85,6 +87,7 @@ export class UsuarioComponent  implements OnInit {
   ingredientesSeleccionados: any[] = [];
   alergenosSeleccionados: any[] = [];
   alergenos: any[] = [];
+  mostrarListaCompra = false;
 
 
 
@@ -612,8 +615,14 @@ export class UsuarioComponent  implements OnInit {
 
   iniciarChat() {
     const id = this.route.snapshot.paramMap.get('id') || '';
-    const idDecrypt = this.encryptService.desencriptar(id);
-    this.router.navigate(['/chat', idDecrypt]);
+    const idDecrypt = this.encryptService.desencriptar(id); // Desencripta el ID actual
+    const idEncrypt = this.encryptService.encriptar(idDecrypt); // Encripta el ID nuevamente
+    this.router.navigate(['/chat', idEncrypt]); // Redirige con el ID encriptado
+  }
+
+  // Modificar la función toggleListaCompra
+  toggleListaCompra() {
+    this.mostrarListaCompra = !this.mostrarListaCompra;
   }
 
   

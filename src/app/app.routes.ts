@@ -10,7 +10,11 @@ import { CrearRecetaComponent } from './features/crear-receta/crear-receta.compo
 import {AdminComponent} from './features/admin/admin.component';
 import {NutriscoreComponent} from './features/nutriscore/nutriscore.component';
 import {EscanerComponent} from './features/nutriscore/components/escaner/escaner.component';
-import {ChatComponent} from './features/chat/chat.component'; // Import added
+import {ChatComponent} from './features/chat/chat.component';
+import {CambioPasswordComponent} from './features/cambio-password/cambio-password.component';
+import {
+  FormularioCambioPasswordComponent
+} from './features/cambio-password/components/formulario-cambio-password/formulario-cambio-password.component'; // Import added
 
 
 export const routes: Routes = [
@@ -31,9 +35,13 @@ export const routes: Routes = [
   { path: 'chat', component: ChatComponent },
   { path: 'chat/:id', component: ChatComponent },
   {path: 'crear-receta', component: CrearRecetaComponent },
+  {path: 'cambioPassword', component: CambioPasswordComponent },
+  { path: 'formResetPassword', component: FormularioCambioPasswordComponent },
   {
     path: 'admin',
     loadChildren: () => import('./features/admin/admin.routes').then(m => m.ADMIN_ROUTES)
   },
   {path: "**", redirectTo: 'main', pathMatch: 'full'},
+
+
 ];

@@ -92,4 +92,6 @@ export class AuthService {
   isAdmin(): boolean {
     return this.getUserRole() === 'ADMIN'; // Ajusta según tus roles
   }
+
+
 }

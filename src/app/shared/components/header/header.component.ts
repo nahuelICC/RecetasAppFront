@@ -6,6 +6,7 @@ import {NgIf} from '@angular/common';
 import {AuthService} from '../../../core/services/auth.service';
 import {HeaderService} from '../../services/header.service';
 import {RouterLink} from '@angular/router';
+import {ioniconContent} from 'ionicons/dist/types/components/icon/request';
 
 @Component({
   selector: 'app-header',
@@ -52,6 +53,8 @@ export class HeaderComponent  implements OnInit {
   toggleMenu(): void {
     this.menuOpen = !this.menuOpen;
   }
+
+
 
 
 }

@@ -83,13 +83,13 @@ export class InicioComponent implements OnInit {
   }
 
   cargarUltimasRecetas() {
-    this.inicioService.getUltimasRecetas().subscribe(recetas => {
+    this.inicioService.getUltimasRecetas(this.cookerId).subscribe(recetas => {
       this.ultimasRecetas = recetas;
     });
   }
 
   cargarRecetasTop() {
-    this.inicioService.getTop10RecetasFavoritas().subscribe(
+    this.inicioService.getTop10RecetasFavoritas(this.cookerId).subscribe(
       (data) => {
         this.topRecetas = data;
       },
