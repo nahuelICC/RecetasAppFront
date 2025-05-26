@@ -9,12 +9,12 @@
     <a *ngFor="let item of navItems"
        [routerLink]="item.path"
        routerLinkActive="color-boton-amarillo color-texto font-semibold shadow-md"
-       [routerLinkActiveOptions]="{exact: item.path === './' || item.path === '' ? true : false}"
+       [routerLinkActiveOptions]="{exact: item.path === './' || item.path === ''}"
        class="color-texto flex items-center px-3 py-2.5 text-sm rounded-md hover: color-boton-amarillo">
       <svg *ngIf="item.icon"
            class="mr-3 flex-shrink-0 h-5 w-5 color-texto"
            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" [attr.d]="item.icon" />
+        <path stroke-linecap="round" stroke-linejoin="round" [attr.d]="item.icon"/>
       </svg>
       <span>{{ item.label }}</span>
     </a>

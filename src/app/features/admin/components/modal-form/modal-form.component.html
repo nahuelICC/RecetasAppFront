@@ -1,0 +1,34 @@
+<div *ngIf="isVisible" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+  <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg space-y-4 transform transition-all">
+    <div class="flex justify-between items-center">
+      <h3 class="text-xl font-semibold text-[#004643]">{{ title }}</h3>
+      <button (click)="close()" class="text-gray-400 hover:text-gray-600">&times;</button>
+    </div>
+    <form [formGroup]="entityForm" (ngSubmit)="submitForm()" class="space-y-4">
+      <div *ngFor="let field of currentFormConfig.fields" class="flex flex-col">
+        <label [for]="field.name" class="mb-1 text-sm font-medium text-gray-700">{{ field.label }} <span *ngIf="field.required" class="text-red-500">*</span></label>
+        <ng-container [ngSwitch]="field.type">
+          <input *ngSwitchCase="'text'" [type]="field.type" [id]="field.name" [formControlName]="field.name" class="form-input">
+          <input *ngSwitchCase="'number'" [type]="field.type" [id]="field.name" [formControlName]="field.name" class="form-input">
+          <input *ngSwitchCase="'date'" [type]="field.type" [id]="field.name" [formControlName]="field.name" class="form-input">
+          <textarea *ngSwitchCase="'textarea'" [id]="field.name" [formControlName]="field.name" class="form-input h-24"></textarea>
+          <select *ngSwitchCase="'select'"
+                  [id]="field.name"
+                  [formControlName]="field.name"
+                  class="form-input appearance-none">
+            <option [ngValue]="null" *ngIf="field.placeholder || !field.required" disabled>
+              {{ field.placeholder || '-- Seleccione --' }}
+            </option>
+            <option *ngFor="let option of field.options" [ngValue]="option.id">
+              {{ option.nombre }}
+            </option>
+          </select>
+        </ng-container>
+      </div>
+      <div class="flex justify-end space-x-3 pt-2">
+        <button type="button" (click)="close()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md shadow-sm">Cancelar</button>
+        <button type="submit" [disabled]="entityForm.invalid" class="px-4 py-2 text-sm font-medium text-white bg-[#f9bc60] hover:bg-opacity-90 rounded-md shadow-sm disabled:opacity-50">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
