@@ -7,10 +7,10 @@
       <div class="flex-1">
         <h3 class="text-lg font-semibold text-[var(--color-texto)]">{{ comentario.username }}</h3>
         <div class="flex items-center space-x-2 mt-1">
-          <svg class="w-4 h-4 text-[var(--color-gris)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
-          <span class="text-sm text-[var(--color-gris)] font-medium">{{ comentario.fecha | timeAgo }}</span>
+          <span class="text-sm text-gray-500 font-medium">{{ comentario.fecha | timeAgo }}</span>
         </div>
       </div>
       <div class="relative group cursor-pointer mt-2 sm:mt-0">
@@ -32,7 +32,7 @@
     </div>
   </div>
   <div class="border border-[var(--color-verde-cuadros)] p-2 md:p-3 min-h-[50px]">
-    <p class="text-sm md:text-base break-words">{{comentario.texto}}</p>
+    <p class="text-sm md:text-base break-words color-texto">{{comentario.texto}}</p>
   </div>
   <div class="flex justify-between items-center mb-3">
     <button (click)="mostrarCuadroRespuesta()"
@@ -45,7 +45,7 @@
       Responder
     </button>
     <button *ngIf="respuestas.length > 0 && !mostrandoRespuestas" (click)="mostrarRespuestas()"
-            class="inline-flex items-center px-3 py-1.5 text-xs md:text-sm font-medium text-[var(--color-verde-fondo)] hover:text-[var(--color-verde-detalles)] hover:bg-white/50 rounded-md transition-colors duration-200">
+            class="inline-flex items-center px-3 py-1.5 text-xs md:text-sm font-medium color-texto hover:text-[var(--color-verde-detalles)] hover:bg-white/50 rounded-md transition-colors duration-200">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24"
            stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -53,7 +53,7 @@
       Ver respuestas ({{respuestas.length}})
     </button>
     <button *ngIf="respuestas.length > 0 && mostrandoRespuestas" (click)="ocultarRespuestas()"
-            class="inline-flex items-center px-3 py-1.5 text-xs md:text-sm font-medium text-[var(--color-verde-fondo)] hover:text-[var(--color-verde-detalles)] hover:bg-white/50 rounded-md transition-colors duration-200">
+            class="inline-flex items-center px-3 py-1.5 text-xs md:text-sm font-medium color-texto hover:text-[var(--color-verde-detalles)] hover:bg-white/50 rounded-md transition-colors duration-200">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24"
            stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />

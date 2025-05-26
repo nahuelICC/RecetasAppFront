@@ -12,14 +12,14 @@
 }
 
 .light-theme{
-    --color-verde-fondo:#fffffe;
+    --color-verde-fondo:#fdfaf6;
     --color-verde-boton:#007f5f;
     --color-texto:#001e1d;
     --color-texto-blanco:#001e1d;
-    --color-verde-cuadros:#00ebc7;
+    --color-verde-cuadros:#2dbfa8;
     --color-amarillo-boton: #fde24f;
     --color-rojo-resaltar:#ff5470;
-    --color-verde-translucido: rgba(0, 235, 199, 0.5);
+    --color-verde-translucido: rgba(45, 191, 168, 0.5);
     --color-verde-detalles: #007A52;
     --color-gris: #CAC4D0;
 }

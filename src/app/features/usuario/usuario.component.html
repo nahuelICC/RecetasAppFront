@@ -123,7 +123,7 @@
     </app-boton>
   </div>
 
-  <div *ngIf="mostrandoCambioContrasena" class="max-w-screen-sm mb-10">
+  <div *ngIf="mostrandoCambioContrasena" class="max-w-screen-sm mb-10 rounded-lg color-verde-claro p-6 shadow-lg">
     <form [formGroup]="cambioContrasenaForm" (ngSubmit)="onGuardarContrasena()">
       <div>
         <label class="block text-sm font-medium mb-1 color-texto-blanco">Contraseña Actual</label>
