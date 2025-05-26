@@ -1,96 +1,108 @@
-<!-- Contenedor principal -->
-<div class="h-screen flex bg-[var(--color-verde-fondo)] text-[var(--color-texto-blanco)]">
+<!-- Contenedor principal con colores originales y estructura fija -->
+<div class="fixed inset-0 flex flex-col bg-[var(--color-verde-fondo)] text-[var(--color-texto-blanco)]">
 
-  <!-- Lista de conversaciones -->
-  <aside class="w-32 sm:w-40 md:w-1/3 border-r border-[var(--color-verde-cuadros)] flex flex-col">
-    <!-- Cabecera fija de conversaciones -->
-    <div class="p-3 bg-[var(--color-verde-fondo)] border-b border-[var(--color-verde-cuadros)] sticky top-0 z-[50]">
-      <h2 class="text-lg md:text-xl font-bold hidden md:block">Mensajes</h2>
-      <div class="md:hidden flex items-center">
-        <ion-icon name="chatbubbles-outline" class="text-xl mr-2" [style.color]="'var(--color-verde-boton)'"></ion-icon>
-        <span class="text-sm font-semibold">Chats</span>
+  <!-- Espacio para el header en móvil -->
+  <div *ngIf="isMobile" class="h-16 flex-shrink-0"></div>
+
+  <!-- Contenedor principal del chat -->
+  <div class="flex flex-1 min-h-0" [ngStyle]="{ 'margin-top': isMobile ? '0' : '5rem' }">
+
+    <!-- Panel izquierdo - Lista de conversaciones -->
+    <aside class="w-32 sm:w-40 md:w-1/3 border-r border-[var(--color-verde-cuadros)] flex flex-col">
+      <!-- Cabecera de conversaciones -->
+      <div class="p-3 bg-[var(--color-verde-fondo)] border-b border-[var(--color-verde-cuadros)] sticky top-0 z-10">
+        <h2 class="text-lg md:text-xl font-bold hidden md:block">Mensajes</h2>
+        <div class="md:hidden flex items-center">
+          <ion-icon name="chatbubbles-outline" class="text-xl mr-2 text-[var(--color-verde-boton)]"></ion-icon>
+          <span class="text-sm font-semibold">Chats</span>
+        </div>
       </div>
-    </div>
 
-    <div *ngIf="loading" class="flex-1 flex items-center justify-center p-2">
-      <ion-icon name="refresh-outline" class="animate-spin text-lg"></ion-icon>
-    </div>
+      <!-- Loading state -->
+      <div *ngIf="loading" class="flex-1 flex items-center justify-center p-2">
+        <ion-icon name="refresh-outline" class="animate-spin text-lg"></ion-icon>
+      </div>
 
-    <!-- Lista de conversaciones -->
-    <div *ngIf="!loading && !error" class="overflow-y-auto flex-1">
-      <div *ngFor="let conversacion of conversaciones"
-           class="flex items-center gap-2 p-3 border-b border-[var(--color-verde-cuadros)] hover:bg-[var(--color-verde-translucido)] cursor-pointer"
-           [class.bg-[var(--color-verde-translucido)]]="usuarioDestinoId === conversacion.otroUsuarioId"
-           (click)="seleccionarConversacion(conversacion.otroUsuarioId)">
+      <!-- Lista de conversaciones -->
+      <div *ngIf="!loading && !error" class="flex-1 overflow-y-auto">
+        <div *ngFor="let conversacion of conversaciones"
+             class="flex items-center gap-2 p-3 border-b border-[var(--color-verde-cuadros)] hover:bg-[var(--color-verde-translucido)] cursor-pointer"
+             [class.bg-[var(--color-verde-translucido)]]="usuarioDestinoId === conversacion.otroUsuarioId"
+             (click)="seleccionarConversacion(conversacion.otroUsuarioId)">
 
-        <img *ngIf="getFotoUsuario(conversacion.otroUsuarioId)"
-             [src]="getFotoUsuario(conversacion.otroUsuarioId)"
-             class="w-10 h-10 rounded-full object-cover flex-shrink-0" />
+          <img *ngIf="getFotoUsuario(conversacion.otroUsuarioId)"
+               [src]="getFotoUsuario(conversacion.otroUsuarioId)"
+               class="w-10 h-10 rounded-full object-cover flex-shrink-0"/>
 
-        <div class="flex-1 min-w-0">
-          <div class="flex flex-col">
-            <span class="text-sm font-medium truncate">
-              {{ getNombreUsuario(conversacion.otroUsuarioId).split(' ')[0] }}
-            </span>
-            <p class="text-xs text-[var(--color-texto-blanco)] opacity-80 truncate">
-              {{ conversacion.ultimoMensaje }}
-            </p>
+          <div class="flex-1 min-w-0">
+            <div class="flex flex-col">
+              <span class="text-sm font-medium truncate">
+                {{ getNombreUsuario(conversacion.otroUsuarioId).split(' ')[0] }}
+              </span>
+              <div class="flex justify-between items-center">
+                <p class="text-xs opacity-80 truncate">
+                  {{ conversacion.ultimoMensaje }}
+                </p>
+                <span class="text-xs opacity-80">
+                  {{ conversacion.fechaUltimoMensaje | date:'shortTime' }}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </aside>
+    </aside>
 
-  <!-- Área de chat -->
-  <main class="flex-1 flex flex-col h-[100vh] md:h-auto">
+    <!-- Panel derecho - Área de chat -->
+    <main class="flex-1 flex flex-col min-h-0">
+      <!-- Cabecera del chat -->
+      <div *ngIf="usuarioDestinoId" class="p-3 bg-[var(--color-verde-fondo)] border-b border-[var(--color-verde-cuadros)] sticky top-0 z-10 flex items-center gap-2">
+        <img *ngIf="getFotoUsuario(usuarioDestinoId)"
+             [src]="getFotoUsuario(usuarioDestinoId)"
+             class="w-8 h-8 rounded-full object-cover"/>
+        <h3 class="text-sm font-semibold truncate">
+          {{ getNombreUsuario(usuarioDestinoId) }}
+        </h3>
+      </div>
 
-    <!-- Cabecera del chat -->
-    <div class="hidden md:flex p-4 bg-[var(--color-verde-fondo)] border-b border-[var(--color-verde-cuadros)] sticky top-0 z-[50] items-center gap-2">
-      <img *ngIf="getFotoUsuario(usuarioDestinoId)"
-           [src]="getFotoUsuario(usuarioDestinoId)"
-           class="w-8 h-8 rounded-full object-cover" />
-      <h3 class="text-sm font-semibold truncate">
-        {{ getNombreUsuario(usuarioDestinoId) }}
-      </h3>
-    </div>
-
-    <!-- Mensajes -->
-    <div class="flex-1 overflow-y-auto p-4 space-y-4 mt-0 md:mt-0">
-      <div *ngFor="let mensaje of mensajes"
-           class="flex"
-           [ngClass]="{
-             'justify-end': mensaje.remitenteId === usuarioActualId,
-             'justify-start': mensaje.remitenteId !== usuarioActualId
-           }">
-        <div [ngClass]="{
-               'bg-[var(--color-verde-boton)]': mensaje.remitenteId === usuarioActualId,
-               'bg-[var(--color-verde-cuadros)]': mensaje.remitenteId !== usuarioActualId
-             }"
-             class="max-w-[75%] px-4 py-2 rounded-2xl shadow text-sm text-[var(--color-texto)]">
-          <p>{{ mensaje.texto }}</p>
-          <div class="text-[10px] mt-1 flex justify-end items-center gap-1 text-[var(--color-texto)] opacity-70">
-            <span>{{ mensaje.fecha | date:'shortTime' }}</span>
-            <span *ngIf="mensaje.remitenteId === usuarioActualId">
-              <ion-icon [name]="mensaje.leido ? 'checkmark-done' : 'checkmark-sharp'"></ion-icon>
-            </span>
+      <!-- Área de mensajes -->
+      <div class="flex-1 overflow-y-auto p-4 space-y-4">
+        <div *ngFor="let mensaje of mensajes"
+             class="flex"
+             [ngClass]="{
+               'justify-end': mensaje.remitenteId === usuarioActualId,
+               'justify-start': mensaje.remitenteId !== usuarioActualId
+             }">
+          <div [ngClass]="{
+                 'bg-[var(--color-verde-boton)]': mensaje.remitenteId === usuarioActualId,
+                 'bg-[var(--color-verde-cuadros)]': mensaje.remitenteId !== usuarioActualId
+               }"
+               class="max-w-[75%] px-4 py-2 rounded-2xl shadow text-sm">
+            <p>{{ mensaje.texto }}</p>
+            <div class="text-[10px] mt-1 flex justify-end items-center gap-1 opacity-70">
+              <span>{{ mensaje.fecha | date:'shortTime' }}</span>
+              <span *ngIf="mensaje.remitenteId === usuarioActualId">
+                <ion-icon [name]="mensaje.leido ? 'checkmark-done' : 'checkmark-sharp'"></ion-icon>
+              </span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Input -->
-    <div class="p-4 border-t border-[var(--color-verde-cuadros)] bg-[var(--color-verde-fondo)]">
-      <div class="flex gap-2 items-center">
-        <input [(ngModel)]="nuevoMensaje"
-               (keyup.enter)="enviarMensaje()"
-               placeholder="Escribe un mensaje..."
-               class="flex-1 bg-[var(--color-verde-cuadros)] text-[var(--color-texto)] rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-amarillo-boton)]" />
-        <button (click)="enviarMensaje()" class="p-2 rounded-full hover:bg-[var(--color-verde-translucido)] transition-shadow"
-                [style.color]="'var(--color-amarillo-boton)'">
-          <ion-icon name="send-outline" class="text-xl"></ion-icon>
-        </button>
+      <!-- Input de mensaje -->
+      <div class="p-4 border-t border-[var(--color-verde-cuadros)] bg-[var(--color-verde-fondo)] sticky bottom-0">
+        <div class="flex gap-2 items-center">
+          <input [(ngModel)]="nuevoMensaje"
+                 (keyup.enter)="enviarMensaje()"
+                 placeholder="Escribe un mensaje..."
+                 class="flex-1 bg-[var(--color-verde-cuadros)] text-[var(--color-texto-blanco)] rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-amarillo-boton)]"/>
+          <button (click)="enviarMensaje()"
+                  class="p-2 rounded-full hover:bg-[var(--color-verde-translucido)] transition-shadow"
+                  [style.color]="'var(--color-amarillo-boton)'">
+            <ion-icon name="send-outline" class="text-xl"></ion-icon>
+          </button>
+        </div>
       </div>
-    </div>
-
-  </main>
+    </main>
+  </div>
 </div>

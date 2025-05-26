@@ -8,8 +8,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { WebsocketService } from '../../core/services/websocket.service';
 import { EncryptService } from '../../core/services/encrypt.service';
 import { IonIcon } from "@ionic/angular/standalone";
-import { DatePipe, NgClass, NgForOf, NgIf } from "@angular/common";
+import {DatePipe, NgClass, NgForOf, NgIf, NgStyle} from "@angular/common";
 import { FormsModule } from "@angular/forms";
+import {Platform} from '@ionic/angular';
 
 @Component({
   selector: 'app-chat',
@@ -20,7 +21,8 @@ import { FormsModule } from "@angular/forms";
     NgForOf,
     NgIf,
     FormsModule,
-    NgClass
+    NgClass,
+    NgStyle
   ],
   styleUrls: ['./chat.component.css']
 })
@@ -34,6 +36,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   fotoUsuarioDestino: string = 'assets/frutero.png';
   loading = true;
   error = '';
+  isMobile = false;
   private subscriptions: Subscription[] = [];
   private currentRoomId: string | null = null;
   private isFetchingProfile = false;
@@ -45,15 +48,22 @@ export class ChatComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private usuarioService: UsuarioService,
-    private encryptService: EncryptService
+    private encryptService: EncryptService,
+    private platform: Platform // Inyecta Platform
   ) {
     this.usuarioActualId = this.authService.getUserId() || 0;
+    this.checkMobile();
+    this.platform.resize.subscribe(() => this.checkMobile());
   }
 
   ngOnInit(): void {
     this.initConversaciones();
     this.initRouteListening();
     this.initWebSocket();
+  }
+
+  private checkMobile(): void {
+    this.isMobile = this.platform.width() < 768;
   }
 
   private initConversaciones(): void {
