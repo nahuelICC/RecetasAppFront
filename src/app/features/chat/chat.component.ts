@@ -62,6 +62,10 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.chatService.conversaciones$.subscribe({
         next: (conversaciones) => {
           this.conversaciones = conversaciones;
+          // Si estamos en una conversación que no está en la lista, la añadimos
+          if (this.usuarioDestinoId && !this.conversaciones.some(c => c.otroUsuarioId === this.usuarioDestinoId)) {
+            this.agregarConversacionSiNecesario();
+          }
           this.loading = false;
         },
         error: (err) => {
@@ -72,6 +76,23 @@ export class ChatComponent implements OnInit, OnDestroy {
       })
     );
     this.chatService.refreshConversaciones();
+  }
+
+  private agregarConversacionSiNecesario(): void {
+    if (!this.usuarioDestinoId || this.conversaciones.some(c => c.otroUsuarioId === this.usuarioDestinoId)) {
+      return;
+    }
+
+    const nuevaConversacion: ConversacionDTO = {
+      otroUsuarioId: this.usuarioDestinoId,
+      otroUsuarioNombre: this.nombreUsuarioDestino,
+      otroUsuarioFoto: this.fotoUsuarioDestino,
+      ultimoMensaje: '',
+      fechaUltimoMensaje: new Date(),
+      noLeidos: false
+    };
+
+    this.conversaciones = [nuevaConversacion, ...this.conversaciones];
   }
 
   private initRouteListening(): void {
@@ -152,48 +173,30 @@ export class ChatComponent implements OnInit, OnDestroy {
 
         if (perfil?.fotoPerfil) {
           this.fotoUsuarioDestino = perfil.fotoPerfil;
-          this.actualizarConversacion(perfil.nombre, perfil.fotoPerfil);
         } else {
           this.usuarioService.fotoPerfilVisita(usuarioDestinoId.toString()).subscribe({
             next: (foto) => {
               this.fotoUsuarioDestino = foto || 'assets/frutero.png';
-              this.actualizarConversacion(perfil?.nombre || 'Usuario', foto || 'assets/frutero.png');
             },
             error: (err) => {
               console.error('Error loading profile picture:', err);
               this.fotoUsuarioDestino = 'assets/frutero.png';
-              this.actualizarConversacion(perfil?.nombre || 'Usuario', 'assets/frutero.png');
             }
           });
         }
+
+        // Actualizamos la lista de conversaciones localmente
+        this.agregarConversacionSiNecesario();
         this.isFetchingProfile = false;
       },
       error: (err) => {
         console.error('Error loading user profile:', err);
         this.nombreUsuarioDestino = 'Usuario';
         this.fotoUsuarioDestino = 'assets/frutero.png';
-        this.actualizarConversacion('Usuario', 'assets/frutero.png');
+        this.agregarConversacionSiNecesario();
         this.isFetchingProfile = false;
       }
     });
-  }
-
-  private actualizarConversacion(nombre: string, foto: string): void {
-    const nuevaConversacion: ConversacionDTO = {
-      otroUsuarioId: this.usuarioDestinoId!,
-      otroUsuarioNombre: nombre,
-      otroUsuarioFoto: foto,
-      ultimoMensaje: '',
-      fechaUltimoMensaje: new Date(),
-      noLeidos: false
-    };
-
-    const index = this.conversaciones.findIndex(c => c.otroUsuarioId === this.usuarioDestinoId);
-    if (index !== -1) {
-      this.conversaciones[index] = nuevaConversacion;
-    } else {
-      this.conversaciones = [nuevaConversacion, ...this.conversaciones];
-    }
   }
 
   private getRoomId(user1Id: number, user2Id: number): string {
@@ -257,6 +260,7 @@ export class ChatComponent implements OnInit, OnDestroy {
           next: (mensajeGuardado) => {
             this.mensajes.push(mensajeGuardado);
             this.nuevoMensaje = '';
+            // Forzar actualización de conversaciones
             this.chatService.refreshConversaciones();
           },
           error: (err) => {
