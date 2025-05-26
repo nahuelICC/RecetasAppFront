@@ -11,6 +11,7 @@ import { IonIcon } from "@ionic/angular/standalone";
 import {DatePipe, NgClass, NgForOf, NgIf, NgStyle} from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import {Platform} from '@ionic/angular';
+import {AudioService} from '../../core/services/audio.service';
 
 @Component({
   selector: 'app-chat',
@@ -48,6 +49,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private usuarioService: UsuarioService,
+    private audioService: AudioService,
     private encryptService: EncryptService,
     private platform: Platform // Inyecta Platform
   ) {
@@ -138,6 +140,9 @@ export class ChatComponent implements OnInit, OnDestroy {
             this.mensajes.push(msg);
             this.marcarMensajesComoLeidos();
             this.chatService.refreshConversaciones();
+
+            // Play sound when a new message is received
+            this.audioService.reproducir('mensaje');
           }
         },
         error: (err) => console.error('Error en mensajes WebSocket:', err)

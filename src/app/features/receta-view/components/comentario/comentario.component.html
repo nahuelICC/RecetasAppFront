@@ -1,84 +1,82 @@
-<div class="bg-[#ABD1C6] rounded-lg shadow-md mb-4 md:mb-8 p-2 md:p-4 w-full">
-  <div class="border border-[#ABD1C6] py-2 mb-2 flex items-center">
+<div class="bg-[var(--color-verde-cuadros)] rounded-lg shadow-md mb-4 md:mb-8 p-2 md:p-4 w-full">
+  <div class="border border-[var(--color-verde-cuadros)] py-2 mb-2 flex items-center">
     <div class="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full border-2 border-white flex-shrink-0">
       <img [src]="comentario.fotoPerfil" alt="Foto de perfil" class="w-full h-full object-cover rounded-full">
     </div>
     <div class="ml-2 md:ml-4 flex flex-col sm:flex-row sm:items-center w-full justify-between">
-        <div class="flex-1">
-          <h3 class="text-lg font-semibold text-gray-800">{{ comentario.username }}</h3>
-          <!-- Fecha y tiempo -->
-          <div class="flex items-center space-x-2 mt-1">
-            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            <span class="text-sm text-gray-500 font-medium">{{ comentario.fecha | timeAgo }}</span>
-          </div>
+      <div class="flex-1">
+        <h3 class="text-lg font-semibold text-[var(--color-texto)]">{{ comentario.username }}</h3>
+        <div class="flex items-center space-x-2 mt-1">
+          <svg class="w-4 h-4 text-[var(--color-gris)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span class="text-sm text-[var(--color-gris)] font-medium">{{ comentario.fecha | timeAgo }}</span>
         </div>
+      </div>
       <div class="relative group cursor-pointer mt-2 sm:mt-0">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500 hover:text-red-700" fill="none"
-          viewBox="0 0 24 24" stroke="currentColor">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[var(--color-rojo-resaltar)] hover:text-[var(--color-rojo-resaltar)]" fill="none"
+             viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
+                d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
         </svg>
         <div
-          class="absolute hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 right-0 -mt-1 whitespace-nowrap">
+          class="absolute hidden group-hover:block bg-[var(--color-texto)] text-[var(--color-texto-blanco)] text-xs rounded py-1 px-2 right-0 -mt-1 whitespace-nowrap">
           Denunciar
         </div>
       </div>
-<div class="ml-2 cursor-pointer" 
-      *ngIf="obtenerNombreUsuario() !== null && obtenerNombreUsuario() === comentario.username"
-      (click)="eliminarComentario(comentario.id)">
+      <div class="ml-2 cursor-pointer"
+           *ngIf="obtenerNombreUsuario() !== null && obtenerNombreUsuario() === comentario.username"
+           (click)="eliminarComentario(comentario.id)">
         <ion-icon name="trash-outline"></ion-icon>
-</div>
+      </div>
     </div>
   </div>
-  <div class="border border-[#ABD1C6] p-2 md:p-3 min-h-[50px]">
+  <div class="border border-[var(--color-verde-cuadros)] p-2 md:p-3 min-h-[50px]">
     <p class="text-sm md:text-base break-words">{{comentario.texto}}</p>
   </div>
   <div class="flex justify-between items-center mb-3">
     <button (click)="mostrarCuadroRespuesta()"
-      class="inline-flex items-center px-3 py-1.5 text-xs md:text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-white/50 rounded-md transition-colors duration-200">
+            class="inline-flex items-center px-3 py-1.5 text-xs md:text-sm font-medium text-[var(--color-texto)] hover:text-[var(--color-verde-detalles)] hover:bg-white/50 rounded-md transition-colors duration-200">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24"
-        stroke="currentColor">
+           stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+              d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
       </svg>
       Responder
     </button>
     <button *ngIf="respuestas.length > 0 && !mostrandoRespuestas" (click)="mostrarRespuestas()"
-      class="inline-flex items-center px-3 py-1.5 text-xs md:text-sm font-medium text-[#004643] hover:text-[#003633] hover:bg-white/50 rounded-md transition-colors duration-200">
+            class="inline-flex items-center px-3 py-1.5 text-xs md:text-sm font-medium text-[var(--color-verde-fondo)] hover:text-[var(--color-verde-detalles)] hover:bg-white/50 rounded-md transition-colors duration-200">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24"
-        stroke="currentColor">
+           stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
       </svg>
       Ver respuestas ({{respuestas.length}})
     </button>
     <button *ngIf="respuestas.length > 0 && mostrandoRespuestas" (click)="ocultarRespuestas()"
-      class="inline-flex items-center px-3 py-1.5 text-xs md:text-sm font-medium text-[#004643] hover:text-[#003633] hover:bg-white/50 rounded-md transition-colors duration-200">
+            class="inline-flex items-center px-3 py-1.5 text-xs md:text-sm font-medium text-[var(--color-verde-fondo)] hover:text-[var(--color-verde-detalles)] hover:bg-white/50 rounded-md transition-colors duration-200">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24"
-        stroke="currentColor">
+           stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
       </svg>
       Ocultar respuestas ({{respuestas.length}})
     </button>
   </div>
-  <!-- Cuadro de respuesta -->
   <div *ngIf="cuadroRespuestaOn" class="bg-white rounded-lg shadow-md p-3 w-full mb-3">
     <textarea [(ngModel)]="textoRespuesta" rows="2" placeholder="Escribe tu respuesta..."
-      class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004643]">
+              class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-verde-fondo)]">
     </textarea>
     <button (click)="responderComentario()"
-      class="mt-2 inline-flex items-center px-3 py-1.5 text-xs md:text-sm font-medium text-white bg-[#004643] hover:bg-[#003633] rounded-md transition-colors duration-200">
+            class="mt-2 inline-flex items-center px-3 py-1.5 text-xs md:text-sm font-medium text-[var(--color-texto-blanco)] bg-[var(--color-verde-fondo)] hover:bg-[var(--color-verde-detalles)] rounded-md transition-colors duration-200">
       Enviar
     </button>
   </div>
 </div>
-<div *ngIf="mostrandoRespuestas" class="ml-4 pl-4 border-l-2 border-[#004643]">
+<div *ngIf="mostrandoRespuestas" class="ml-4 pl-4 border-l-2 border-[var(--color-verde-fondo)]">
   <app-respuesta *ngFor="let respuesta of respuestasVisibles" [respuesta]="respuesta"></app-respuesta>
   <div *ngIf="respuestasVisibles.length < respuestas.length" class="text-center mt-2">
     <button (click)="cargarMasRespuestas()"
-    class="inline-flex items-center px-3 py-1.5 text-xs md:text-sm font-medium text-[#ffffff] hover:text-[#003633] hover:bg-white/50 rounded-md transition-colors duration-200">
-    Cargar más respuestas ({{respuestasVisibles.length}}/{{respuestas.length}})
+            class="inline-flex items-center px-3 py-1.5 text-xs md:text-sm font-medium text-[var(--color-texto-blanco)] hover:text-[var(--color-verde-detalles)] hover:bg-white/50 rounded-md transition-colors duration-200">
+      Cargar más respuestas ({{respuestasVisibles.length}}/{{respuestas.length}})
     </button>
   </div>
 </div>
