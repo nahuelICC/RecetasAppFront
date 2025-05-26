@@ -61,6 +61,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initConversaciones();
     this.initRouteListening();
+    this.websocketService.connect();
     this.initWebSocket();
   }
 
@@ -134,15 +135,23 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   private initWebSocket(): void {
     this.subscriptions.push(
-      this.chatService.getMessagesObservable().subscribe({
+      this.websocketService.getMessages().subscribe({
         next: (msg) => {
-          if (msg && (msg.destinatarioId === this.usuarioActualId || msg.remitenteId === this.usuarioDestinoId)) {
-            this.mensajes.push(msg);
-            this.marcarMensajesComoLeidos();
+          if (msg) {
+            // Play sound for the new message
+            this.audioService.reproducir('mensaje');
+
+            // Refresh the conversation list
             this.chatService.refreshConversaciones();
 
-            // Play sound when a new message is received
-            this.audioService.reproducir('mensaje');
+            // Only add the message to the current chat if it belongs to the active conversation
+            if (
+              (msg.remitenteId === this.usuarioDestinoId && msg.destinatarioId === this.usuarioActualId) ||
+              (msg.remitenteId === this.usuarioActualId && msg.destinatarioId === this.usuarioDestinoId)
+            ) {
+              this.mensajes.push(msg);
+              this.marcarMensajesComoLeidos();
+            }
           }
         },
         error: (err) => console.error('Error en mensajes WebSocket:', err)
@@ -160,7 +169,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.websocketService.disconnect();
       }
       this.currentRoomId = nuevaRoomId;
-      this.websocketService.connect(this.currentRoomId);
+      this.websocketService.connect();
     }
 
     this.cargarMensajes();
@@ -311,6 +320,10 @@ export class ChatComponent implements OnInit, OnDestroy {
     if (!usuarioId) return 'assets/frutero.png';
     const conversacion = this.conversaciones.find(c => c.otroUsuarioId === usuarioId);
     return conversacion?.otroUsuarioFoto || this.fotoUsuarioDestino || 'assets/frutero.png';
+  }
+
+  tieneMensajesNoLeidos(): boolean {
+    return this.conversaciones.some(conversacion => conversacion.noLeidos);
   }
 
   ngOnDestroy(): void {

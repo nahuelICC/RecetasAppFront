@@ -6,15 +6,24 @@ import { Howl } from 'howler';
 })
 export class AudioService {
   private sonidos: { [clave: string]: Howl } = {};
+  private initialized = false;
 
-  constructor() {
+  constructor() {}
+
+  private initialize(): void {
+    if (this.initialized) return;
+
+    // Initialize sounds after a user gesture
     this.sonidos['mensaje'] = new Howl({
       src: ['assets/mensajeRecibido.wav'],
       volume: 1.0
     });
+
+    this.initialized = true;
   }
 
   reproducir(sonido: 'mensaje'): void {
+    this.initialize(); // Ensure sounds are initialized
     const audio = this.sonidos[sonido];
     if (audio) {
       audio.play();

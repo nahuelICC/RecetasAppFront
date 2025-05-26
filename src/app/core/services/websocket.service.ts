@@ -11,20 +11,19 @@ export class WebsocketService {
   private stompClient: Client | null = null;
   private messageSubject = new BehaviorSubject<ChatDTO | null>(null);
   private connectionStatus = new BehaviorSubject<boolean>(false);
-  private currentRoomId: string | null = null;
 
   constructor(private authService: AuthService) {}
 
-  connect(roomId: string): void {
-    if (this.stompClient?.connected && this.currentRoomId === roomId) {
+  connect(): void {
+    if (this.stompClient?.connected) {
       return;
     }
 
-    this.currentRoomId = roomId;
     const token = this.authService.getToken();
+    const userId = this.authService.getUserId();
 
-    if (!token) {
-      console.error('No hay token disponible');
+    if (!token || !userId) {
+      console.error('No hay token o ID de usuario disponible');
       return;
     }
 
@@ -36,7 +35,7 @@ export class WebsocketService {
       debug: (str) => console.log('[STOMP]', str),
       onConnect: () => {
         console.log('Conectado al servidor WebSocket');
-        this.onConnectSuccess(roomId);
+        this.onConnectSuccess(userId);
       },
       onStompError: (frame) => {
         console.error('Error en WebSocket:', frame.headers['message']);
@@ -47,11 +46,11 @@ export class WebsocketService {
     this.stompClient.activate();
   }
 
-  private onConnectSuccess(roomId: string): void {
+  private onConnectSuccess(userId: number): void {
     this.connectionStatus.next(true);
 
     this.stompClient?.subscribe(
-      `/topic/messages/${roomId}`,
+      `/topic/messages/${userId}`,
       (message) => {
         try {
           const chatMessage: ChatDTO = JSON.parse(message.body);
@@ -67,7 +66,7 @@ export class WebsocketService {
   sendMessage(destination: string, body: any): void {
     if (this.stompClient?.connected) {
       this.stompClient.publish({
-        destination: `/app/chat/${this.currentRoomId}`,
+        destination: `/app/chat`,
         body: JSON.stringify(body)
       });
     } else {
@@ -82,7 +81,6 @@ export class WebsocketService {
       this.connectionStatus.next(false);
     }
     this.stompClient = null;
-    this.currentRoomId = null;
   }
 
   getMessages(): Observable<ChatDTO | null> {
