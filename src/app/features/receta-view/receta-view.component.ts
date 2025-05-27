@@ -1,7 +1,7 @@
 import { Component, NgZone, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { InfoPlatoComponent } from './components/info-plato/info-plato.component';
 import { AlergenoComponent } from "./components/alergeno/alergeno.component";
-import { IonAccordion, IonAccordionGroup, IonItem, IonLabel, IonIcon } from '@ionic/angular/standalone';
+import { IonAccordion, IonAccordionGroup, IonIcon } from '@ionic/angular/standalone';
 import { ComentarioComponent } from './components/comentario/comentario.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RecetaService } from './services/receta.service';
@@ -17,6 +17,9 @@ import { EncryptService } from '../../core/services/encrypt.service';
 import { AuthService } from '../../core/services/auth.service';
 import { FormsModule } from '@angular/forms';
 import { Alergeno } from './models/Alergeno';
+import { AlertInfoComponent, AlertType } from '../../shared/components/alert-info/alert-info.component';
+import { AlertConfirmarComponent } from '../../shared/components/alert-confirmar/alert-confirmar.component';
+import { InfiniteScrollCustomEvent, IonAvatar, IonContent, IonInfiniteScroll, IonInfiniteScrollContent, IonItem, IonLabel, IonList } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-receta-view',
@@ -33,7 +36,15 @@ import { Alergeno } from './models/Alergeno';
     NgFor,
     NgIf,
     BotonAddRecetaComponent,
-    FormsModule
+    FormsModule,
+    AlertInfoComponent,
+    IonAvatar,
+    IonContent,
+    IonInfiniteScroll,
+    IonInfiniteScrollContent,
+    IonItem,
+    IonLabel,
+    IonList
   ],
   templateUrl: './receta-view.component.html',
   styleUrls: ['./receta-view.component.css'],
@@ -60,6 +71,16 @@ export class RecetaViewComponent implements OnInit {
   cuadroComentarioOn: boolean = false;
   textoComentario: string = '';
   listaAlergenos: Alergeno[] = [];
+  isAlertVisible: boolean = false;
+  alertType: AlertType = 'error';
+  alertMessage: string = '';
+  borrarComentario: boolean = false;
+  currentPage: number = 1;
+  itemsPerPage: number = 5;
+  hasMoreItems: boolean = true;
+  currentItemsToShow: number = 5;
+  allComentarios: ComentarioResponse[] = [];
+  displayedComentarios: ComentarioResponse[] = [];
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
@@ -85,17 +106,17 @@ export class RecetaViewComponent implements OnInit {
     );
   }
 
-obtenerAlergenos() {
-  if (!this.receta?.alergenos) return;
-  const copia= new Set();
-  this.listaAlergenos = this.receta.alergenos.filter(alergeno => {
-    if (copia.has(alergeno.id)) {
-      return false;
-    }
-    copia.add(alergeno.id);
-    return true;
-  });
-}
+  obtenerAlergenos() {
+    if (!this.receta?.alergenos) return;
+    const copia = new Set();
+    this.listaAlergenos = this.receta.alergenos.filter(alergeno => {
+      if (copia.has(alergeno.id)) {
+        return false;
+      }
+      copia.add(alergeno.id);
+      return true;
+    });
+  }
   get columnasIngredientes(): any[][] {
     const columnas = [];
     const ingredientes = this.receta.ingredientes;
@@ -123,16 +144,16 @@ obtenerAlergenos() {
   obtenerComentariosReceta() {
     this.comentarioService.getComentariosReceta(this.idReceta).subscribe(
       (response) => {
-        this.comentariosReceta = [...response];
+        this.allComentarios = [...response];
+        this.displayedComentarios = this.allComentarios.slice(0, this.currentItemsToShow);
         this.cdr.markForCheck();
-        console.log('Comentarios de la receta obtenidos:', this.comentariosReceta);
       },
       (error) => {
         console.error('Error al obtener los comentarios de la receta:', error);
       }
     );
   }
-
+  
   redireccionarPerfil(id: string): void {
     this.zone.run(() => {
       const idEncrypt = this.encryptService.encriptar(id);
@@ -146,21 +167,63 @@ obtenerAlergenos() {
     return this.authService.isLogged();
   }
 
-responderReceta() {
-this.comentarioService.comentarReceta({ texto: this.textoComentario }, this.idReceta).subscribe({
-    next: (nuevoComentario) => {
-      this.textoComentario = '';
-      this.cuadroComentarioOn = false;
-      console.log("carga");
-      this.obtenerComentariosReceta(); 
-    },
-    error: (error) => {
-      console.error('Error al publicar comentario:', error);
-      this.cuadroComentarioOn = false;
-    }
-  });
-}
+  responderReceta() {
+    this.comentarioService.comentarReceta({ texto: this.textoComentario }, this.idReceta).subscribe({
+      next: (nuevoComentario) => {
+        this.textoComentario = '';
+        this.cuadroComentarioOn = false;
+        console.log("carga");
+        this.obtenerComentariosReceta();
+      },
+      error: (error) => {
+        console.error('Error al publicar comentario:', error);
+        this.cuadroComentarioOn = false;
+      }
+    });
+  }
+
+  recargarComentariosReceta() {
+    this.currentItemsToShow = 5;
+    this.obtenerComentariosReceta();
+    
+    this.isAlertVisible = true;
+    this.alertType = 'success';
+    this.alertMessage = 'Comentario eliminado correctamente';
+    setTimeout(() => {
+      this.isAlertVisible = false;
+    }, 3000);
+  }
+  
   mostrarCuadro() {
     this.cuadroComentarioOn = !this.cuadroComentarioOn;
   }
+
+  onIonInfinite(event: InfiniteScrollCustomEvent) {
+    setTimeout(() => {
+      this.currentItemsToShow += 5; // Aumenta la cantidad a mostrar
+      this.displayedComentarios = this.allComentarios.slice(0, this.currentItemsToShow);
+      
+      // Comprueba si ya mostramos todos
+      if (this.displayedComentarios.length >= this.allComentarios.length) {
+        event.target.disabled = true;
+      }
+      
+      event.target.complete();
+      this.cdr.markForCheck();
+    }, 500);
+  }
+
+  generateItems() {
+    const newItems = this.comentariosReceta.slice(this.comentariosReceta.length, this.comentariosReceta.length + 5);
+    this.comentariosReceta.push(...newItems);
+    if (newItems.length === 0) {
+      this.isAlertVisible = true;
+      this.alertMessage = 'No hay más comentarios para mostrar';
+      setTimeout(() => {
+        this.isAlertVisible = false;
+      }, 3000);
+    }
+  }
+
+
 }

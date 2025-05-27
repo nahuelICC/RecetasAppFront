@@ -9,6 +9,9 @@
   --color-verde-translucido: rgba(171, 209, 198, 0.5);
   --color-verde-detalles: #003836;
   --color-gris: #CAC4D0;
+  --color-fondo-comentarios: #f0f0f0;
+  --color-texto-comentarios: #004643;
+
 }
 
 .light-theme{
@@ -22,4 +25,8 @@
     --color-verde-translucido: rgba(45, 191, 168, 0.5);
     --color-verde-detalles: #007A52;
     --color-gris: #CAC4D0;
+    --color-fondo-comentarios: #004643;
+    --color-texto-comentarios: #fff;
+
+
 }

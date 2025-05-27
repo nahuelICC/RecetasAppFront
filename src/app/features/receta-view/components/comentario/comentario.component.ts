@@ -1,5 +1,5 @@
 // comentario.component.ts
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule, NgIf, NgFor } from '@angular/common';
 import { TimeAgoPipe } from '../../pipes/time-ago.pipe';
 import { RespuestaComponent } from '../respuesta/respuesta.component';
@@ -10,6 +10,8 @@ import { CrearRespuesta } from '../../../../core/models/CrearRespuesta';
 import { IonIcon } from '@ionic/angular/standalone';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ComentarioService } from '../../../../core/services/comentario.service';
+import { AlertType } from '../../../../shared/components/alert-info/alert-info.component';
+import { AlertConfirmarComponent } from '../../../../shared/components/alert-confirmar/alert-confirmar.component';
 
 @Component({
   selector: 'app-comentario',
@@ -21,12 +23,14 @@ import { ComentarioService } from '../../../../core/services/comentario.service'
     NgIf,
     NgFor,
     FormsModule,
-    IonIcon
+    IonIcon,
+    AlertConfirmarComponent
   ]
 })
 export class ComentarioComponent implements OnInit {
 
   @Input() comentario!: ComentarioResponse;
+  @Output() comentarioEliminado = new EventEmitter<ComentarioResponse>();
 
   respuestas: any[] = [];
   respuestasVisibles: any[] = [];
@@ -39,6 +43,9 @@ export class ComentarioComponent implements OnInit {
     idComentario: 0,
     texto: ''
   };
+  borrarComentario: boolean = false;
+
+  
 
   constructor(
     private respuestaService: RespuestaService,
@@ -74,12 +81,8 @@ export class ComentarioComponent implements OnInit {
     const inicio = this.paginaActual * this.elementosPorPagina;
     const fin = inicio + this.elementosPorPagina;
     const nuevasRespuestas = this.respuestas.slice(inicio, fin);
-
-    console.log(`Cargando respuestas del ${inicio} al ${fin}. Nuevas: ${nuevasRespuestas.length}`);
-
     this.respuestasVisibles = [...this.respuestasVisibles, ...nuevasRespuestas];
     this.paginaActual++;
-    console.log('Quedan más respuestas:', this.respuestasVisibles.length < this.respuestas.length);
   }
 
   ocultarRespuestas() {
@@ -107,12 +110,19 @@ export class ComentarioComponent implements OnInit {
     );
   }
 
+
+
   obtenerNombreUsuario() {
     return this.authService.getUsername();
   }
 
   eliminarComentario(id: number) {
     this.comentarioService.eliminarComentario(id).subscribe({
-      })
+      next: () => {   
+        this.comentarioEliminado.emit(this.comentario);
+        }
+    })
   }
+
+  
 }
