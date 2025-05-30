@@ -6,6 +6,7 @@ import {CambioPasswordService} from '../../services/cambio-password.service';
 import {NgIf} from '@angular/common';
 import {BotonComponent} from '../../../../shared/components/boton/boton.component';
 import {AlertConfirmarComponent} from '../../../../shared/components/alert-confirmar/alert-confirmar.component';
+import {IonIcon} from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-formulario-cambio-password',
@@ -16,7 +17,8 @@ import {AlertConfirmarComponent} from '../../../../shared/components/alert-confi
     ReactiveFormsModule,
     BotonComponent,
     AlertConfirmarComponent,
-    AlertInfoComponent
+    AlertInfoComponent,
+    IonIcon
   ],
   standalone: true
 })
@@ -38,6 +40,8 @@ export class FormularioCambioPasswordComponent  implements OnInit {
   alertMessage = 'Contraseña cambiada con éxito';
   isAlertVisible = false;
   alertType: AlertType = 'warning';
+  showPassword = false;
+  showPassword2 = false;
 
   constructor(
     private route: ActivatedRoute,

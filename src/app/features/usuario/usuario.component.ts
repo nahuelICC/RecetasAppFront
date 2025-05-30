@@ -88,6 +88,9 @@ export class UsuarioComponent  implements OnInit {
   alergenosSeleccionados: any[] = [];
   alergenos: any[] = [];
   mostrarListaCompra = false;
+  showPassword = false;
+  showNewPassword = false;
+  showRepeatPassword = false;
 
 
 
@@ -625,5 +628,5 @@ export class UsuarioComponent  implements OnInit {
     this.mostrarListaCompra = !this.mostrarListaCompra;
   }
 
-  
+
 }
