@@ -49,6 +49,7 @@ export class UsuarioComponent  implements OnInit {
   perfil: any;
   activeTab: string = 'recetas';
   recetas: any[] = [];
+  recetasVisibles: any[] = [];
   colecciones: any[] = [];
   recetasGuardadas: any[] = [];
   imagenPerfilUsuario: string = 'https://ionicframework.com/docs/img/demos/avatar.svg';
@@ -104,6 +105,7 @@ export class UsuarioComponent  implements OnInit {
       this.usuarioService.getPerfilId(idDecrypt).subscribe((response) => {
         this.perfil = response;
         this.recetas = response.recetas;
+        this.recetasVisibles = response.recetas.filter((receta: any) => receta.esVisible);
         this.colecciones = response.colecciones;
         if (!this.perfil.ingredientesFavoritos) this.perfil.ingredientesFavoritos = [];
         if (!this.perfil.alergenos) this.perfil.alergenos = [];
@@ -129,6 +131,7 @@ export class UsuarioComponent  implements OnInit {
         this.perfil = response;
         this.recetas = response.recetas;
         this.colecciones = response.colecciones;
+        this.recetasVisibles = response.recetas.filter((receta: any) => receta.esVisible);
         this.recetasGuardadas = response.recetasGuardadas;
         this.alergenosSeleccionados = response.alergenos ? [...response.alergenos] : [];
         this.ingredientesSeleccionados = response.ingredientesFavoritos ? [...response.ingredientesFavoritos] : [];
@@ -187,6 +190,7 @@ export class UsuarioComponent  implements OnInit {
     this.usuarioService.listaSeguidores(this.esPerfilPropio, idDecrypt).subscribe((response) => {
       this.seguidores = response;
     });
+
 
 
   }
@@ -629,4 +633,15 @@ export class UsuarioComponent  implements OnInit {
   }
 
 
+  onEditarVisibilidad($event: any) {
+    if ($event.esVisible == false) {
+    this.recetasVisibles = this.recetasVisibles.filter(receta => receta.idReceta !== $event.idReceta);
+      this.perfil.numeroRecetas--;
+  } else{
+    const receta = this.recetas.find(r => r.idReceta === $event.idReceta);
+    if (receta) {
+      this.recetasVisibles.push(receta);}
+      this.perfil.numeroRecetas++;
+    }
+  }
 }

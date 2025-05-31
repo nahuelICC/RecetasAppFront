@@ -4,13 +4,13 @@
       <ion-tab-button tab="main" [routerLink]="['/main']" class="color-verde-claro">
         <ion-icon name="home"></ion-icon>
       </ion-tab-button>
-      <ion-tab-button tab="recetas" class="color-verde-claro">
+      <ion-tab-button tab="recetas" class="color-verde-claro" [routerLink]="['/explorador']">
         <ion-icon name="search"></ion-icon>
       </ion-tab-button>
-      <ion-tab-button  class="color-verde-claro">
+      <ion-tab-button  class="color-verde-claro" [routerLink]="['/nutriscore']">
         <ion-icon name="nutrition"></ion-icon>
       </ion-tab-button>
-      <ion-tab-button class="color-verde-claro" *ngIf="authService.isLogged()">
+      <ion-tab-button class="color-verde-claro" *ngIf="authService.isLogged()" [routerLink]="['/perfil']">
         <ion-icon name="person" ></ion-icon>
       </ion-tab-button>
       <ion-tab-button class="color-verde-claro" (click)="logout()" *ngIf="authService.isLogged()">

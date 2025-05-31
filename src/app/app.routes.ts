@@ -21,7 +21,7 @@ import { AdminGuard } from './core/guards/admin.guard';
 export const routes: Routes = [
   { path: 'registro', component: RegistroComponent },
   { path: 'activar-cuenta', component: ActivacionComponent },
-  { path: 'main', component: InicioComponent },
+  { path: 'main', component: InicioComponent, canActivate: [LoginGuard] },
   { path: 'receta/:id', component: RecetaViewComponent, canActivate: [LoginGuard] },
   { path: 'login', component: LoginComponent},
   { path: 'explorador', component: ExploradorComponent, canActivate: [LoginGuard] },
