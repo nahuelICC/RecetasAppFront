@@ -44,8 +44,11 @@ export class ComentarioComponent implements OnInit {
     texto: ''
   };
   borrarComentario: boolean = false;
+  isAlertVisible: boolean = false;
+  alertType: AlertType = 'error';
+  alertMessage: string = '';
 
-  
+
 
   constructor(
     private respuestaService: RespuestaService,
@@ -94,21 +97,29 @@ export class ComentarioComponent implements OnInit {
   mostrarCuadroRespuesta() {
     this.cuadroRespuestaOn = !this.cuadroRespuestaOn;
   }
-  responderComentario() {
-    this.respNueva.texto = this.textoRespuesta;
-    this.respNueva.idComentario = this.comentario.id;
-    this.respuestaService.ResponderComentario(this.respNueva).subscribe(
-      (respuesta) => {
-        this.respuestas.unshift(respuesta);
-        this.respuestasVisibles.unshift(respuesta);
-        this.cuadroRespuestaOn = false;
-        this.textoRespuesta = '';
-      },
-      (error) => {
-        console.error('Error al enviar respuesta:', error);
+responderComentario() {
+  if (!this.textoRespuesta.trim()) return;
+
+  this.respNueva.texto = this.textoRespuesta;
+  this.respNueva.idComentario = this.comentario.id;
+
+  this.respuestaService.ResponderComentario(this.respNueva).subscribe(
+    (nuevaRespuesta) => {
+      this.respuestas = [nuevaRespuesta, ...this.respuestas];
+      
+      if (this.mostrandoRespuestas) {
+        this.paginaActual = 0;
+        this.respuestasVisibles = this.respuestas.slice(0, this.elementosPorPagina);
       }
-    );
-  }
+      
+      this.textoRespuesta = '';
+      this.cuadroRespuestaOn = false;
+    },
+    (error) => {
+      console.error('Error al enviar respuesta:', error);
+    }
+  );
+}
 
 
 
@@ -118,11 +129,28 @@ export class ComentarioComponent implements OnInit {
 
   eliminarComentario(id: number) {
     this.comentarioService.eliminarComentario(id).subscribe({
-      next: () => {   
+      next: () => {
         this.comentarioEliminado.emit(this.comentario);
-        }
+      }
     })
   }
 
+recargarRespuestasComentario(respuestaEliminada: any) {
+  this.respuestas = this.respuestas.filter(r => r.id !== respuestaEliminada.id);
+  this.respuestasVisibles = this.respuestasVisibles.filter(r => r.id !== respuestaEliminada.id);
   
+  if (this.respuestasVisibles.length < this.elementosPorPagina && this.respuestas.length > 0) {
+    this.paginaActual = 0;
+    this.respuestasVisibles = this.respuestas.slice(0, this.elementosPorPagina);
+  }
+  
+  this.isAlertVisible = true;
+  this.alertType = 'success';
+  this.alertMessage = 'Respuesta eliminada correctamente';
+  setTimeout(() => {
+    this.isAlertVisible = false;
+  }, 3000);
+}
+
+
 }
