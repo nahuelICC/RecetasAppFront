@@ -21,4 +21,8 @@ export class RespuestaService {
   ResponderComentario(respNueva: CrearRespuesta): Observable<Respuesta> {
     return this.http.post<Respuesta>(`${this.apiUrl}/new`, respNueva);
   }
+
+  eliminarRespuesta(idRespuesta: String): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/eliminar/${idRespuesta}`);
+  }
 }

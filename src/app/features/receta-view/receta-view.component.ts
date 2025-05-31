@@ -185,7 +185,6 @@ export class RecetaViewComponent implements OnInit {
   recargarComentariosReceta() {
     this.currentItemsToShow = 5;
     this.obtenerComentariosReceta();
-    
     this.isAlertVisible = true;
     this.alertType = 'success';
     this.alertMessage = 'Comentario eliminado correctamente';
@@ -200,14 +199,11 @@ export class RecetaViewComponent implements OnInit {
 
   onIonInfinite(event: InfiniteScrollCustomEvent) {
     setTimeout(() => {
-      this.currentItemsToShow += 5; // Aumenta la cantidad a mostrar
+      this.currentItemsToShow += 5;
       this.displayedComentarios = this.allComentarios.slice(0, this.currentItemsToShow);
-      
-      // Comprueba si ya mostramos todos
       if (this.displayedComentarios.length >= this.allComentarios.length) {
         event.target.disabled = true;
       }
-      
       event.target.complete();
       this.cdr.markForCheck();
     }, 500);
