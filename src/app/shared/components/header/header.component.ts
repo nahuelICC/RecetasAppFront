@@ -6,7 +6,6 @@ import {NgIf} from '@angular/common';
 import {AuthService} from '../../../core/services/auth.service';
 import {HeaderService} from '../../services/header.service';
 import {RouterLink} from '@angular/router';
-import {ioniconContent} from 'ionicons/dist/types/components/icon/request';
 
 @Component({
   selector: 'app-header',
@@ -25,7 +24,7 @@ export class HeaderComponent  implements OnInit {
   isMobile: boolean;
   menuOpen: boolean = false;
   imagenPerfil: string = 'https://ionicframework.com/docs/img/demos/avatar.svg';
-  isLightMode = false;
+  isLightMode: boolean = false;
 
   constructor(private platform: Platform,public authService: AuthService, private headerService: HeaderService) {
     this.isMobile = this.platform.width() < 768;
@@ -68,11 +67,12 @@ export class HeaderComponent  implements OnInit {
   applyTheme() {
     const classList = document.documentElement.classList;
     if (this.isLightMode) {
-      classList.add('light-theme');
-      classList.remove('dark-theme');
-    } else {
       classList.remove('light-theme');
       classList.add('dark-theme');
+    } else {
+      classList.add('light-theme');
+      classList.remove('dark-theme');
+
     }
   }
 
