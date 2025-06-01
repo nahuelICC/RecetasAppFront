@@ -47,3 +47,18 @@ ion-accordion.accordion-expanding .custom-accordion-icon,
 ion-accordion.accordion-expanded .custom-accordion-icon {
     transform: rotate(180deg);
 }
+
+ion-list {
+  background: transparent;
+  padding: 0;
+}
+
+.custom-list {
+  background: transparent;
+  
+  ion-item {
+    --background: transparent;
+    --padding-start: 0;
+    --inner-padding-end: 0;
+  }
+}

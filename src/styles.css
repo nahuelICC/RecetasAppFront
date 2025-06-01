@@ -7,48 +7,51 @@
 @tailwind utilities;
 
 
-html, body { height: 100%;
+html,
+body {
+  height: 100%;
   background-color: var(--color-verde-fondo);
 }
+
 body {
   margin: 0;
   height: auto;
   background-color: var(--color-verde-fondo);
 }
 
-.color-texto{
+.color-texto {
   color: var(--color-texto);
 }
 
-.color-boton-verde{
+.color-boton-verde {
   background-color: var(--color-verde-boton);
 }
 
-.color-boton-amarillo{
+.color-boton-amarillo {
   background-color: var(--color-amarillo-boton);
 }
 
-.color-texto-blanco{
+.color-texto-blanco {
   color: var(--color-texto-blanco);
 }
 
-.color-verde-claro{
+.color-verde-claro {
   background-color: var(--color-verde-cuadros);
 }
 
-.color-verde-claro-tranlucido{
+.color-verde-claro-tranlucido {
   background-color: var(--color-verde-translucido);
 }
 
-.color-verde-oscuro{
+.color-verde-oscuro {
   background-color: var(--color-verde-fondo);
 }
 
-.color-rojo-resalto{
+.color-rojo-resalto {
   background-color: var(--color-rojo-resaltar);
 }
 
-.color-verde-detalles{
+.color-verde-detalles {
   background-color: var(--color-verde-detalles);
   border-color: var(--color-verde-detalles);
 }
@@ -57,12 +60,27 @@ body {
   background-color: var(--color-gris);
 }
 
-ion-content{
+.color-fondo-comentarios {
+  background-color: var(--color-fondo-comentarios);
+}
+
+.color-texto-comentarios {
+  color: var(--color-texto-comentarios);
+}
+
+.color-fondo-acciones-comentarios {
+  background-color: var(--color-texto-comentarios);
+}
+
+.color-texto-acciones-comentarios {
+  color: var(--color-fondo-comentarios);
+}
+ion-content {
   --background: var(--color-verde-fondo);
   font-family: "Cambria, Georgia, serif", sans-serif;
 }
 
-.texto-logo{
+.texto-logo {
   font-family: 'Poppins', sans-serif;
 }
 
@@ -71,10 +89,12 @@ ion-content{
     transform: scale(0.5);
     opacity: 0;
   }
+
   50% {
     transform: scale(1.2);
     opacity: 1;
   }
+
   100% {
     transform: scale(1);
     opacity: 0;

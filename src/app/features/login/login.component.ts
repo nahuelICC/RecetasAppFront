@@ -7,6 +7,7 @@ import {BotonComponent} from '../../shared/components/boton/boton.component';
 import {NgIf} from '@angular/common';
 import {PantallaCargaComponent} from '../../shared/components/pantalla-carga/pantalla-carga.component';
 import {AlertInfoComponent, AlertType} from '../../shared/components/alert-info/alert-info.component';
+import {IonIcon} from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-login',
@@ -16,7 +17,8 @@ import {AlertInfoComponent, AlertType} from '../../shared/components/alert-info/
     NgIf,
     ReactiveFormsModule,
     PantallaCargaComponent,
-    AlertInfoComponent
+    AlertInfoComponent,
+    IonIcon
   ],
   templateUrl: './login.component.html',
   standalone: true,
@@ -29,6 +31,7 @@ export class LoginComponent {
   isAlertVisible: boolean = false;
   alertType: AlertType = 'warning';
   isLoading = false;
+  showPassword: boolean = false;
 
   constructor(private authService: AuthService,private loginService:LoginService, private fb: FormBuilder, private router:Router) {
     this.loginForm = this.fb.group({

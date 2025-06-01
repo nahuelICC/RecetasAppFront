@@ -1,5 +1,5 @@
 // comentario.component.ts
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule, NgIf, NgFor } from '@angular/common';
 import { TimeAgoPipe } from '../../pipes/time-ago.pipe';
 import { RespuestaComponent } from '../respuesta/respuesta.component';
@@ -10,6 +10,8 @@ import { CrearRespuesta } from '../../../../core/models/CrearRespuesta';
 import { IonIcon } from '@ionic/angular/standalone';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ComentarioService } from '../../../../core/services/comentario.service';
+import { AlertType } from '../../../../shared/components/alert-info/alert-info.component';
+import { AlertConfirmarComponent } from '../../../../shared/components/alert-confirmar/alert-confirmar.component';
 
 @Component({
   selector: 'app-comentario',
@@ -22,13 +24,15 @@ import { ComentarioService } from '../../../../core/services/comentario.service'
     NgIf,
     NgFor,
     FormsModule,
-    IonIcon
+    IonIcon,
+    AlertConfirmarComponent
   ]
 })
 export class ComentarioComponent implements OnInit {
 
   @Input() comentario!: ComentarioResponse;
   @Input() idReceta!: string;
+  @Output() comentarioEliminado = new EventEmitter<ComentarioResponse>();
 
   respuestas: any[] = [];
   respuestasVisibles: any[] = [];
@@ -41,6 +45,13 @@ export class ComentarioComponent implements OnInit {
     idComentario: 0,
     texto: ''
   };
+  borrarComentario: boolean = false;
+  isAlertVisible: boolean = false;
+  alertType: AlertType = 'error';
+  alertMessage: string = '';
+  imagenPerfilUsuario: string = 'https://ionicframework.com/docs/img/demos/avatar.svg';
+
+
 
   constructor(
     private respuestaService: RespuestaService,
@@ -76,12 +87,8 @@ export class ComentarioComponent implements OnInit {
     const inicio = this.paginaActual * this.elementosPorPagina;
     const fin = inicio + this.elementosPorPagina;
     const nuevasRespuestas = this.respuestas.slice(inicio, fin);
-
-    console.log(`Cargando respuestas del ${inicio} al ${fin}. Nuevas: ${nuevasRespuestas.length}`);
-
     this.respuestasVisibles = [...this.respuestasVisibles, ...nuevasRespuestas];
     this.paginaActual++;
-    console.log('Quedan más respuestas:', this.respuestasVisibles.length < this.respuestas.length);
   }
 
   ocultarRespuestas() {
@@ -93,22 +100,29 @@ export class ComentarioComponent implements OnInit {
   mostrarCuadroRespuesta() {
     this.cuadroRespuestaOn = !this.cuadroRespuestaOn;
   }
-  responderComentario() {
-    this.respNueva.texto = this.textoRespuesta;
+responderComentario() {
+  if (!this.textoRespuesta.trim()) return;  this.respNueva.texto = this.textoRespuesta;
     this.respNueva.idComentario = this.comentario.id;
 
     this.respuestaService.ResponderComentario(parseInt(this.idReceta), this.respNueva).subscribe(
-      (respuesta) => {
-        this.respuestas.unshift(respuesta);
-        this.respuestasVisibles.unshift(respuesta);
-        this.cuadroRespuestaOn = false;
-        this.textoRespuesta = '';
-      },
-      (error) => {
-        console.error('Error al enviar respuesta:', error);
+      (nuevaRespuesta) => {
+      this.respuestas = [nuevaRespuesta, ...this.respuestas];
+
+      if (this.mostrandoRespuestas) {
+        this.paginaActual = 0;
+        this.respuestasVisibles = this.respuestas.slice(0, this.elementosPorPagina);
       }
-    );
-  }
+
+      this.textoRespuesta = '';
+      this.cuadroRespuestaOn = false;
+    },
+    (error) => {
+      console.error('Error al enviar respuesta:', error);
+    }
+  );
+}
+
+
 
 
   obtenerNombreUsuario() {
@@ -117,6 +131,29 @@ export class ComentarioComponent implements OnInit {
 
   eliminarComentario(id: number) {
     this.comentarioService.eliminarComentario(id).subscribe({
-      })
+      next: () => {
+        this.comentarioEliminado.emit(this.comentario);
+      }
+    })
   }
+
+recargarRespuestasComentario(respuestaEliminada: any) {
+  this.respuestas = this.respuestas.filter(r => r.id !== respuestaEliminada.id);
+  this.respuestasVisibles = this.respuestasVisibles.filter(r => r.id !== respuestaEliminada.id);
+
+  if (this.respuestasVisibles.length < this.elementosPorPagina && this.respuestas.length > 0) {
+    this.paginaActual = 0;
+    this.respuestasVisibles = this.respuestas.slice(0, this.elementosPorPagina);
+  }
+
+  this.isAlertVisible = true;
+  this.alertType = 'success';
+  this.alertMessage = 'Respuesta eliminada correctamente';
+  setTimeout(() => {
+    this.isAlertVisible = false;
+  }, 3000);
+}
+
+
+
 }

@@ -33,11 +33,14 @@ export class CuadroRecetaComponent  implements OnInit {
 
   @Output() editaGuardar = new EventEmitter<any>();
 
-  toggleVisibilidad() {
-    this.receta.esVisible = !this.receta.esVisible;
-    this.usuarioService.editarVisibilidadReceta(this.receta.idReceta, this.receta.esVisible).subscribe();
-  }
+  @Output() editaVisibilidad = new EventEmitter<any>();
 
+toggleVisibilidad() {
+  this.receta.esVisible = !this.receta.esVisible;
+  this.usuarioService.editarVisibilidadReceta(this.receta.idReceta, this.receta.esVisible).subscribe(() => {
+    this.editaVisibilidad.emit({ idReceta: this.receta.idReceta, esVisible: this.receta.esVisible });
+  });
+}
   toggleLike() {
     if (this.receta.cookerGusta) {
       this.inicioService.eliminarMeGusta(this.receta.idReceta).subscribe({

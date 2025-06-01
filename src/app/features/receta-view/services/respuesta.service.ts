@@ -22,4 +22,7 @@ export class RespuestaService {
     return this.http.post<Respuesta>(`${this.apiUrl}/new/${idReceta}`, respNueva);
   }
 
+  eliminarRespuesta(idRespuesta: String): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/eliminar/${idRespuesta}`);
+  }
 }

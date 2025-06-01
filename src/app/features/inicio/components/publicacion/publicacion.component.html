@@ -2,7 +2,7 @@
 <div class="rounded-lg overflow-hidden relative aspect-square group bg-[var(--color-verde-cuadros)] shadow-md" (click)="redireccionarReceta(receta.id.toString())">
 
   <!-- Badge del usuario creador -->
-  <div class="absolute top-2 left-2 color-verde-claro text-black text-xs px-2 py-1 rounded-full flex items-center space-x-1 z-20 cursor-pointer" (click)="$event.stopPropagation(); redireccionarPerfil(receta.cookerId.toString())">
+  <div class="absolute top-2 left-2 color-verde-claro text-black text-xs px-2 py-1 rounded-full flex items-center space-x-1 z-10 cursor-pointer" (click)="$event.stopPropagation(); redireccionarPerfil(receta.cookerId.toString())">
     <ion-icon name="person" class="text-black text-base"></ion-icon>
     <span>{{ receta.nombreCooker }}</span>
   </div>

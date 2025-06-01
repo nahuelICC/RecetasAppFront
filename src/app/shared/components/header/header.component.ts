@@ -9,6 +9,8 @@ import {RouterLink} from '@angular/router';
 import {NotificacionesComponent} from '../../../features/notificaciones/notificaciones.component';
 import {notificationsOutline} from 'ionicons/icons';
 import {NotificacionesService} from '../../../features/notificaciones/services/notificaciones.service';
+import {ChatService} from '../../../features/chat/chat.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -23,15 +25,23 @@ import {NotificacionesService} from '../../../features/notificaciones/services/n
     NotificacionesComponent,
   ]
 })
-export class HeaderComponent  implements OnInit {
-
+export class HeaderComponent implements OnInit {
   isMobile: boolean;
   menuOpen: boolean = false;
   imagenPerfil: string = 'https://ionicframework.com/docs/img/demos/avatar.svg';
   mostrarNotificaciones = false;
   notificacionesNoLeidasCount = 0;
+  isLightMode: boolean = false;
+  mensajesNoLeidos: number = 0;
+  private subscriptions: Subscription[] = [];
 
-  constructor(private platform: Platform,public authService: AuthService, private headerService: HeaderService, private notificacionesService: NotificacionesService ) {
+  constructor(
+    private platform: Platform,
+    public authService: AuthService,
+    private headerService: HeaderService,
+    private chatService: ChatService,
+    private notificacionesService: NotificacionesService
+  ) {
     this.isMobile = this.platform.width() < 768;
     this.platform.resize.subscribe(() => {
       this.isMobile = this.platform.width() < 768;
@@ -52,12 +62,26 @@ export class HeaderComponent  implements OnInit {
         this.notificacionesNoLeidasCount = count;
       });
     }
+    const savedTheme = localStorage.getItem('theme');
+    this.isLightMode = savedTheme === 'light';
+    this.applyTheme();
+
+    if (this.authService.isLogged()) {
+      this.subscriptions.push(
+        this.chatService.conversaciones$.subscribe(conversaciones => {
+          this.mensajesNoLeidos = conversaciones
+            .filter(c => c.noLeidos)
+            .reduce((total, conversacion) => total + (conversacion.noLeidos ? 1 : 0), 0);
+        })
+      );
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
 
-  /**
-   * Cerrar sesión
-   */
   logout(): void {
     this.authService.logout();
     window.location.href = '/login';
@@ -86,6 +110,20 @@ export class HeaderComponent  implements OnInit {
 
 
 
+  toggleTheme() {
+    this.isLightMode = !this.isLightMode;
+    localStorage.setItem('theme', this.isLightMode ? 'light' : 'dark');
+    this.applyTheme();
+  }
 
-
+  applyTheme() {
+    const classList = document.documentElement.classList;
+    if (this.isLightMode) {
+      classList.remove('light-theme');
+      classList.add('dark-theme');
+    } else {
+      classList.add('light-theme');
+      classList.remove('dark-theme');
+    }
+  }
 }
