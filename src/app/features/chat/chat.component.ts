@@ -2,7 +2,8 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/co
 import { ChatService } from './chat.service';
 import { AuthService } from '../../core/services/auth.service';
 import { UsuarioService } from '../usuario/services/usuario.service';
-import { Subscription } from 'rxjs';
+import { Subscription, of, forkJoin } from 'rxjs';
+import { switchMap, map, catchError } from 'rxjs/operators';
 import { ChatDTO, ConversacionDTO } from './models/chat.dto';
 import { ActivatedRoute, Router } from '@angular/router';
 import { WebsocketService } from '../../core/services/websocket.service';
@@ -13,8 +14,6 @@ import { FormsModule } from "@angular/forms";
 import {Platform} from '@ionic/angular';
 import {AudioService} from '../../core/services/audio.service';
 import { ChangeDetectorRef } from '@angular/core';
-
-
 
 @Component({
   selector: 'app-chat',
@@ -46,6 +45,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   pageSize = 10;
   loadingMore = false;
   allMessagesLoaded = false;
+  private usuariosBloqueados: Set<number> = new Set<number>();
   private subscriptions: Subscription[] = [];
   private currentRoomId: string | null = null;
   private isFetchingProfile = false;
@@ -54,6 +54,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   terminoBusqueda = '';
   usuariosSeguidos: any[] = [];
   mostrarResultadosBusqueda = false;
+  perfilBloqueado = false;
 
   constructor(
     private chatService: ChatService,
@@ -98,9 +99,25 @@ export class ChatComponent implements OnInit, OnDestroy {
   private initConversaciones(): void {
     this.loading = true;
     this.subscriptions.push(
-      this.chatService.conversaciones$.subscribe({
-        next: (conversaciones) => {
-          this.conversaciones = conversaciones;
+      this.chatService.conversaciones$.pipe(
+        switchMap(conversaciones => {
+          // Verificar bloqueo para cada conversación
+          const verificaciones = conversaciones.map(conv =>
+            this.usuarioService.perfilBloqueado(conv.otroUsuarioId.toString()).pipe(
+              map(bloqueado => ({ ...conv, bloqueado })),
+              catchError(() => of({ ...conv, bloqueado: false }))
+            )
+          );
+          return forkJoin(verificaciones);
+        })
+      ).subscribe({
+        next: (conversacionesConEstado) => {
+          // Filtrar conversaciones bloqueadas y actualizar conjunto
+          this.conversaciones = conversacionesConEstado.filter(conv => !conv.bloqueado);
+          conversacionesConEstado
+            .filter(conv => conv.bloqueado)
+            .forEach(conv => this.usuariosBloqueados.add(conv.otroUsuarioId));
+
           if (this.usuarioDestinoId && !this.conversaciones.some(c => c.otroUsuarioId === this.usuarioDestinoId)) {
             this.agregarConversacionSiNecesario();
           }
@@ -143,13 +160,14 @@ export class ChatComponent implements OnInit, OnDestroy {
 
             if (this.usuarioDestinoId !== nuevoDestinoId) {
               this.usuarioDestinoId = nuevoDestinoId;
-              this.handleNewConversation();
+              this.verificarBloqueo();
             }
           } else {
             this.usuarioDestinoId = null;
             this.mensajes = [];
             this.nombreUsuarioDestino = '';
             this.fotoUsuarioDestino = '';
+            this.perfilBloqueado = false;
           }
         },
         error: (err) => {
@@ -160,20 +178,58 @@ export class ChatComponent implements OnInit, OnDestroy {
     );
   }
 
+  private verificarBloqueo(): void {
+    if (!this.usuarioDestinoId) return;
+
+    this.usuarioService.perfilBloqueado(this.usuarioDestinoId.toString()).subscribe({
+      next: (response) => {
+        const estaBloqueado = response as boolean;
+        this.perfilBloqueado = estaBloqueado;
+
+        if (estaBloqueado) {
+          // Añadir a usuarios bloqueados
+          this.usuariosBloqueados.add(this.usuarioDestinoId!);
+
+          // Limpiar mensajes y desconectar
+          this.mensajes = [];
+          this.websocketService.disconnect();
+          this.currentRoomId = null;
+
+          // Forzar actualización de conversaciones
+          this.chatService.refreshConversaciones();
+        } else {
+          this.handleNewConversation();
+        }
+      },
+      error: (err) => {
+        console.error('Error al verificar bloqueo:', err);
+        this.perfilBloqueado = false;
+        this.handleNewConversation();
+      }
+    });
+  }
   private initWebSocket(): void {
     this.subscriptions.push(
       this.websocketService.getMessages().subscribe({
         next: (msg) => {
-          if (msg) {
-            if (msg.borrado) {
-              const index = this.mensajes.findIndex(m => m.id === msg.id);
-              if (index !== -1) {
-                this.mensajes[index] = msg;
-                this.cdr.detectChanges();
-                return;
-              }
-            }
+          if (!msg) return;
 
+          // Verificar si el mensaje es de un usuario bloqueado
+          if (this.usuariosBloqueados.has(msg.remitenteId)) {
+            return; // Ignorar mensajes de usuarios bloqueados
+          }
+
+          if (msg.borrado) {
+            const index = this.mensajes.findIndex(m => m.id === msg.id);
+            if (index !== -1) {
+              this.mensajes[index] = msg;
+              this.cdr.detectChanges();
+              return;
+            }
+          }
+
+          // Solo procesar mensajes si no estamos en un chat bloqueado
+          if (!this.perfilBloqueado) {
             this.audioService.reproducir('mensaje');
             this.chatService.refreshConversaciones();
 
@@ -192,7 +248,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   private handleNewConversation(): void {
-    if (!this.usuarioDestinoId) return;
+    if (!this.usuarioDestinoId || this.perfilBloqueado) return;
 
     const nuevaRoomId = this.getRoomId(this.usuarioActualId, this.usuarioDestinoId);
 
@@ -248,12 +304,13 @@ export class ChatComponent implements OnInit, OnDestroy {
     });
   }
 
-
   private getRoomId(user1Id: number, user2Id: number): string {
     return [user1Id, user2Id].sort().join('_');
   }
 
   onScroll(event: Event): void {
+    if (this.perfilBloqueado) return;
+
     const element = event.target as HTMLElement;
     const atTop = element.scrollTop === 0;
 
@@ -262,9 +319,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
   }
 
-// Método para verificar si debemos cargar más mensajes
   checkLoadMore(): void {
-    if (!this.scrollContainer) return;
+    if (!this.scrollContainer || this.perfilBloqueado) return;
 
     const element = this.scrollContainer.nativeElement;
     const nearTop = element.scrollTop < 100;
@@ -274,13 +330,11 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
   }
 
-// Modificar el método scrollToBottom para que también verifique loadMore
   private scrollToBottom(): void {
-    if (this.scrollContainer) {
+    if (this.scrollContainer && !this.perfilBloqueado) {
       this.cdr.detectChanges();
       setTimeout(() => {
         const container = this.scrollContainer.nativeElement;
-        // Solo hacer scroll si no estamos cargando más mensajes
         if (!this.loadingMore) {
           container.scrollTop = container.scrollHeight;
         }
@@ -288,9 +342,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
   }
 
-
   cargarMensajes(loadMore: boolean = false): void {
-    if (!this.usuarioDestinoId) return;
+    if (!this.usuarioDestinoId || this.perfilBloqueado) return;
 
     if (loadMore) {
       if (this.allMessagesLoaded || this.loadingMore) return;
@@ -309,7 +362,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: (mensajes) => {
         if (loadMore) {
-          // Mantener el scroll position después de cargar
           const prevHeight = this.scrollContainer.nativeElement.scrollHeight;
           this.mensajes = [...mensajes.reverse(), ...this.mensajes];
 
@@ -355,7 +407,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   enviarMensaje(): void {
-    if (!this.nuevoMensaje.trim() || !this.usuarioDestinoId) return;
+    if (!this.nuevoMensaje.trim() || !this.usuarioDestinoId || this.perfilBloqueado) return;
 
     this.usuarioService.getPerfil().subscribe({
       next: (perfil) => {
@@ -375,7 +427,6 @@ export class ChatComponent implements OnInit, OnDestroy {
             this.mensajes.push(mensajeGuardado);
             this.nuevoMensaje = '';
             this.scrollToBottom();
-            // Forzar actualización de conversaciones
             this.chatService.refreshConversaciones();
           },
           error: (err) => {
@@ -392,7 +443,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   marcarMensajesComoLeidos(): void {
-    if (!this.usuarioDestinoId) return;
+    if (!this.usuarioDestinoId || this.perfilBloqueado) return;
 
     this.subscriptions.push(
       this.chatService.marcarComoLeido(this.usuarioDestinoId, this.usuarioActualId).subscribe({
@@ -423,7 +474,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   borrarMensaje(mensaje: ChatDTO): void {
-    if (mensaje.remitenteId !== this.usuarioActualId) return;
+    if (mensaje.remitenteId !== this.usuarioActualId || this.perfilBloqueado) return;
 
     this.chatService.marcarComoBorrado(mensaje.id!, this.usuarioActualId).subscribe({
       next: (mensajeActualizado) => {
@@ -436,7 +487,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     });
   }
 
-
   getMensajeTexto(mensaje: ChatDTO): string {
     if (mensaje.borrado) {
       return mensaje.remitenteId === this.usuarioActualId
@@ -445,4 +495,10 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
     return mensaje.texto;
   }
+
+  irAlPerfil(usuarioId: number): void {
+    const idEncrypt = this.encryptService.encriptar(usuarioId.toString()); // Encripta el ID del usuario
+    this.router.navigate(['/perfil', idEncrypt]); // Redirige al perfil con el ID encriptado
+  }
+
 }

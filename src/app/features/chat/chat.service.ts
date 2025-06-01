@@ -91,4 +91,9 @@ export class ChatService {
       tap(() => this.refreshConversaciones())
     );
   }
+  private usuariosBloqueados: Set<number> = new Set<number>();
+
+  getUsuariosBloqueados(): Set<number> {
+    return this.usuariosBloqueados;
+  }
 }

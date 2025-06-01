@@ -10,7 +10,9 @@ import {NotificacionesComponent} from '../../../features/notificaciones/notifica
 import {notificationsOutline} from 'ionicons/icons';
 import {NotificacionesService} from '../../../features/notificaciones/services/notificaciones.service';
 import {ChatService} from '../../../features/chat/chat.service';
-import { Subscription } from 'rxjs';
+import { UsuarioService } from '../../../features/usuario/services/usuario.service';
+import { Subscription, forkJoin, of } from 'rxjs';
+import { switchMap, map, catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-header',
@@ -40,6 +42,7 @@ export class HeaderComponent implements OnInit {
     public authService: AuthService,
     private headerService: HeaderService,
     private chatService: ChatService,
+    private usuarioService: UsuarioService,
     private notificacionesService: NotificacionesService
   ) {
     this.isMobile = this.platform.width() < 768;
@@ -68,10 +71,22 @@ export class HeaderComponent implements OnInit {
 
     if (this.authService.isLogged()) {
       this.subscriptions.push(
-        this.chatService.conversaciones$.subscribe(conversaciones => {
-          this.mensajesNoLeidos = conversaciones
-            .filter(c => c.noLeidos)
-            .reduce((total, conversacion) => total + (conversacion.noLeidos ? 1 : 0), 0);
+        this.chatService.conversaciones$.pipe(
+          switchMap(conversaciones => {
+            // Verificar bloqueo para cada conversación
+            const verificaciones = conversaciones.map(conv =>
+              this.usuarioService.perfilBloqueado(conv.otroUsuarioId.toString()).pipe(
+                map(bloqueado => ({ ...conv, bloqueado })),
+                catchError(() => of({ ...conv, bloqueado: false }))
+              )
+            );
+            return forkJoin(verificaciones);
+          })
+        ).subscribe(conversacionesConEstado => {
+          // Filtrar conversaciones no bloqueadas y contar no leídos
+          this.mensajesNoLeidos = conversacionesConEstado
+            .filter(conv => !conv.bloqueado && conv.noLeidos)
+            .reduce((total, conv) => total + 1, 0);
         })
       );
     }
@@ -80,7 +95,6 @@ export class HeaderComponent implements OnInit {
   ngOnDestroy(): void {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
-
 
   logout(): void {
     this.authService.logout();
@@ -106,9 +120,6 @@ export class HeaderComponent implements OnInit {
   handleCerrarNotificaciones() {
     this.mostrarNotificaciones = false;
   }
-
-
-
 
   toggleTheme() {
     this.isLightMode = !this.isLightMode;
