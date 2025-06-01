@@ -18,7 +18,8 @@ export class RespuestaService {
     return this.http.get<Respuesta[]>(`${this.apiUrl}/listar/${idComentario}`);
   }
 
-  ResponderComentario(respNueva: CrearRespuesta): Observable<Respuesta> {
-    return this.http.post<Respuesta>(`${this.apiUrl}/new`, respNueva);
+  ResponderComentario(idReceta: number, respNueva: CrearRespuesta): Observable<Respuesta> {
+    return this.http.post<Respuesta>(`${this.apiUrl}/new/${idReceta}`, respNueva);
   }
+
 }

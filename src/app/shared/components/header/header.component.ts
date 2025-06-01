@@ -6,7 +6,9 @@ import {NgIf} from '@angular/common';
 import {AuthService} from '../../../core/services/auth.service';
 import {HeaderService} from '../../services/header.service';
 import {RouterLink} from '@angular/router';
-import {ioniconContent} from 'ionicons/dist/types/components/icon/request';
+import {NotificacionesComponent} from '../../../features/notificaciones/notificaciones.component';
+import {notificationsOutline} from 'ionicons/icons';
+import {NotificacionesService} from '../../../features/notificaciones/services/notificaciones.service';
 
 @Component({
   selector: 'app-header',
@@ -18,6 +20,7 @@ import {ioniconContent} from 'ionicons/dist/types/components/icon/request';
     NgIf,
     IonAvatar,
     RouterLink,
+    NotificacionesComponent,
   ]
 })
 export class HeaderComponent  implements OnInit {
@@ -25,8 +28,10 @@ export class HeaderComponent  implements OnInit {
   isMobile: boolean;
   menuOpen: boolean = false;
   imagenPerfil: string = 'https://ionicframework.com/docs/img/demos/avatar.svg';
+  mostrarNotificaciones = false;
+  notificacionesNoLeidasCount = 0;
 
-  constructor(private platform: Platform,public authService: AuthService, private headerService: HeaderService) {
+  constructor(private platform: Platform,public authService: AuthService, private headerService: HeaderService, private notificacionesService: NotificacionesService ) {
     this.isMobile = this.platform.width() < 768;
     this.platform.resize.subscribe(() => {
       this.isMobile = this.platform.width() < 768;
@@ -35,12 +40,20 @@ export class HeaderComponent  implements OnInit {
 
   ngOnInit(): void {
     this.headerService.getFotoPerfil().subscribe((response: any) => {
-      console.log(response);
       if (response !== 'sin foto') {
         this.imagenPerfil = response;
       }
     });
+
+    const idUsuario = this.authService.getUserId();
+    if (idUsuario) {
+      this.notificacionesService.actualizarContadorNotificaciones(idUsuario);
+      this.notificacionesService.notificacionesNoLeidasCount$.subscribe(count => {
+        this.notificacionesNoLeidasCount = count;
+      });
+    }
   }
+
 
   /**
    * Cerrar sesión
@@ -53,6 +66,24 @@ export class HeaderComponent  implements OnInit {
   toggleMenu(): void {
     this.menuOpen = !this.menuOpen;
   }
+
+  toggleNotificaciones() {
+    this.mostrarNotificaciones = !this.mostrarNotificaciones;
+    if (this.menuOpen) this.menuOpen = false;
+
+    if (this.mostrarNotificaciones) {
+      const idUsuario = this.authService.getUserId();
+      if (idUsuario) {
+        this.notificacionesService.actualizarContadorNotificaciones(idUsuario);
+      }
+    }
+  }
+
+  handleCerrarNotificaciones() {
+    this.mostrarNotificaciones = false;
+  }
+
+
 
 
 

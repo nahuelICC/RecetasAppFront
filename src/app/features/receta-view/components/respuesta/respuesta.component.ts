@@ -6,6 +6,7 @@ import { NgIf } from '@angular/common';
   selector: 'app-respuesta',
   templateUrl: './respuesta.component.html',
   styleUrls: ['./respuesta.component.css'],
+  standalone: true,
   imports: [
     TimeAgoPipe,
   ]
@@ -13,7 +14,7 @@ import { NgIf } from '@angular/common';
 export class RespuestaComponent implements OnInit {
 
 
-  @Input() respuesta!:any 
+  @Input() respuesta!:any
 
   constructor() { }
 

@@ -34,6 +34,7 @@ import {
   albumsOutline,
   pencilOutline,
   chevronDownOutline,
+  notificationsOutline,
   grid,
   albums,
   bookmarks,
@@ -95,7 +96,8 @@ addIcons({
   checkmarkDone,
   sunny,
   moon,
-  radioButtonOn
+  radioButtonOn,
+  notificationsOutline
 
 });
 

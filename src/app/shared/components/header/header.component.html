@@ -8,7 +8,24 @@
     <a class="color-texto font-semibold hover:text-white" href="/registro" *ngIf="!authService.isLogged()">Registro</a>
     <a class="color-texto font-semibold hover:text-white" href="/nutriscore" *ngIf="authService.isLogged()">Nutriscore</a>
     <a class="color-texto font-semibold hover:text-white" href="/login" *ngIf="!authService.isLogged()">Login</a>
-    <ion-icon name="paper-plane-outline" class="text-2xl hover:cursor-pointer avion" *ngIf="authService.isLogged()" [routerLink]="'/chat'"></ion-icon>    <div class="relative" *ngIf="authService.isLogged()">
+    <ion-icon name="paper-plane-outline" class="text-2xl hover:cursor-pointer avion" *ngIf="authService.isLogged()" [routerLink]="'/chat'"></ion-icon>
+    <div class="relative">
+      <ion-icon name="notifications-outline" *ngIf="authService.isLogged()"
+                class="text-2xl hover:cursor-pointer avion"
+                (click)="toggleNotificaciones()"></ion-icon>
+
+      <span *ngIf="notificacionesNoLeidasCount > 0" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-[var(--color-rojo-resaltar)] rounded-full transform translate-x-1/2 -translate-y-1/2">
+        {{ notificacionesNoLeidasCount }}
+      </span>
+
+      <div *ngIf="mostrarNotificaciones" class="absolute right-0 mt-2 w-80 bg-white shadow-xl rounded-lg z-50 border border-gray-200 max-h-96 overflow-y-auto">
+        <app-notificaciones
+          [visible]="mostrarNotificaciones"
+          (cerrarNotificaciones)="handleCerrarNotificaciones()">
+        </app-notificaciones>
+      </div>
+    </div>
+    <div class="relative" *ngIf="authService.isLogged()">
       <ion-avatar (click)="toggleMenu()" class="cursor-pointer w-10 h-10">
         <img alt="Avatar" [src]="imagenPerfil" class="w-full h-full rounded-full" />
       </ion-avatar>
@@ -27,5 +44,23 @@
 
 <div *ngIf="isMobile" class="fixed top-0 left-0 right-0 color-verde-claro p-4 flex justify-between items-center z-50 border-b border-b-gray-300">
   <span class="text-lg font-bold texto-logo">Cookers</span>
-  <ion-icon name="paper-plane-outline" class="text-2xl"></ion-icon>
+  <div class="flex items-center gap-4">
+    <ion-icon name="paper-plane-outline" class="text-2xl" *ngIf="authService.isLogged()" [routerLink]="'/chat'"></ion-icon>
+
+    <div class="relative" *ngIf="authService.isLogged()">
+      <ion-icon name="notifications-outline" class="text-2xl cursor-pointer" (click)="toggleNotificaciones()"></ion-icon>
+
+      <span *ngIf="notificacionesNoLeidasCount > 0"
+            class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-[var(--color-rojo-resaltar)] rounded-full transform translate-x-1/2 -translate-y-1/2">
+      {{ notificacionesNoLeidasCount }}
+    </span>
+
+      <div *ngIf="mostrarNotificaciones" class="absolute right-0 mt-2 w-80 bg-white shadow-xl rounded-lg z-50 border border-gray-200 max-h-96 overflow-y-auto">
+        <app-notificaciones
+          [visible]="mostrarNotificaciones"
+          (cerrarNotificaciones)="handleCerrarNotificaciones()">
+        </app-notificaciones>
+      </div>
+    </div>
+  </div>
 </div>

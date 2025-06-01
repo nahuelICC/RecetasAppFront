@@ -13,6 +13,7 @@ import { ComentarioService } from '../../../../core/services/comentario.service'
 
 @Component({
   selector: 'app-comentario',
+  standalone: true,
   templateUrl: './comentario.component.html',
   styleUrls: ['./comentario.component.css'],
   imports: [
@@ -27,6 +28,7 @@ import { ComentarioService } from '../../../../core/services/comentario.service'
 export class ComentarioComponent implements OnInit {
 
   @Input() comentario!: ComentarioResponse;
+  @Input() idReceta!: string;
 
   respuestas: any[] = [];
   respuestasVisibles: any[] = [];
@@ -94,7 +96,8 @@ export class ComentarioComponent implements OnInit {
   responderComentario() {
     this.respNueva.texto = this.textoRespuesta;
     this.respNueva.idComentario = this.comentario.id;
-    this.respuestaService.ResponderComentario(this.respNueva).subscribe(
+
+    this.respuestaService.ResponderComentario(parseInt(this.idReceta), this.respNueva).subscribe(
       (respuesta) => {
         this.respuestas.unshift(respuesta);
         this.respuestasVisibles.unshift(respuesta);
@@ -106,6 +109,7 @@ export class ComentarioComponent implements OnInit {
       }
     );
   }
+
 
   obtenerNombreUsuario() {
     return this.authService.getUsername();
