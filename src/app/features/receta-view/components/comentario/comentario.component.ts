@@ -47,6 +47,7 @@ export class ComentarioComponent implements OnInit {
   isAlertVisible: boolean = false;
   alertType: AlertType = 'error';
   alertMessage: string = '';
+  imagenPerfilUsuario: string = 'https://ionicframework.com/docs/img/demos/avatar.svg';
 
 
 
@@ -106,12 +107,12 @@ responderComentario() {
   this.respuestaService.ResponderComentario(this.respNueva).subscribe(
     (nuevaRespuesta) => {
       this.respuestas = [nuevaRespuesta, ...this.respuestas];
-      
+
       if (this.mostrandoRespuestas) {
         this.paginaActual = 0;
         this.respuestasVisibles = this.respuestas.slice(0, this.elementosPorPagina);
       }
-      
+
       this.textoRespuesta = '';
       this.cuadroRespuestaOn = false;
     },
@@ -138,12 +139,12 @@ responderComentario() {
 recargarRespuestasComentario(respuestaEliminada: any) {
   this.respuestas = this.respuestas.filter(r => r.id !== respuestaEliminada.id);
   this.respuestasVisibles = this.respuestasVisibles.filter(r => r.id !== respuestaEliminada.id);
-  
+
   if (this.respuestasVisibles.length < this.elementosPorPagina && this.respuestas.length > 0) {
     this.paginaActual = 0;
     this.respuestasVisibles = this.respuestas.slice(0, this.elementosPorPagina);
   }
-  
+
   this.isAlertVisible = true;
   this.alertType = 'success';
   this.alertMessage = 'Respuesta eliminada correctamente';

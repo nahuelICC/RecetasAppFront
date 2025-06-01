@@ -145,7 +145,9 @@ export class RecetaViewComponent implements OnInit {
     this.comentarioService.getComentariosReceta(this.idReceta).subscribe(
       (response) => {
         this.allComentarios = [...response];
-        this.displayedComentarios = this.allComentarios.slice(0, this.currentItemsToShow);
+        this.displayedComentarios = this.allComentarios
+          .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())
+          .slice(0, this.currentItemsToShow);
         this.cdr.markForCheck();
       },
       (error) => {
@@ -153,7 +155,7 @@ export class RecetaViewComponent implements OnInit {
       }
     );
   }
-  
+
   redireccionarPerfil(id: string): void {
     this.zone.run(() => {
       const idEncrypt = this.encryptService.encriptar(id);
@@ -192,7 +194,7 @@ export class RecetaViewComponent implements OnInit {
       this.isAlertVisible = false;
     }, 3000);
   }
-  
+
   mostrarCuadro() {
     this.cuadroComentarioOn = !this.cuadroComentarioOn;
   }

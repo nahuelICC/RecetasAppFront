@@ -1,6 +1,6 @@
 <app-alert-confirmar *ngIf="borrarRespuesta" [message]="'¿Estás seguro de que quieres borrar tu comentario?'"
  (confirm)="eliminarRespuesta()" (cancel)="borrarRespuesta = false">
-</app-alert-confirmar> 
+</app-alert-confirmar>
 <!-- Contenedor principal del comentario -->
 <div
   class="color-fondo-comentarios rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 mt-6 mb-6 w-full overflow-hidden group">
@@ -10,7 +10,7 @@
       <!-- Avatar del usuario -->
       <div class="relative flex-shrink-0">
         <div class="relative">
-          <img [src]="respuesta.fotoPerfil" alt="Foto de perfil"
+          <img [src]="respuesta.fotoPerfil == null ? imagenPerfilUsuario : respuesta.fotoPerfil" alt="Foto de perfil"
             class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full object-cover shadow-lg ring-2 ring-gray-100">
         </div>
       </div>

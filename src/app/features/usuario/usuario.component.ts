@@ -83,7 +83,7 @@ export class UsuarioComponent  implements OnInit {
   modoEdicionColeccion = false;
   coleccionEditando: any = {};
   editarPerfil = false;
-  ingredientes: any[] = []; // Asegúrate de cargar esta lista
+  ingredientes: any[] = [];
   ingredientesFiltrados: any[] = [];
   ingredientesSeleccionados: any[] = [];
   alergenosSeleccionados: any[] = [];

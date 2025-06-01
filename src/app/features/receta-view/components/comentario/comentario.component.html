@@ -7,7 +7,7 @@
       <!-- Avatar del usuario -->
       <div class="relative flex-shrink-0">
         <div class="relative">
-          <img [src]="comentario.fotoPerfil" alt="Foto de perfil"
+          <img [src]="comentario.fotoPerfil == null ? imagenPerfilUsuario : comentario.fotoPerfil"  alt="Foto de perfil"
             class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full object-cover shadow-lg ring-2 ring-gray-100">
         </div>
       </div>
