@@ -42,6 +42,10 @@ export class ChatComponent implements OnInit, OnDestroy {
   loading = true;
   error = '';
   isMobile = false;
+  currentPage = 0;
+  pageSize = 10;
+  loadingMore = false;
+  allMessagesLoaded = false;
   private subscriptions: Subscription[] = [];
   private currentRoomId: string | null = null;
   private isFetchingProfile = false;
@@ -74,15 +78,6 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   private checkMobile(): void {
     this.isMobile = this.platform.width() < 768;
-  }
-  private scrollToBottom(): void {
-    if (this.scrollContainer) {
-      this.cdr.detectChanges(); // Ensure the view is fully updated
-      setTimeout(() => {
-        const container = this.scrollContainer.nativeElement;
-        container.scrollTop = container.scrollHeight;
-      }, 0);
-    }
   }
 
 
@@ -244,29 +239,91 @@ export class ChatComponent implements OnInit, OnDestroy {
     return [user1Id, user2Id].sort().join('_');
   }
 
-  cargarMensajes(): void {
-    if (!this.usuarioDestinoId || this.usuarioDestinoId === this.usuarioActualId) {
-      console.error('ID de destinatario inválido');
-      this.error = 'ID de destinatario inválido';
-      return;
+  onScroll(event: Event): void {
+    const element = event.target as HTMLElement;
+    const atTop = element.scrollTop === 0;
+
+    if (atTop && !this.loadingMore && !this.allMessagesLoaded) {
+      this.cargarMensajes(true);
+    }
+  }
+
+// Método para verificar si debemos cargar más mensajes
+  checkLoadMore(): void {
+    if (!this.scrollContainer) return;
+
+    const element = this.scrollContainer.nativeElement;
+    const nearTop = element.scrollTop < 100;
+
+    if (nearTop && !this.loadingMore && !this.allMessagesLoaded) {
+      this.cargarMensajes(true);
+    }
+  }
+
+// Modificar el método scrollToBottom para que también verifique loadMore
+  private scrollToBottom(): void {
+    if (this.scrollContainer) {
+      this.cdr.detectChanges();
+      setTimeout(() => {
+        const container = this.scrollContainer.nativeElement;
+        // Solo hacer scroll si no estamos cargando más mensajes
+        if (!this.loadingMore) {
+          container.scrollTop = container.scrollHeight;
+        }
+      }, 0);
+    }
+  }
+
+
+  cargarMensajes(loadMore: boolean = false): void {
+    if (!this.usuarioDestinoId) return;
+
+    if (loadMore) {
+      if (this.allMessagesLoaded || this.loadingMore) return;
+      this.currentPage++;
+      this.loadingMore = true;
+    } else {
+      this.currentPage = 0;
+      this.allMessagesLoaded = false;
     }
 
-    this.loading = true;
-    this.subscriptions.push(
-      this.chatService.getMensajes(this.usuarioActualId, this.usuarioDestinoId).subscribe({
-        next: (data: ChatDTO[]) => {
-          this.mensajes = data;
+    this.chatService.getMensajes(
+      this.usuarioActualId,
+      this.usuarioDestinoId,
+      this.currentPage,
+      this.pageSize
+    ).subscribe({
+      next: (mensajes) => {
+        if (loadMore) {
+          // Mantener el scroll position después de cargar
+          const prevHeight = this.scrollContainer.nativeElement.scrollHeight;
+          this.mensajes = [...mensajes.reverse(), ...this.mensajes];
+
+          this.cdr.detectChanges();
+          setTimeout(() => {
+            this.scrollContainer.nativeElement.scrollTop =
+              this.scrollContainer.nativeElement.scrollHeight - prevHeight;
+          }, 0);
+        } else {
+          this.mensajes = mensajes.reverse();
           this.scrollToBottom();
-          this.marcarMensajesComoLeidos();
-          this.loading = false;
-        },
-        error: (err: any) => {
-          console.error('Error al cargar mensajes:', err);
-          this.error = 'Error al cargar los mensajes';
-          this.loading = false;
         }
-      })
-    );
+
+        if (mensajes.length < this.pageSize) {
+          this.allMessagesLoaded = true;
+        }
+
+        this.loading = false;
+        this.loadingMore = false;
+        this.marcarMensajesComoLeidos();
+      },
+      error: (err) => {
+        this.loading = false;
+        this.loadingMore = false;
+        console.error('Error al cargar mensajes:', err);
+        this.error = 'Error al cargar los mensajes';
+      }
+    });
   }
 
   seleccionarConversacion(usuarioId: number): void {

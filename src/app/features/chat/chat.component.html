@@ -71,7 +71,13 @@
       </div>
 
       <!-- Área de mensajes -->
-      <div class="flex-1 overflow-y-auto p-4 space-y-4" #scrollContainer>
+      <div class="flex-1 overflow-y-auto p-4 space-y-4" #scrollContainer
+           (scroll)="onScroll($event)">
+
+        <!-- Indicador de carga cuando se cargan más mensajes -->
+        <div *ngIf="loadingMore" class="flex justify-center py-2">
+          <ion-icon name="refresh-outline" class="animate-spin"></ion-icon>
+        </div>
 
         <div *ngFor="let mensaje of mensajes"
              class="flex"
