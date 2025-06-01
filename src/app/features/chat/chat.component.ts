@@ -150,10 +150,18 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.websocketService.getMessages().subscribe({
         next: (msg) => {
           if (msg) {
+            // Actualización para mensajes borrados
+            if (msg.borrado) {
+              const index = this.mensajes.findIndex(m => m.id === msg.id);
+              if (index !== -1) {
+                this.mensajes[index] = msg;
+                this.cdr.detectChanges();
+                return;
+              }
+            }
+
             // Play sound for the new message
             this.audioService.reproducir('mensaje');
-
-            // Refresh the conversation list
             this.chatService.refreshConversaciones();
 
             // Only add the message to the current chat if it belongs to the active conversation
@@ -422,12 +430,12 @@ export class ChatComponent implements OnInit, OnDestroy {
     });
   }
 
-// Modificar template para mostrar mensajes borrados
+
   getMensajeTexto(mensaje: ChatDTO): string {
     if (mensaje.borrado) {
       return mensaje.remitenteId === this.usuarioActualId
-        ? 'Eliminaste este mensaje'
-        : 'Este mensaje ha sido eliminado';
+        ? '✖ Eliminaste este mensaje'
+        : '✖ Este mensaje ha sido eliminado';
     }
     return mensaje.texto;
   }
