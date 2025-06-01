@@ -82,4 +82,13 @@ export class ChatService {
   refreshConversaciones(): void {
     this.loadConversaciones();
   }
+
+  marcarComoBorrado(mensajeId: number, usuarioId: number): Observable<ChatDTO> {
+    return this.http.put<ChatDTO>(
+      `${this.apiUrl}/borrar/${mensajeId}?usuarioId=${usuarioId}`,
+      {}
+    ).pipe(
+      tap(() => this.refreshConversaciones())
+    );
+  }
 }

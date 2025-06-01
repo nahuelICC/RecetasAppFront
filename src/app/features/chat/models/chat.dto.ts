@@ -3,6 +3,7 @@ export interface ChatDTO {
   texto: string;
   fecha: Date;
   leido: boolean;
+  borrado: boolean;
   remitenteId: number;
   destinatarioId: number;
   remitenteNombre: string;

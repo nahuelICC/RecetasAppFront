@@ -33,6 +33,7 @@ import { ChangeDetectorRef } from '@angular/core';
 export class ChatComponent implements OnInit, OnDestroy {
   conversaciones: ConversacionDTO[] = [];
   mensajes: ChatDTO[] = [];
+  mensajeSeleccionado: ChatDTO | null = null;
   nuevoMensaje = '';
   usuarioActualId: number;
   usuarioDestinoId: number | null = null;
@@ -293,6 +294,7 @@ export class ChatComponent implements OnInit, OnDestroy {
           destinatarioId: this.usuarioDestinoId!,
           fecha: new Date(),
           leido: false,
+          borrado: false,
           remitenteNombre: perfil.nombre || 'Usuario',
           remitenteFoto: perfil.fotoPerfil || 'assets/frutero.png'
         };
@@ -347,5 +349,29 @@ export class ChatComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscriptions.forEach(sub => sub.unsubscribe());
     this.websocketService.disconnect();
+  }
+
+  borrarMensaje(mensaje: ChatDTO): void {
+    if (mensaje.remitenteId !== this.usuarioActualId) return;
+
+    this.chatService.marcarComoBorrado(mensaje.id!, this.usuarioActualId).subscribe({
+      next: (mensajeActualizado) => {
+        const index = this.mensajes.findIndex(m => m.id === mensaje.id);
+        if (index !== -1) {
+          this.mensajes[index] = mensajeActualizado;
+        }
+      },
+      error: (err) => console.error('Error al borrar mensaje:', err)
+    });
+  }
+
+// Modificar template para mostrar mensajes borrados
+  getMensajeTexto(mensaje: ChatDTO): string {
+    if (mensaje.borrado) {
+      return mensaje.remitenteId === this.usuarioActualId
+        ? 'Eliminaste este mensaje'
+        : 'Este mensaje ha sido eliminado';
+    }
+    return mensaje.texto;
   }
 }
