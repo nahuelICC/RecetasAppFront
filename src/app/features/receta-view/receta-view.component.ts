@@ -1,7 +1,6 @@
-import { Component, NgZone, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
+import { Component, NgZone, OnInit, ChangeDetectorRef } from '@angular/core';
 import { InfoPlatoComponent } from './components/info-plato/info-plato.component';
 import { AlergenoComponent } from "./components/alergeno/alergeno.component";
-import { IonAccordion, IonAccordionGroup, IonIcon } from '@ionic/angular/standalone';
 import { ComentarioComponent } from './components/comentario/comentario.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RecetaService } from './services/receta.service';
@@ -18,8 +17,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { FormsModule } from '@angular/forms';
 import { Alergeno } from './models/Alergeno';
 import { AlertInfoComponent, AlertType } from '../../shared/components/alert-info/alert-info.component';
-import { AlertConfirmarComponent } from '../../shared/components/alert-confirmar/alert-confirmar.component';
-import { InfiniteScrollCustomEvent, IonAvatar, IonContent, IonInfiniteScroll, IonInfiniteScrollContent, IonItem, IonLabel, IonList } from '@ionic/angular/standalone';
+import { InfiniteScrollCustomEvent, IonInfiniteScroll, IonInfiniteScrollContent,IonList } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-receta-view',
@@ -27,23 +25,14 @@ import { InfiniteScrollCustomEvent, IonAvatar, IonContent, IonInfiniteScroll, Io
   imports: [
     InfoPlatoComponent,
     AlergenoComponent,
-    IonAccordion,
-    IonAccordionGroup,
-    IonItem,
-    IonLabel,
-    IonIcon,
     ComentarioComponent,
     NgFor,
     NgIf,
     BotonAddRecetaComponent,
     FormsModule,
     AlertInfoComponent,
-    IonAvatar,
-    IonContent,
     IonInfiniteScroll,
     IonInfiniteScrollContent,
-    IonItem,
-    IonLabel,
     IonList
   ],
   templateUrl: './receta-view.component.html',
