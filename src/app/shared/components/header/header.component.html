@@ -3,7 +3,7 @@
     <img src="assets/logo.png" class="h-10 sm:h-12 w-auto max-w-[120px] sm:max-w-[160px] hidden lg:block">
     <a [routerLink]="'/main'" class="lg:text-2xl text-lg font-bold texto-logo no-underline text-inherit">Cookers</a>
   </div>
-  <nav class="flex items-center gap-16 mr-4">
+  <div class="flex items-center md:gap-10 gap-16 mr-4">
     <a class="color-texto font-semibold hover:text-white" href="/main">Home</a>
     <a class="color-texto font-semibold hover:text-white" href="/explorador">Buscador</a>
     <button class="w-full text-left px-4 py-2" (click)="toggleTheme()" *ngIf="!authService.isLogged()">
@@ -22,8 +22,6 @@
       </span>
     </div>
 
-    <div class="relative" *ngIf="authService.isLogged()">
-    <ion-icon name="paper-plane-outline" class="text-2xl hover:cursor-pointer avion" *ngIf="authService.isLogged()" [routerLink]="'/chat'"></ion-icon>
     <div class="relative">
       <ion-icon name="notifications-outline" *ngIf="authService.isLogged()"
                 class="text-2xl hover:cursor-pointer avion"
@@ -58,14 +56,12 @@
         </button>
       </div>
     </div>
-  </nav>
+  </div>
 </div>
 
 <div *ngIf="isMobile" class="fixed top-0 left-0 right-0 color-verde-claro p-4 flex justify-between items-center z-50 border-b border-b-gray-300">
   <span class="text-lg font-bold texto-logo">Cookers</span>
   <div class="flex items-center gap-4">
-    <ion-icon name="paper-plane-outline" class="text-2xl" *ngIf="authService.isLogged()" [routerLink]="'/chat'"></ion-icon>
-
     <div class="relative" *ngIf="authService.isLogged()">
       <ion-icon name="notifications-outline" class="text-2xl cursor-pointer" (click)="toggleNotificaciones()"></ion-icon>
 

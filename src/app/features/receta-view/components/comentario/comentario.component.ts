@@ -33,6 +33,7 @@ export class ComentarioComponent implements OnInit {
   @Input() comentario!: ComentarioResponse;
   @Input() idReceta!: string;
   @Output() comentarioEliminado = new EventEmitter<ComentarioResponse>();
+  @Output() comentarioDenunciado = new EventEmitter<ComentarioResponse>();
 
   respuestas: any[] = [];
   respuestasVisibles: any[] = [];
@@ -50,6 +51,9 @@ export class ComentarioComponent implements OnInit {
   alertType: AlertType = 'error';
   alertMessage: string = '';
   imagenPerfilUsuario: string = 'https://ionicframework.com/docs/img/demos/avatar.svg';
+  mostrarAlertaConfirmacion: boolean = false;
+  mensajeAlertaConfirmacion: string = '';
+  accionConfirmada!: () => void;
 
 
 
@@ -136,6 +140,25 @@ responderComentario() {
       }
     })
   }
+  confirmarEliminacion() {
+    this.mensajeAlertaConfirmacion = '¿Estás seguro de que quieres eliminar el comentario?';
+    this.accionConfirmada = () => this.eliminarComentario(this.comentario.id);
+    this.mostrarAlertaConfirmacion = true;
+  }
+  confirmarDenuncia() {
+    this.mensajeAlertaConfirmacion = '¿Estás seguro de que quieres denunciar el comentario?';
+    this.accionConfirmada = () => this.denunciarComentario();
+    this.mostrarAlertaConfirmacion = true;
+  }
+  confirmarAccion() {
+    if (this.accionConfirmada) {
+      this.accionConfirmada();
+    }
+    this.mostrarAlertaConfirmacion = false;
+  }
+  cancelarAccion() {
+    this.mostrarAlertaConfirmacion = false;
+  }
 
 recargarRespuestasComentario(respuestaEliminada: any) {
   this.respuestas = this.respuestas.filter(r => r.id !== respuestaEliminada.id);
@@ -153,6 +176,18 @@ recargarRespuestasComentario(respuestaEliminada: any) {
     this.isAlertVisible = false;
   }, 3000);
 }
+
+  denunciarComentario() {
+    this.comentarioService.denunciarComentario(this.comentario.id).subscribe({
+      next: () => {
+        this.comentarioDenunciado.emit();
+      },
+      error: (err) => {
+        console.error('Error al denunciar comentario:', err);
+      }
+    });
+  }
+
 
 
 

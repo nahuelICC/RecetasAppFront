@@ -25,4 +25,6 @@ export class RespuestaService {
   eliminarRespuesta(idRespuesta: String): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/eliminar/${idRespuesta}`);
   }
+
+
 }

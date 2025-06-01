@@ -32,8 +32,8 @@
           <!-- Menú de acciones mejorado -->
           <div class="flex items-center space-x-2 mt-3 sm:mt-0">
             <!-- Botón de denuncia -->
-            <button class="relative group/btn p-2 rounded-full hover:bg-red-50 transition-all duration-200">
-              <svg xmlns="http://www.w3.org/2000/svg"
+            <button (click)="confirmarDenuncia()" class="relative group/btn p-2 rounded-full hover:bg-red-50 transition-all duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg"
                 class="h-5 w-5 text-gray-400 group-hover/btn:text-red-500 transition-colors duration-200" fill="none"
                 viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
@@ -47,7 +47,7 @@
 
             <!-- Botón de eliminar (solo para el autor) -->
             <button *ngIf="obtenerNombreUsuario() !== null && obtenerNombreUsuario() === comentario.username"
-              (click)="borrarComentario = true"
+                    (click)="confirmarEliminacion()"
               class="relative group/btn p-2 rounded-full hover:bg-red-50 transition-all duration-200">
               <svg xmlns="http://www.w3.org/2000/svg"
                 class="h-5 w-5 text-gray-400 group-hover/btn:text-red-500 transition-colors duration-200" fill="none"
@@ -164,6 +164,10 @@
     </div>
   </div>
 </div>
-<app-alert-confirmar *ngIf="borrarComentario" [message]="'¿Estás seguro de que quieres borrar tu comentario?'"
-  (confirm)="eliminarComentario(comentario.id)" (cancel)="borrarComentario = false">
+<app-alert-confirmar
+  *ngIf="mostrarAlertaConfirmacion"
+  [message]="mensajeAlertaConfirmacion"
+  (confirm)="confirmarAccion()"
+  (cancel)="cancelarAccion()">
 </app-alert-confirmar>
+

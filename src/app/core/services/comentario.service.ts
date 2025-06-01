@@ -33,4 +33,7 @@ constructor(
   eliminarComentario(idComentario: number){
     return this.http.delete(this.apiUrl + `/comentario/receta/${idComentario}`);
   }
+  denunciarComentario(idComentario: number): Observable<string> {
+    return this.http.post(`${this.apiUrl}/comentario/denunciar/${idComentario}`, null, { responseType: 'text' });
+  }
 }

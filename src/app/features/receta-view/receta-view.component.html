@@ -95,7 +95,7 @@
       </div>
       <ion-list>
         @for (comentario of displayedComentarios; track comentario; let index = $index) {
-        <app-comentario [comentario]="comentario" [idReceta]="idReceta" (comentarioEliminado)="recargarComentariosReceta()">
+        <app-comentario [comentario]="comentario" [idReceta]="idReceta" (comentarioEliminado)="recargarComentariosReceta()"  (comentarioDenunciado)="mostrarAlertaDenuncia()">
         </app-comentario>
         }
       </ion-list>
@@ -110,5 +110,5 @@
   </section>
 </main>
 <app-boton-add-receta></app-boton-add-receta>
-<app-alert-info [message]="alertMessage" [isVisible]="isAlertVisible" [type]="alertType">
+<app-alert-info [message]="alertMessage" [isVisible]="AlertVisible" [type]="alertType">
 </app-alert-info>

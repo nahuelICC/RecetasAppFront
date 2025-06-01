@@ -20,7 +20,8 @@ import { Respuesta } from '../../models/Respuesta';
 export class RespuestaComponent implements OnInit {
 
 
-  @Input() respuesta!:any@Output() respuestaEliminado = new EventEmitter<Respuesta>();
+  @Input() respuesta!:any
+  @Output() respuestaEliminado = new EventEmitter<Respuesta>();
 
   borrarRespuesta: boolean = false;
   imagenPerfilUsuario: string = 'https://ionicframework.com/docs/img/demos/avatar.svg';

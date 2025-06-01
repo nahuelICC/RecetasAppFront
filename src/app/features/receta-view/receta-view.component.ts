@@ -25,8 +25,6 @@ import { InfiniteScrollCustomEvent, IonAvatar, IonContent, IonInfiniteScroll, Io
   selector: 'app-receta-view',
   standalone: true,
   imports: [
-    InfoPlatoComponent,
-    AlergenoComponent,
     IonAccordion,
     IonAccordionGroup,
     IonItem,
@@ -44,7 +42,9 @@ import { InfiniteScrollCustomEvent, IonAvatar, IonContent, IonInfiniteScroll, Io
     IonInfiniteScrollContent,
     IonItem,
     IonLabel,
-    IonList
+    IonList,
+    InfoPlatoComponent,
+    AlergenoComponent
   ],
   templateUrl: './receta-view.component.html',
   styleUrls: ['./receta-view.component.css'],
@@ -71,7 +71,7 @@ export class RecetaViewComponent implements OnInit {
   cuadroComentarioOn: boolean = false;
   textoComentario: string = '';
   listaAlergenos: Alergeno[] = [];
-  isAlertVisible: boolean = false;
+  AlertVisible: boolean = false;
   alertType: AlertType = 'error';
   alertMessage: string = '';
   borrarComentario: boolean = false;
@@ -81,6 +81,7 @@ export class RecetaViewComponent implements OnInit {
   currentItemsToShow: number = 5;
   allComentarios: ComentarioResponse[] = [];
   displayedComentarios: ComentarioResponse[] = [];
+
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
@@ -187,11 +188,11 @@ export class RecetaViewComponent implements OnInit {
   recargarComentariosReceta() {
     this.currentItemsToShow = 5;
     this.obtenerComentariosReceta();
-    this.isAlertVisible = true;
+    this.AlertVisible = true;
     this.alertType = 'success';
     this.alertMessage = 'Comentario eliminado correctamente';
     setTimeout(() => {
-      this.isAlertVisible = false;
+      this.AlertVisible = false;
     }, 3000);
   }
 
@@ -211,17 +212,27 @@ export class RecetaViewComponent implements OnInit {
     }, 500);
   }
 
-  generateItems() {
-    const newItems = this.comentariosReceta.slice(this.comentariosReceta.length, this.comentariosReceta.length + 5);
-    this.comentariosReceta.push(...newItems);
-    if (newItems.length === 0) {
-      this.isAlertVisible = true;
-      this.alertMessage = 'No hay más comentarios para mostrar';
-      setTimeout(() => {
-        this.isAlertVisible = false;
-      }, 3000);
-    }
+  mostrarAlertaDenuncia() {
+    this.AlertVisible = true;          // Mostrar la alerta
+    this.alertType = 'success';        // Tipo de alerta
+    this.alertMessage = 'Comentario denunciado correctamente'; // Mensaje
+
+    setTimeout(() => {
+      this.AlertVisible = false;      // Ocultar después de 3 segundos
+    }, 3000);
   }
+
+  // generateItems() {
+  //   const newItems = this.comentariosReceta.slice(this.comentariosReceta.length, this.comentariosReceta.length + 5);
+  //   this.comentariosReceta.push(...newItems);
+  //   if (newItems.length === 0) {
+  //     this.isAlertVisible = true;
+  //     this.alertMessage = 'No hay más comentarios para mostrar';
+  //     setTimeout(() => {
+  //       this.isAlertVisible = false;
+  //     }, 3000);
+  //   }
+  // }
 
 
 }
