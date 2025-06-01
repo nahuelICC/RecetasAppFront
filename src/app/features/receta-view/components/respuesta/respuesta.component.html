@@ -10,7 +10,7 @@
       <!-- Avatar del usuario -->
       <div class="relative flex-shrink-0">
         <div class="relative">
-          <img [src]="respuesta.fotoPerfil" alt="Foto de perfil"
+          <img [src]="respuesta.fotoPerfil==null || ''?  'https://ionicframework.com/docs/img/demos/avatar.svg': respuesta.fotoPerfil" alt="Foto de perfil"
             class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full object-cover shadow-lg ring-2 ring-gray-100">
         </div>
       </div>
