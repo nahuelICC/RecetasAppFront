@@ -37,8 +37,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   nuevoMensaje = '';
   usuarioActualId: number;
   usuarioDestinoId: number | null = null;
-  nombreUsuarioDestino: string = 'Usuario';
-  fotoUsuarioDestino: string = 'assets/frutero.png';
+  nombreUsuarioDestino: string = '';
+  fotoUsuarioDestino: string = '';
   loading = true;
   error = '';
   isMobile = false;
@@ -50,7 +50,10 @@ export class ChatComponent implements OnInit, OnDestroy {
   private currentRoomId: string | null = null;
   private isFetchingProfile = false;
   @ViewChild('scrollContainer') scrollContainer!: ElementRef;
-
+  buscando = false;
+  terminoBusqueda = '';
+  usuariosSeguidos: any[] = [];
+  mostrarResultadosBusqueda = false;
 
   constructor(
     private chatService: ChatService,
@@ -74,12 +77,23 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.initRouteListening();
     this.websocketService.connect();
     this.initWebSocket();
+    this.cargarUsuariosSeguidos();
   }
 
   private checkMobile(): void {
     this.isMobile = this.platform.width() < 768;
   }
 
+  private cargarUsuariosSeguidos(): void {
+    this.usuarioService.listaSeguidos(true).subscribe({
+      next: (seguidos) => {
+        this.usuariosSeguidos = seguidos;
+      },
+      error: (err) => {
+        console.error('Error al cargar usuarios seguidos:', err);
+      }
+    });
+  }
 
   private initConversaciones(): void {
     this.loading = true;
@@ -87,7 +101,6 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.chatService.conversaciones$.subscribe({
         next: (conversaciones) => {
           this.conversaciones = conversaciones;
-          // Si estamos en una conversación que no está en la lista, la añadimos
           if (this.usuarioDestinoId && !this.conversaciones.some(c => c.otroUsuarioId === this.usuarioDestinoId)) {
             this.agregarConversacionSiNecesario();
           }
@@ -135,6 +148,8 @@ export class ChatComponent implements OnInit, OnDestroy {
           } else {
             this.usuarioDestinoId = null;
             this.mensajes = [];
+            this.nombreUsuarioDestino = '';
+            this.fotoUsuarioDestino = '';
           }
         },
         error: (err) => {
@@ -150,7 +165,6 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.websocketService.getMessages().subscribe({
         next: (msg) => {
           if (msg) {
-            // Actualización para mensajes borrados
             if (msg.borrado) {
               const index = this.mensajes.findIndex(m => m.id === msg.id);
               if (index !== -1) {
@@ -160,11 +174,9 @@ export class ChatComponent implements OnInit, OnDestroy {
               }
             }
 
-            // Play sound for the new message
             this.audioService.reproducir('mensaje');
             this.chatService.refreshConversaciones();
 
-            // Only add the message to the current chat if it belongs to the active conversation
             if (
               (msg.remitenteId === this.usuarioDestinoId && msg.destinatarioId === this.usuarioActualId) ||
               (msg.remitenteId === this.usuarioActualId && msg.destinatarioId === this.usuarioDestinoId)
@@ -193,15 +205,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
 
     this.cargarMensajes();
-
-    const conversacionExistente = this.conversaciones.find(c => c.otroUsuarioId === this.usuarioDestinoId);
-
-    if (conversacionExistente) {
-      this.nombreUsuarioDestino = conversacionExistente.otroUsuarioNombre;
-      this.fotoUsuarioDestino = conversacionExistente.otroUsuarioFoto;
-    } else {
-      this.cargarInformacionUsuarioDestino();
-    }
+    this.cargarInformacionUsuarioDestino();
   }
 
   private cargarInformacionUsuarioDestino(): void {
@@ -210,6 +214,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     if (!usuarioDestinoId || this.isFetchingProfile) return;
 
     this.isFetchingProfile = true;
+    this.nombreUsuarioDestino = '';
+    this.fotoUsuarioDestino = '';
 
     this.usuarioService.getPerfilId(usuarioDestinoId.toString()).subscribe({
       next: (perfil) => {
@@ -229,19 +235,19 @@ export class ChatComponent implements OnInit, OnDestroy {
           });
         }
 
-        // Actualizamos la lista de conversaciones localmente
         this.agregarConversacionSiNecesario();
         this.isFetchingProfile = false;
       },
       error: (err) => {
         console.error('Error loading user profile:', err);
-        this.nombreUsuarioDestino = 'Usuario';
+        this.nombreUsuarioDestino = '';
         this.fotoUsuarioDestino = 'assets/frutero.png';
         this.agregarConversacionSiNecesario();
         this.isFetchingProfile = false;
       }
     });
   }
+
 
   private getRoomId(user1Id: number, user2Id: number): string {
     return [user1Id, user2Id].sort().join('_');
