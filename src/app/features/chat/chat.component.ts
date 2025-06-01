@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { ChatService } from './chat.service';
 import { AuthService } from '../../core/services/auth.service';
 import { UsuarioService } from '../usuario/services/usuario.service';
@@ -12,6 +12,9 @@ import {DatePipe, NgClass, NgForOf, NgIf, NgStyle} from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import {Platform} from '@ionic/angular';
 import {AudioService} from '../../core/services/audio.service';
+import { ChangeDetectorRef } from '@angular/core';
+
+
 
 @Component({
   selector: 'app-chat',
@@ -41,6 +44,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   private currentRoomId: string | null = null;
   private isFetchingProfile = false;
+  @ViewChild('scrollContainer') scrollContainer!: ElementRef;
+
 
   constructor(
     private chatService: ChatService,
@@ -51,7 +56,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     private usuarioService: UsuarioService,
     private audioService: AudioService,
     private encryptService: EncryptService,
-    private platform: Platform // Inyecta Platform
+    private cdr: ChangeDetectorRef,
+    private platform: Platform
   ) {
     this.usuarioActualId = this.authService.getUserId() || 0;
     this.checkMobile();
@@ -68,6 +74,16 @@ export class ChatComponent implements OnInit, OnDestroy {
   private checkMobile(): void {
     this.isMobile = this.platform.width() < 768;
   }
+  private scrollToBottom(): void {
+    if (this.scrollContainer) {
+      this.cdr.detectChanges(); // Ensure the view is fully updated
+      setTimeout(() => {
+        const container = this.scrollContainer.nativeElement;
+        container.scrollTop = container.scrollHeight;
+      }, 0);
+    }
+  }
+
 
   private initConversaciones(): void {
     this.loading = true;
@@ -239,6 +255,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.chatService.getMensajes(this.usuarioActualId, this.usuarioDestinoId).subscribe({
         next: (data: ChatDTO[]) => {
           this.mensajes = data;
+          this.scrollToBottom();
           this.marcarMensajesComoLeidos();
           this.loading = false;
         },
@@ -284,6 +301,7 @@ export class ChatComponent implements OnInit, OnDestroy {
           next: (mensajeGuardado) => {
             this.mensajes.push(mensajeGuardado);
             this.nuevoMensaje = '';
+            this.scrollToBottom();
             // Forzar actualización de conversaciones
             this.chatService.refreshConversaciones();
           },
