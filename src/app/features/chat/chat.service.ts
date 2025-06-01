@@ -38,12 +38,12 @@ export class ChatService {
       });
   }
 
-  getMensajes(remitenteId: number, destinatarioId: number): Observable<ChatDTO[]> {
+  getMensajes(remitenteId: number, destinatarioId: number, page: number = 0, size: number = 10): Observable<ChatDTO[]> {
     if (remitenteId === destinatarioId) {
       return throwError(() => new Error('Los IDs no pueden ser iguales'));
     }
     return this.http.get<ChatDTO[]>(
-      `${this.apiUrl}/mensajes?remitenteId=${remitenteId}&destinatarioId=${destinatarioId}`
+      `${this.apiUrl}/mensajes?remitenteId=${remitenteId}&destinatarioId=${destinatarioId}&page=${page}&size=${size}`
     ).pipe(
       catchError(error => {
         console.error('Error al obtener mensajes:', error);
@@ -81,5 +81,14 @@ export class ChatService {
 
   refreshConversaciones(): void {
     this.loadConversaciones();
+  }
+
+  marcarComoBorrado(mensajeId: number, usuarioId: number): Observable<ChatDTO> {
+    return this.http.put<ChatDTO>(
+      `${this.apiUrl}/borrar/${mensajeId}?usuarioId=${usuarioId}`,
+      {}
+    ).pipe(
+      tap(() => this.refreshConversaciones())
+    );
   }
 }

@@ -5,7 +5,7 @@
   <div *ngIf="isMobile" class="h-16 flex-shrink-0"></div>
 
   <!-- Contenedor principal del chat -->
-  <div class="flex flex-1 min-h-0" [ngStyle]="{ 'margin-top': isMobile ? '0' : '5rem' }">
+  <div class="flex flex-1 min-h-0" [ngStyle]="{ 'margin-top': isMobile ? '0' : '5rem', 'padding-bottom': isMobile ? '4rem' : '0' }">
 
     <!-- Panel izquierdo - Lista de conversaciones -->
     <aside class="w-32 sm:w-40 md:w-1/3 border-r border-[var(--color-verde-cuadros)] flex flex-col">
@@ -51,7 +51,8 @@
           </div>
 
           <!-- Botón para mensajes no leídos -->
-          <ion-icon *ngIf="conversacion.noLeidos" name="radio-button-on" class="text-[var(--color-rojo-resaltar)] text-lg"></ion-icon>
+          <ion-icon *ngIf="conversacion.noLeidos" name="radio-button-on"
+                    class="text-[var(--color-rojo-resaltar)] text-lg"></ion-icon>
         </div>
       </div>
     </aside>
@@ -59,7 +60,8 @@
     <!-- Panel derecho - Área de chat -->
     <main class="flex-1 flex flex-col min-h-0">
       <!-- Cabecera del chat -->
-      <div *ngIf="usuarioDestinoId" class="p-3 bg-[var(--color-verde-fondo)] border-b border-[var(--color-verde-cuadros)] sticky top-0 z-10 flex items-center gap-2">
+      <div *ngIf="usuarioDestinoId"
+           class="p-3 bg-[var(--color-verde-fondo)] border-b border-[var(--color-verde-cuadros)] sticky top-0 z-10 flex items-center gap-2">
         <img *ngIf="getFotoUsuario(usuarioDestinoId)"
              [src]="getFotoUsuario(usuarioDestinoId)"
              class="w-8 h-8 rounded-full object-cover"/>
@@ -69,26 +71,40 @@
       </div>
 
       <!-- Área de mensajes -->
-      <div class="flex-1 overflow-y-auto p-4 space-y-4">
+      <div class="flex-1 overflow-y-auto p-4 space-y-4" #scrollContainer
+           (scroll)="onScroll($event)">
+
+        <!-- Indicador de carga cuando se cargan más mensajes -->
+        <div *ngIf="loadingMore" class="flex justify-center py-2">
+          <ion-icon name="refresh-outline" class="animate-spin"></ion-icon>
+        </div>
 
         <div *ngFor="let mensaje of mensajes"
              class="flex"
              [ngClass]="{
-               'justify-end': mensaje.remitenteId === usuarioActualId,
+               'sm:justify-end justify-start': mensaje.remitenteId === usuarioActualId,
                'justify-start': mensaje.remitenteId !== usuarioActualId
              }">
           <div [ngClass]="{
-                 'bg-[var(--color-verde-boton)]': mensaje.remitenteId === usuarioActualId,
-                 'bg-[var(--color-verde-cuadros)]': mensaje.remitenteId !== usuarioActualId
+                 'bg-[var(--color-verde-boton)]': mensaje.remitenteId === usuarioActualId && !mensaje.borrado,
+                 'bg-[var(--color-verde-cuadros)]': mensaje.remitenteId !== usuarioActualId && !mensaje.borrado,
+                 'italic text-gray-400': mensaje.borrado
                }"
-               class="max-w-[75%] px-4 py-2 rounded-2xl shadow text-sm">
-            <p>{{ mensaje.texto }}</p>
+               class="max-w-[75%] px-4 py-2 rounded-2xl shadow text-sm relative">
+            <p [ngClass]="{'italic': mensaje.borrado}">{{ getMensajeTexto(mensaje) }}</p>
             <div class="text-[10px] mt-1 flex justify-end items-center gap-1 opacity-70">
-              <span>{{ mensaje.fecha | date:'shortTime' }}</span>
-              <span *ngIf="mensaje.remitenteId === usuarioActualId">
+              <span [ngClass]="{'italic': mensaje.borrado}">{{ mensaje.fecha | date:'shortTime' }}</span>
+              <span *ngIf="mensaje.remitenteId === usuarioActualId && !mensaje.borrado">
                 <ion-icon [name]="mensaje.leido ? 'checkmark-done' : 'checkmark-sharp'"></ion-icon>
               </span>
             </div>
+
+            <!-- Botón para borrar mensaje (solo para mensajes propios no borrados) -->
+            <ion-icon *ngIf="mensaje.remitenteId === usuarioActualId && !mensaje.borrado"
+                      name="trash-outline"
+                      (click)="borrarMensaje(mensaje)"
+                      class="absolute -right-2 -top-2 text-red-500 hover:text-red-700 cursor-pointer bg-white rounded-full p-1 text-xs">
+            </ion-icon>
           </div>
         </div>
       </div>
