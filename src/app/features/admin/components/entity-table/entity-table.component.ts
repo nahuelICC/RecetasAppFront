@@ -136,7 +136,10 @@ export class EntityTableComponent  implements OnInit, OnDestroy{
   }
 
   handleEdit(item: any): void {
-    this.modalData = { ...item };
+    this.modalData = { ...item,
+      alergenoId: item.alergeno ? item.alergeno.id : null,
+      categoriaId: item.categoria ? item.categoria.id : null
+    };
     this.modalTitle = `Editar ${this.config.entityName}`;
     this.isModalOpen = true;
   }
@@ -175,39 +178,39 @@ export class EntityTableComponent  implements OnInit, OnDestroy{
   }
   //
   onFormSubmit(formData: any): void {
-  //   this.isLoading = true;
-  //   let operation: Observable<any>;
-  //
-  //   if (this.modalData && this.modalData.id) { // Editando
-  //     if (!this.config.updateEntity) {
-  //       console.warn("updateEntity no configurado.");
-  //       this.isLoading = false;
-  //       this.isModalOpen = false;
-  //       return;
-  //     }
-  //     operation = this.config.updateEntity(this.modalData.id, formData);
-  //   } else { // Creando
-  //     if (!this.config.createEntity) {
-  //       console.warn("createEntity no configurado.");
-  //       this.isLoading = false;
-  //       this.isModalOpen = false;
-  //       return;
-  //     }
-  //     operation = this.config.createEntity(formData);
-  //   }
-  //
-  //   operation.subscribe({
-  //     next: () => {
-  //       alert(`${this.config.entityName} ${this.modalData?.id ? 'actualizado' : 'creado'}.`);
-  //       this.isModalOpen = false;
-  //       this.resetAndLoadData(); // Recarga los datos
-  //     },
-  //     error: (err) => {
-  //       console.error("Error al guardar:", err);
-  //       alert(`Error al guardar ${this.config.entityName}.`);
-  //       this.isLoading = false; // Mantener el modal abierto para corrección o reintento
-  //     }
-  //   });
+    this.isLoading = true;
+    let operation: Observable<any>;
+
+    if (this.modalData && this.modalData.id) { // Editando
+      if (!this.config.updateEntity) {
+        console.warn("updateEntity no configurado.");
+        this.isLoading = false;
+        this.isModalOpen = false;
+        return;
+      }
+      operation = this.config.updateEntity(this.modalData.id, formData);
+    } else { // Creando
+      if (!this.config.createEntity) {
+        console.warn("createEntity no configurado.");
+        this.isLoading = false;
+        this.isModalOpen = false;
+        return;
+      }
+      operation = this.config.createEntity(formData);
+    }
+
+    operation.subscribe({
+      next: () => {
+        alert(`${this.config.entityName} ${this.modalData?.id ? 'actualizado' : 'creado'}.`);
+        this.isModalOpen = false;
+        this.resetAndLoadData(); // Recarga los datos
+      },
+      error: (err) => {
+        console.error("Error al guardar:", err);
+        alert(`Error al guardar ${this.config.entityName}.`);
+        this.isLoading = false; // Mantener el modal abierto para corrección o reintento
+      }
+    });
   }
 
 }

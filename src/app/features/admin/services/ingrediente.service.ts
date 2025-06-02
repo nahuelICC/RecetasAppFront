@@ -32,15 +32,16 @@ export class IngredienteService {
         })
       );
   }
-  createIngrediente(ingredienteData: any): Observable<IngredienteAdminDTO> {
-    return this.http.post<IngredienteAdminDTO>(`${this.apiUrl}/admin/crear`, ingredienteData); // Ajusta endpoint
+  crearIngrediente(ingredienteData: any): Observable<IngredienteAdminDTO> {
+    return this.http.post<IngredienteAdminDTO>(`${this.apiUrl}/admin/crear`, ingredienteData);
   }
 
-  updateIngrediente(id: number, ingredienteData: any): Observable<IngredienteAdminDTO> {
-    return this.http.put<IngredienteAdminDTO>(`${this.apiUrl}/admin/actualizar/${id}`, ingredienteData); // Ajusta endpoint
+  actualizarIngrediente(id: number, ingredienteData: any): Observable<any> {
+    ingredienteData.id = id;
+    return this.http.put<IngredienteAdminDTO>(`${this.apiUrl}/admin/actualizar`, ingredienteData);
   }
 
-  deleteIngrediente(id: number): Observable<void> { // Delete a menudo no devuelve contenido
-    return this.http.delete<void>(`${this.apiUrl}/admin/eliminar/${id}`); // Ajusta endpoint
+  ocultarIngrediente(id: number): Observable<void> { // Delete a menudo no devuelve contenido
+    return this.http.delete<void>(`${this.apiUrl}/admin/eliminar/${id}`);
   }
 }

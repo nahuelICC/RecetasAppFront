@@ -16,11 +16,14 @@
                   [id]="field.name"
                   [formControlName]="field.name"
                   class="form-input appearance-none">
-            <option [ngValue]="null" *ngIf="field.placeholder || !field.required" disabled>
-              {{ field.placeholder || '-- Seleccione --' }}
+            <option [ngValue]="null" *ngIf="!field.required">
+              {{ field.placeholder || '-- Ninguno --' }}
             </option>
-            <option *ngFor="let option of field.options" [ngValue]="option.id">
-              {{ option.nombre }}
+            <option [ngValue]="null" *ngIf="field.required && !entityForm.get(field.name)?.value" disabled>
+              {{ field.placeholder || '-- Seleccione (obligatorio) --' }}
+            </option>
+            <option *ngFor="let option of field.options" [ngValue]="option.value">
+              {{ option.label }}
             </option>
           </select>
         </ng-container>
