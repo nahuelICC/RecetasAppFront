@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit  } from '@angular/core';
 import { ChatService } from './chat.service';
 import { AuthService } from '../../core/services/auth.service';
 import { UsuarioService } from '../usuario/services/usuario.service';
@@ -14,6 +14,7 @@ import { FormsModule } from "@angular/forms";
 import {Platform} from '@ionic/angular';
 import {AudioService} from '../../core/services/audio.service';
 import { ChangeDetectorRef } from '@angular/core';
+import { NgZone } from '@angular/core';
 import {PreviewRecetaComponent} from '../receta-view/components/preview-receta/preview-receta.component';
 
 @Component({
@@ -31,7 +32,7 @@ import {PreviewRecetaComponent} from '../receta-view/components/preview-receta/p
   ],
   styleUrls: ['./chat.component.css']
 })
-export class ChatComponent implements OnInit, OnDestroy {
+export class ChatComponent implements OnInit, OnDestroy,AfterViewInit   {
   conversaciones: ConversacionDTO[] = [];
   mensajes: ChatDTO[] = [];
   mensajeSeleccionado: ChatDTO | null = null;
@@ -47,6 +48,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   pageSize = 10;
   loadingMore = false;
   allMessagesLoaded = false;
+  private shouldScrollToBottom = false;
+  private mutationObserver: MutationObserver | null = null;
   private usuariosBloqueados: Set<number> = new Set<number>();
   private subscriptions: Subscription[] = [];
   private currentRoomId: string | null = null;
@@ -68,6 +71,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     private audioService: AudioService,
     private encryptService: EncryptService,
     private cdr: ChangeDetectorRef,
+    private zone: NgZone,
     private platform: Platform
   ) {
     this.usuarioActualId = this.authService.getUserId() || 0;
@@ -81,6 +85,23 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.websocketService.connect();
     this.initWebSocket();
     this.cargarUsuariosSeguidos();
+  }
+  ngAfterViewInit(): void {
+    this.setupMutationObserver();
+  }
+  private setupMutationObserver(): void {
+    if (!this.scrollContainer) return;
+
+    this.zone.runOutsideAngular(() => {
+      this.mutationObserver = new MutationObserver(() => {
+        this.scrollToBottom();
+      });
+
+      this.mutationObserver.observe(this.scrollContainer.nativeElement, {
+        childList: true,
+        subtree: true
+      });
+    });
   }
 
   private checkMobile(): void {
@@ -332,15 +353,14 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
   }
 
-  private scrollToBottom(): void {
-    if (this.scrollContainer && !this.perfilBloqueado) {
-      this.cdr.detectChanges();
-      setTimeout(() => {
-        const container = this.scrollContainer.nativeElement;
-        if (!this.loadingMore) {
-          container.scrollTop = container.scrollHeight;
-        }
-      }, 0);
+  scrollToBottom(): void {
+    try {
+      if (this.scrollContainer && this.scrollContainer.nativeElement) {
+        this.scrollContainer.nativeElement.scrollTop =
+          this.scrollContainer.nativeElement.scrollHeight;
+      }
+    } catch (err) {
+      console.error('Error al hacer scroll:', err);
     }
   }
 
@@ -471,6 +491,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.mutationObserver?.disconnect();
     this.subscriptions.forEach(sub => sub.unsubscribe());
     this.websocketService.disconnect();
   }
