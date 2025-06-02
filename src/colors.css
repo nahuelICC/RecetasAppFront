@@ -7,4 +7,26 @@
   --color-amarillo-boton: #f9bc60;
   --color-rojo-resaltar:#e16162;
   --color-verde-translucido: rgba(171, 209, 198, 0.5);
+  --color-verde-detalles: #003836;
+  --color-gris: #CAC4D0;
+  --color-fondo-comentarios: #f0f0f0;
+  --color-texto-comentarios: #004643;
+
+}
+
+.light-theme{
+    --color-verde-fondo:#fdfaf6;
+    --color-verde-boton:#007f5f;
+    --color-texto:#001e1d;
+    --color-texto-blanco:#001e1d;
+    --color-verde-cuadros:#2dbfa8;
+    --color-amarillo-boton: #fde24f;
+    --color-rojo-resaltar:#ff5470;
+    --color-verde-translucido: rgba(45, 191, 168, 0.5);
+    --color-verde-detalles: #007A52;
+    --color-gris: #CAC4D0;
+    --color-fondo-comentarios: #004643;
+    --color-texto-comentarios: #fff;
+
+
 }

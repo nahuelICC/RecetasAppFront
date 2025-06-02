@@ -3,6 +3,7 @@ import { Alergeno } from '../../models/Alergeno';
 
 @Component({
   selector: 'app-alergeno',
+  standalone: true,
   templateUrl: './alergeno.component.html',
   styleUrls: ['./alergeno.component.css'],
 })

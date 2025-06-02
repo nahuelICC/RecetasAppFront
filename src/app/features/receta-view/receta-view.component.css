@@ -1,127 +1,64 @@
-/* recipe-steps.component.scss */
-:host {
-    --recipe-primary-color: var(--ion-color-primary, #3880ff);
-    --recipe-dark-color: var(--ion-color-dark, #222428);
-    --recipe-light-color: var(--ion-color-light, #f4f5f8);
-    --recipe-medium-color: var(--ion-color-medium, #92949c);
-    --recipe-accent-color: var(--ion-color-secondary, #3dc2ff);
-    --recipe-success-color: var(--ion-color-success, #2dd36f);
-    --recipe-warning-color: var(--ion-color-warning, #ffc409);
-    --recipe-border-radius: 8px;
-  }
+.custom-accordion-group {
+    @apply space-y-3;
+}
 
-  .recipe-steps-container {
-    padding-bottom: 16px;
-  }
+.custom-accordion {
+    @apply border border-solid rounded-lg transition-all duration-200;
+    background-color: var(--accordion-bg, transparent);
+    border-color: var(--accordion-border, #e0e0e0);
+}
 
-  /* Personalización del acordeón */
-  .custom-accordion {
-    background: transparent;
-    --ion-item-background: transparent;
-  }
+.custom-accordion-header {
+    @apply bg-transparent hover:bg-opacity-20 transition-colors duration-200;
+    --background: transparent;
+    --color: var(--accordion-text, #ffffff);
+}
 
-  .step-item {
-    margin-bottom: 12px;
-    border-radius: var(--recipe-border-radius);
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  }
+.custom-step-number {
+    @apply w-10 h-10 flex items-center justify-center rounded-full m-2 font-bold;
+    background-color: var(--step-number-bg, #CAC4D0);
+    color: var(--step-number-text, #000000);
+}
 
-  .step-header {
-    --background: #ABD1C6;
-    --color: var(--recipe-dark-color);
-    --border-radius: var(--recipe-border-radius);
-    --padding-start: 8px;
-    --inner-padding-end: 8px;
-  }
+.custom-accordion-title {
+    @apply text-lg font-medium;
+    color: var(--accordion-text, #ffffff);
+}
 
+.custom-accordion-icon {
+    @apply text-gray-400 text-lg transform transition-transform duration-200;
+}
 
+.custom-accordion-content {
+    @apply p-4 space-y-4;
+    background-color: var(--accordion-bg, transparent);
+    color: var(--accordion-text, #ffffff);
+}
 
-  .step-title {
-    font-weight: 600;
-    font-size: 16px;
-    white-space: normal;
-  }
+.custom-step-description {
+    @apply whitespace-pre-line;
+}
 
-  .step-icon {
-    color: var(--recipe-medium-color);
-    transition: transform 0.3s;
-  }
+.custom-step-image {
+    @apply flex justify-center;
+}
 
-  /* Rotar icono cuando el acordeón está expandido */
-  ion-accordion.accordion-expanding .step-icon,
-  ion-accordion.accordion-expanded .step-icon {
+ion-accordion.accordion-expanding .custom-accordion-icon,
+ion-accordion.accordion-expanded .custom-accordion-icon {
     transform: rotate(180deg);
+}
+
+ion-list {
+  background: transparent;
+  padding: 0;
+}
+
+.custom-list {
+  background: transparent;
+  
+  ion-item {
+    --background: transparent;
+    --padding-start: 0;
+    --inner-padding-end: 0;
   }
-
-  .step-content {
-    padding: 16px;
-    line-height: 1.5;
-    background-color: #ABD1C6;
-    color: var(--recipe-dark-color);
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
-  }
-
-  /* Elementos adicionales dentro del paso */
-  .step-timing {
-    display: flex;
-    align-items: center;
-    margin-top: 12px;
-    color: var(--recipe-medium-color);
-    font-size: 14px;
-
-    ion-icon {
-      margin-right: 6px;
-      font-size: 16px;
-    }
-  }
-
-  .step-image {
-    margin: 16px 0;
-    border-radius: var(--recipe-border-radius);
-    overflow: hidden;
-
-    img {
-      width: 100%;
-      height: auto;
-      object-fit: cover;
-    }
-  }
-
-  .step-tips {
-    margin-top: 16px;
-    background-color: rgba(var(--ion-color-warning-rgb), 0.1);
-    border-left: 3px solid var(--recipe-warning-color);
-    padding: 12px;
-    border-radius: var(--recipe-border-radius);
-
-    h4 {
-      margin-top: 0;
-      color: var(--recipe-dark-color);
-      display: flex;
-      align-items: center;
-      font-size: 16px;
-      font-weight: 600;
-
-      ion-icon {
-        margin-right: 6px;
-        color: var(--recipe-warning-color);
-      }
-    }
-
-    p {
-      margin-bottom: 0;
-      font-size: 14px;
-    }
-  }
-
-  /* Añade esto a tu archivo global.scss si quieres personalizar el componente nativo de Ionic */
-  ion-accordion-group::part(native) {
-    background: transparent;
-  }
-
-  ion-accordion.accordion-collapsed::part(header),
-  ion-accordion.accordion-expanding::part(header),
-  ion-accordion.accordion-expanded::part(header) {
-    box-shadow: none;
-  }
+}

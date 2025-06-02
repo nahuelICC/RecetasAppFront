@@ -34,6 +34,7 @@ import {
   albumsOutline,
   pencilOutline,
   chevronDownOutline,
+  notificationsOutline,
   grid,
   albums,
   bookmarks,
@@ -45,7 +46,10 @@ import {
   cameraOutline,
   sendOutline,
   checkmarkSharp,
-  checkmarkDone
+  checkmarkDone,
+  sunny,
+  moon,
+  radioButtonOn,
 } from "ionicons/icons";
 
 addIcons({
@@ -89,7 +93,11 @@ addIcons({
   cameraOutline,
   sendOutline,
   checkmarkSharp,
-  checkmarkDone
+  checkmarkDone,
+  sunny,
+  moon,
+  radioButtonOn,
+  notificationsOutline
 
 });
 

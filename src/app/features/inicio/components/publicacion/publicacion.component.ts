@@ -8,6 +8,8 @@ import {AlertInfoComponent} from '../../../../shared/components/alert-info/alert
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {AuthService} from '../../../../core/services/auth.service';
 import {EncryptService} from '../../../../core/services/encrypt.service';
+import {ellipsisHorizontalOutline, ellipsisVertical} from 'ionicons/icons';
+import {ShareModalComponent} from '../share-modal/share-modal.component';
 
 @Component({
   selector: 'app-publicacion',
@@ -21,7 +23,8 @@ import {EncryptService} from '../../../../core/services/encrypt.service';
     BotonComponent,
     AlertInfoComponent,
     RouterLink,
-    NgClass
+    NgClass,
+    ShareModalComponent
   ]
 })
 export class PublicacionComponent  implements OnInit {
@@ -36,6 +39,7 @@ export class PublicacionComponent  implements OnInit {
   mostrarAnimacionGuardar: boolean = false;
   alertVisible: boolean = false;
   alertMessage: string = '';
+  mostrarShareModal = false;
   alertType: 'success' | 'error' | 'warning' = 'success';
 
   constructor(private inicioService: InicioService, private authService: AuthService,private router:Router,private zone: NgZone,private encryptService:EncryptService) {}
@@ -163,12 +167,6 @@ export class PublicacionComponent  implements OnInit {
     }
   }
 
-  handleDobleClick() {
-    if (!this.recetaLeGusta) {
-      this.toggleLike();
-    }
-  }
-
   redireccionarPerfil(id: string): void {
     this.zone.run(() => {
       const idEncrypt = this.encryptService.encriptar(id);
@@ -178,6 +176,21 @@ export class PublicacionComponent  implements OnInit {
     });
   }
 
+  redireccionarReceta(id: string): void {
+    this.zone.run(() => {
+      const idEncrypt = this.encryptService.encriptar(id);
+      this.router.navigate(['/receta', idEncrypt]).then(() => {
+        window.location.reload();
+      });
+    });
+  }
+  abrirShareModal(): void {
+    this.menuAbierto = false;
+    this.mostrarShareModal = true;
+    console.log('Modal de compartir abierto para receta:', this.receta.id);
+  }
 
 
+  protected readonly ellipsisVertical = ellipsisVertical;
+  protected readonly ellipsisHorizontalOutline = ellipsisHorizontalOutline;
 }

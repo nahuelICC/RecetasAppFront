@@ -10,11 +10,11 @@
 <!-- Carrusel de categorías -->
 <div class="container mx-auto px-8 py-8">
   <!-- Botón flotante modificado -->
-  <app-boton-add-receta class="fixed bottom-6 right-6 z-50 transform transition-transform hover:scale-110"></app-boton-add-receta>
+  <app-boton-add-receta></app-boton-add-receta>
 
   <!-- Carrusel horizontal de recetas -->
   <div class="mb-12">
-    <h2 class="text-2xl text-white font-bold mb-4">Novedades</h2>
+    <h2 class="text-2xl color-texto-blanco font-bold mb-4">Novedades</h2>
     <div class="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide">
       <app-publicacion
         *ngFor="let receta of ultimasRecetas"
@@ -25,7 +25,7 @@
     </div>
   </div>
   <div class="mb-12">
-    <h2 class="text-2xl text-white font-bold mb-4">Recetas Favoritas</h2>
+    <h2 class="text-2xl color-texto-blanco font-bold mb-4">Recetas Favoritas</h2>
     <div class="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide">
       <app-publicacion
         *ngFor="let receta of topRecetas"
@@ -39,7 +39,7 @@
   <!-- Sección de recetas por categorías -->
   <!-- Recetas "Para ti" -->
   <div class="mb-12">
-    <h2 class="text-2xl text-white font-bold mb-4">Para ti</h2>
+    <h2 class="text-2xl color-texto-blanco font-bold mb-4">Para ti</h2>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <app-publicacion
         *ngFor="let receta of recetasParaTiVisible"
@@ -64,9 +64,9 @@
   </div>
   <!-- Recetas "Siguiendo" -->
   <div class="mb-12">
-    <h2 class="text-2xl text-white font-bold mb-4">Siguiendo</h2>
+    <h2 class="text-2xl color-texto-blanco font-bold mb-4">Siguiendo</h2>
 
-    <div *ngIf="recetasSiguiendo.length === 0; else mostrarRecetasSiguiendo" class="text-white py-6">
+    <div *ngIf="recetasSiguiendo.length === 0; else mostrarRecetasSiguiendo" class="color-texto-blanco py-6">
       Aún no sigues a ningún cooker.
     </div>
 

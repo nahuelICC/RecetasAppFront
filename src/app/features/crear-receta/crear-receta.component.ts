@@ -6,12 +6,13 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AlertInfoComponent} from '../../shared/components/alert-info/alert-info.component';
 import { AlertConfirmarComponent} from '../../shared/components/alert-confirmar/alert-confirmar.component';
+import {PantallaCargaComponent} from '../../shared/components/pantalla-carga/pantalla-carga.component';
 
 @Component({
   selector: 'app-crear-receta',
   templateUrl: './crear-receta.component.html',
   standalone: true,
-  imports: [FormsModule, CommonModule, AlertInfoComponent, AlertConfirmarComponent]
+  imports: [FormsModule, CommonModule, AlertInfoComponent, AlertConfirmarComponent, PantallaCargaComponent]
 })
 export class CrearRecetaComponent implements OnInit {
   receta: Receta = {
@@ -51,6 +52,8 @@ export class CrearRecetaComponent implements OnInit {
   showAlert: boolean = false;
 
   showConfirm: boolean = false;
+
+  loading: boolean = false;
 
   constructor(private crearRecetaService: CrearRecetaService, private router: Router) {}
 
@@ -253,6 +256,7 @@ export class CrearRecetaComponent implements OnInit {
   }
 
   onConfirm(): void {
+    this.loading = true;
     this.showConfirm = false;
     this.crearRecetaService.registrarReceta(this.receta, this.imagen, this.video)
       .subscribe({
@@ -261,11 +265,13 @@ export class CrearRecetaComponent implements OnInit {
           this.alertType = 'success';
           this.showAlert = true;
           this.router.navigate(['/main']);
+          this.loading = false;
         },
         error: () => {
           this.alertMessage = 'Error al registrar la receta';
           this.alertType = 'error';
           this.showAlert = true;
+          this.loading = false;
         },
       });
   }

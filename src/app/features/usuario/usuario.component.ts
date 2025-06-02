@@ -15,6 +15,7 @@ import {AlertConfirmarComponent} from '../../shared/components/alert-confirmar/a
 import {AuthService} from '../../core/services/auth.service';
 import {EncryptService} from '../../core/services/encrypt.service';
 import {RegistroService} from '../registro/services/registro.service';
+import {ListaCompraComponent} from './components/lista-compra/lista-compra.component';
 
 @Component({
   selector: 'app-usuario',
@@ -39,7 +40,8 @@ import {RegistroService} from '../registro/services/registro.service';
     IonInfiniteScroll,
     IonInfiniteScrollContent,
     IonChip,
-    IonLabel
+    IonLabel,
+    ListaCompraComponent
   ]
 })
 export class UsuarioComponent  implements OnInit {
@@ -47,6 +49,7 @@ export class UsuarioComponent  implements OnInit {
   perfil: any;
   activeTab: string = 'recetas';
   recetas: any[] = [];
+  recetasVisibles: any[] = [];
   colecciones: any[] = [];
   recetasGuardadas: any[] = [];
   imagenPerfilUsuario: string = 'https://ionicframework.com/docs/img/demos/avatar.svg';
@@ -80,11 +83,15 @@ export class UsuarioComponent  implements OnInit {
   modoEdicionColeccion = false;
   coleccionEditando: any = {};
   editarPerfil = false;
-  ingredientes: any[] = []; // Asegúrate de cargar esta lista
+  ingredientes: any[] = [];
   ingredientesFiltrados: any[] = [];
   ingredientesSeleccionados: any[] = [];
   alergenosSeleccionados: any[] = [];
   alergenos: any[] = [];
+  mostrarListaCompra = false;
+  showPassword = false;
+  showNewPassword = false;
+  showRepeatPassword = false;
 
 
 
@@ -98,6 +105,7 @@ export class UsuarioComponent  implements OnInit {
       this.usuarioService.getPerfilId(idDecrypt).subscribe((response) => {
         this.perfil = response;
         this.recetas = response.recetas;
+        this.recetasVisibles = response.recetas.filter((receta: any) => receta.esVisible);
         this.colecciones = response.colecciones;
         if (!this.perfil.ingredientesFavoritos) this.perfil.ingredientesFavoritos = [];
         if (!this.perfil.alergenos) this.perfil.alergenos = [];
@@ -123,6 +131,7 @@ export class UsuarioComponent  implements OnInit {
         this.perfil = response;
         this.recetas = response.recetas;
         this.colecciones = response.colecciones;
+        this.recetasVisibles = response.recetas.filter((receta: any) => receta.esVisible);
         this.recetasGuardadas = response.recetasGuardadas;
         this.alergenosSeleccionados = response.alergenos ? [...response.alergenos] : [];
         this.ingredientesSeleccionados = response.ingredientesFavoritos ? [...response.ingredientesFavoritos] : [];
@@ -181,6 +190,7 @@ export class UsuarioComponent  implements OnInit {
     this.usuarioService.listaSeguidores(this.esPerfilPropio, idDecrypt).subscribe((response) => {
       this.seguidores = response;
     });
+
 
 
   }
@@ -612,7 +622,26 @@ export class UsuarioComponent  implements OnInit {
 
   iniciarChat() {
     const id = this.route.snapshot.paramMap.get('id') || '';
-    const idDecrypt = this.encryptService.desencriptar(id);
-    this.router.navigate(['/chat', idDecrypt]);
+    const idDecrypt = this.encryptService.desencriptar(id); // Desencripta el ID actual
+    const idEncrypt = this.encryptService.encriptar(idDecrypt); // Encripta el ID nuevamente
+    this.router.navigate(['/chat', idEncrypt]); // Redirige con el ID encriptado
+  }
+
+  // Modificar la función toggleListaCompra
+  toggleListaCompra() {
+    this.mostrarListaCompra = !this.mostrarListaCompra;
+  }
+
+
+  onEditarVisibilidad($event: any) {
+    if ($event.esVisible == false) {
+    this.recetasVisibles = this.recetasVisibles.filter(receta => receta.idReceta !== $event.idReceta);
+      this.perfil.numeroRecetas--;
+  } else{
+    const receta = this.recetas.find(r => r.idReceta === $event.idReceta);
+    if (receta) {
+      this.recetasVisibles.push(receta);}
+      this.perfil.numeroRecetas++;
+    }
   }
 }

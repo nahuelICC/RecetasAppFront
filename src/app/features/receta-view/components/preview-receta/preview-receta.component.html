@@ -1,0 +1,21 @@
+<a *ngIf="receta"
+   [routerLink]="rutaDestino"
+   class="block w-full bg-white dark:bg-[var(--color-verde-cuadros)] rounded-xl shadow-md border border-gray-300 dark:border-[var(--color-verde-detalles)] overflow-hidden transition-transform hover:shadow-lg hover:scale-[1.02] duration-200">
+  <div class="flex">
+    <img [src]="receta.imagen || 'assets/receta-default.png'"
+         alt="imagen receta"
+         class="w-24 h-24 object-cover rounded-l-xl border-r border-gray-200 dark:border-[var(--color-verde-detalles)]">
+    <div class="p-2 flex flex-col">
+      <h3 class="mt-0 font-semibold text-[var(--color-texto)] text-sm line-clamp-1">
+        {{ receta.nombre }}
+      </h3>
+      <p class="text-xs text-[var(--color-texto)] opacity-70 mt-1 line-clamp-2">
+        {{ receta.descripcion || 'Sin descripción disponible.' }}
+      </p>
+    </div>
+  </div>
+</a>
+
+<div *ngIf="error" class="text-sm text-red-600 mt-2">
+  {{ error }}
+</div>

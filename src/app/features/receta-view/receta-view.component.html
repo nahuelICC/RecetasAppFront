@@ -1,52 +1,114 @@
-<!--main-->
-<div class="w-3/4 m-auto p-4">
+<!-- Contenedor principal -->
+<main class="w-3/4 m-auto p-4">
   <!-- Info plato -->
   <app-info-plato [receta]="receta"></app-info-plato>
-  <!--Alergenos -->
-  <div>
-    <h2 class="text-white uppercase">Alérgenos</h2>
-    <div class="flex flex-row flex-wrap gap-2">
-        <div *ngFor="let alergeno of receta.alergenos">
-            <app-alergeno [alergeno]="alergeno"></app-alergeno>
-        </div>
+
+  <!-- Alérgenos -->
+  <section class="space-y-4" *ngIf="receta.alergenos.length > 0">
+    <h2 class="text-2xl font-bold text-white tracking-wider">Alérgenos</h2>
+    <div class="flex flex-wrap gap-3">
+      <div *ngFor="let alergeno of listaAlergenos">
+        <app-alergeno [alergeno]="alergeno"></app-alergeno>
+      </div>
     </div>
-</div>
+  </section>
+
   <!-- Ingredientes -->
-  <div class="flex flex-col">
-      <h2 class="text-white uppercase">Ingredientes</h2>
+  <h2 class="text-2xl font-bold text-white  tracking-wider">Ingredientes</h2>
+  <div class="flex flex-wrap">
+    <div *ngFor="let columna of columnasIngredientes" class="w-full md:w-1/2 lg:w-1/3 px-4">
       <ul>
-          <li *ngFor="let ingrediente of receta.ingredientes" class="text-white uppercase">&#183; {{ingrediente.cantidad}} {{ingrediente.medida}} de {{ingrediente.nombre}}</li>
+        <li *ngFor="let ingrediente of columna" class="color-texto-blanco capitalize m-4">
+          &#183; {{ingrediente.cantidad}} {{ingrediente.medida}} de {{ingrediente.nombre}}
+        </li>
       </ul>
+    </div>
   </div>
-  <!-- Pasos -->
-  <div class="recipe-steps-container">
-      <h2 class="recipe-section-title text-white">Pasos</h2>
-      <ion-accordion-group class="custom-accordion" multiple="true">
-        <ion-accordion *ngFor="let paso of pasosReceta; let i = index" [value]="'paso_' + i" class="step-item">
-            <ion-item slot="header" class="step-header">
-                <div class="bg-[#CAC4D0] w-10 h-10 flex items-center justify-center rounded-full m-2">{{paso.numero}}</div>
-                <ion-label class="step-title">{{paso.titulo}}</ion-label>
-            </ion-item>
-            <div class="step-content" slot="content">
-                <p>{{paso.descripcion}}</p>
-                <div class="step-timing" *ngIf="paso.tiempoEstimado">
-                    <ion-icon name="time-outline"></ion-icon>
-                    <span>Tiempo estimado: {{paso.tiempoEstimado}} minutos</span>
-                </div>
-                <div class="step-tips" *ngIf="paso.consejo">
-                    <h4><ion-icon name="bulb-outline"></ion-icon> Consejo</h4>
-                    <p>{{paso.consejo}}</p>
-                </div>
+  <h2 class="text-2xl font-bold color-texto-blanco mb-8 tracking-wider ">
+    Preparación
+  </h2>
+  <div class="p-6mb-8">
+
+    <!-- Contenedor de línea temporal -->
+    <div class="relative pl-14"> <!-- Padding ajustado para centrado perfecto -->
+      <div class="absolute  top-0 bottom-0 w-0.5 bg-gray-600 z-0"></div>
+
+      <div class="space-y-10">
+        <div *ngFor="let paso of pasosReceta" class="relative group"> <!-- Añadido group para hover -->
+          <!-- Número del paso con hover amarillo -->
+          <div class="absolute left-0 w-10 h-10 flex items-center justify-center rounded-full color-gris text-gray-900 font-bold transform -translate-x-1/2 z-10
+                                transition-colors duration-200 group-hover:bg-amber-400 group-hover:text-gray-900">
+            {{paso.numero}}
+          </div>
+
+          <!-- Contenido del paso -->
+          <div class="pl-8 pt-2">
+            <div
+              class="p-5 rounded-lg border border-gray-700 bg-gray-800/50 transition-all duration-200 group-hover:border-amber-400/50">
+              <h3 class="text-xl font-semibold text-white mb-2">{{paso.titulo}}</h3>
+              <p class="text-gray-300 whitespace-pre-line">{{paso.descripcion}}</p>
+
+              <div *ngIf="paso.foto" class="mt-4">
+                <img [src]="paso.foto"
+                  class="w-full max-w-[500px] aspect-video object-cover rounded-lg shadow-md border border-gray-700 group-hover:border-amber-400/30 transition-all duration-300"
+                  alt="Paso {{paso.numero}}">
+              </div>
             </div>
-        </ion-accordion>
-    </ion-accordion-group>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-  <!-- Comentarios -->
-  <div>
-      <h2 class="text-white">Comentarios</h2>
-      <app-comentario></app-comentario>
-      <app-comentario></app-comentario>
-      <app-comentario></app-comentario>
-      <app-comentario></app-comentario>
-  </div>
-</div>
+  <!-- Video -->
+  <section *ngIf="receta.video" class="space-y-4">
+    <h2 class="text-2xl font-bold text-white tracking-wider">Video Tutorial</h2>
+    <div class="bg-black rounded-xl overflow-hidden h-[500px]">
+      <video controls class="w-full h-full object-cover"
+        poster="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NDAiIGhlaWdodD0iMzYwIiB2aWV3Qm94PSIwIDAgNjQwIDM2MCI+PHJlY3Qgd2lkdGg9IjY0MCIgaGVpZ2h0PSIzNjAiIGZpbGw9IiMzMzMiLz48dGV4dCB4PSIzMjAiIHk9IjE4MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjI0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSI+VmlkZW8gZGUgcmVjZXRhPC90ZXh0Pjwvc3ZnPg==">
+        <source src="{{receta.video}}" type="video/mp4">
+        Tu navegador no soporta videos HTML5.
+      </video>
+    </div>
+  </section>
+  <section class=" bg-red">
+    <h2 class="text-2xl font-bold color-texto-blanco tracking-wider">Comentarios</h2>
+    <div class="space-y-6">
+      <div *ngIf="compararLogin()">
+        <p class="color-texto-blanco mb-4">Comparte tu opinión sobre esta receta:</p>
+      </div>
+      <button *ngIf="compararLogin()" (click)="mostrarCuadro()"
+        class="inline-flex items-center px-3 py-1.5 text-xs md:text-sm font-medium color-texto-blanco hover:text-[#003633] hover:bg-white rounded-md transition-colors duration-200">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+        Comentar
+      </button>
+      <div *ngIf="cuadroComentarioOn" class="color-fondo-comentarios rounded-lg shadow-md p-3 w-full mb-3">
+        <textarea [(ngModel)]="textoComentario" rows="2" placeholder="Escribe tu comentario..."
+          class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004643]">
+    </textarea>
+        <button (click)="responderReceta()"
+          class="mt-2 inline-flex items-center px-3 py-1.5 text-xs md:text-sm font-medium color-texto-acciones-comentarios color-fondo-acciones-comentarios hover:bg-[#003633] rounded-md transition-colors duration-200">
+          Enviar
+        </button>
+      </div>
+      <ion-list>
+        @for (comentario of displayedComentarios; track comentario; let index = $index) {
+        <app-comentario [comentario]="comentario" [idReceta]="idReceta" (comentarioEliminado)="recargarComentariosReceta()"  (comentarioDenunciado)="mostrarAlertaDenuncia()">
+        </app-comentario>
+        }
+      </ion-list>
+      <ion-infinite-scroll (ionInfinite)="onIonInfinite($event)">
+        <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Cargando más comentarios...">
+        </ion-infinite-scroll-content>
+      </ion-infinite-scroll>
+    </div>
+    <div *ngIf="displayedComentarios.length == 0" class="text-center color-texto-acciones-comentarios">
+      No hay comentarios aún. ¡Sé el primero en comentar!
+    </div>
+  </section>
+</main>
+<app-boton-add-receta></app-boton-add-receta>
+<app-alert-info [message]="alertMessage" [isVisible]="AlertVisible" [type]="alertType">
+</app-alert-info>

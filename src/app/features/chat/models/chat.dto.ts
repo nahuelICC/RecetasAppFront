@@ -1,9 +1,9 @@
-// src/app/models/chat.model.ts
 export interface ChatDTO {
-  id: number;
+  id?: number;
   texto: string;
   fecha: Date;
   leido: boolean;
+  borrado: boolean;
   remitenteId: number;
   destinatarioId: number;
   remitenteNombre: string;

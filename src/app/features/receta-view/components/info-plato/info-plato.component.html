@@ -1,46 +1,68 @@
 <!-- Main container -->
-<div class="w-full max-w-4xl mx-auto overflow-hidden px-4 sm:px-6 mt-8 sm:mt-16">
-    <!-- Fotografia del plato -->
-    <div class="w-full h-60 sm:h-80 overflow-hidden rounded-2xl sm:rounded-3xl">
-        <img [src]="receta.imagen" [alt]="receta.nombre" class="w-full h-full object-cover rounded-2xl sm:rounded-3xl">
+<div class="w-full max-w-none mx-auto overflow-hidden px-0 mt-8 sm:mt-16">
+    <div class="w-full h-60 sm:h-80 md:h-96 overflow-hidden rounded-2xl">
+        <img [src]="receta.imagen" [alt]="receta.nombre" class="w-full h-full object-cover">
     </div>
 
     <!-- Informacion del plato -->
-    <div class="mt-6 sm:mt-8">
-        <h2 class="text-center text-white text-xl sm:text-2xl md:text-3xl">{{receta.nombre}}</h2>
-        <p class="text-center text-white mt-3 text-sm sm:text-base px-2 sm:px-8 md:px-16">
+    <div class="w-full max-w-4xl mx-auto px-4 sm:px-6 mt-6 sm:mt-8">
+        <h2 class="text-center color-texto-blanco text-xl sm:text-2xl md:text-3xl">{{receta.nombre}}</h2>
+        <p class="text-center color-texto-blanco mt-3 text-sm sm:text-base px-2 sm:px-8 md:px-16">
             {{receta.descripcion}}
         </p>
     </div>
     <!--Informacion de la receta-->
-    <div class="w-full max-w-sm sm:max-w-md md:max-w-lg mx-auto mt-6 sm:mt-8">
-        <ul class="flex justify-between text-white">
-            <li>
-                <div class="border border-[#003836] rounded-full w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-[#003836] flex items-center justify-center">
-                    <ion-icon name="" class=""></ion-icon>
+    <div class="w-full max-w-3xl mx-auto mt-6 px-4 sm:px-6">
+        <ul class="flex flex-wrap justify-between gap-4">
+
+            <!-- Elemento 2 -->
+            <li class="flex flex-col items-center w-1/6 min-w-[100px] text-white">
+                <div class="border-2 rounded-full w-20 h-20 color-verde-detalles flex items-center justify-center p-1">
+                    <svg id="eSzakTAhfg31" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                        viewBox="0 0 32 32" shape-rendering="geometricPrecision" text-rendering="geometricPrecision"
+                        width="14" height="14" class="w-12 h-12" project-id="142a13c0e5fa455fadc05c9c2939a7a2" export-id="dd517fcbc5cc4761980c92a2006d336d"
+                        cached="false">
+                        <path
+                            d="M0,7.008q0,1.856.992,3.52Q2.176,7.2,4.704,4.704t5.824-3.712Q8.832,0,7.008,0Q4.096,0,2.048,2.08t-2.048,4.928ZM2.016,16q0,2.784,1.056,5.312t2.944,4.48v4.224q0,.832.576,1.408t1.408.576t1.408-.576.608-1.408v-1.408Q12.928,30.016,16,30.016t6.016-1.408v1.408q0,.832.576,1.408t1.408.576t1.408-.576.608-1.408v-4.224q1.888-1.952,2.944-4.448t1.056-5.344-1.12-5.44-2.976-4.48-4.48-2.976-5.44-1.12-5.44,1.12-4.48,2.976-2.976,4.48-1.088,5.44Zm4,0q0-2.048.768-3.872t2.144-3.2t3.2-2.144t3.872-.8q2.72,0,5.024,1.344t3.648,3.648t1.344,5.024q0,2.016-.8,3.872t-2.144,3.2-3.2,2.144-3.872.768q-2.72,0-5.024-1.312t-3.616-3.648-1.344-5.024Zm8,0q0,.832.576,1.408t1.408.576h4q.832,0,1.408-.576t.608-1.408-.608-1.408-1.408-.608h-1.984v-1.984q0-.832-.608-1.408t-1.408-.608-1.408.608-.576,1.408v4ZM21.472,0.992Q24.8,2.208,27.296,4.704t3.712,5.824Q32,8.864,32,7.008q0-2.88-2.048-4.928t-4.96-2.08q-1.824,0-3.52.992Z"
+                            fill="#f8f8f8" />
+                    </svg>
                 </div>
+                <p class="text-center mt-2 font-medium color-texto-blanco">
+                    {{receta.duracion}} minutos
+                </p>
             </li>
-            <li class="text-center text-white font-[Roboto]">
-                <div class="border border-[#003836] rounded-full w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-[#003836] flex items-center justify-center">
+
+            <!-- Elemento 3 -->
+            <li class="flex flex-col items-center w-1/6 min-w-[100px] text-white">
+                <div
+                    class="border-2 rounded-full w-20 h-20 color-verde-detalles flex items-center justify-center p-1">
+                    <p class="text-center text-xs sm:text-sm  leading-tight">Grasas</p>
                 </div>
-            </li>
-            <li>
-                <div class="border border-[#003836] rounded-full w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-[#003836] flex items-center justify-center">
+                <p class="text-center mt-2 font-medium color-texto-blanco">
                     {{receta.grasas}}
-                </div>
-                <p>Grasas</p>
+                </p>
             </li>
-            <li>
-                <div class="border border-[#003836] rounded-full w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-[#003836] flex items-center justify-center">
-                    {{receta.hidratos}}
+
+            <!-- Elemento 4 -->
+            <li class="flex flex-col items-center w-1/6 min-w-[100px] text-white">
+                <div
+                    class="border-2   rounded-full w-20 h-20 color-verde-detalles flex items-center justify-center p-1">
+                    <p class="text-center text-xs sm:text-sm  leading-tight">Proteínas</p>
                 </div>
-                <p>Hidratos</p>
-            </li>
-            <li>
-                <div class="border border-[#003836] rounded-full w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-[#003836] flex items-center justify-center">
+                <p class="text-center mt-2 font-medium color-texto-blanco">
                     {{receta.proteinas}}
+                </p>
+            </li>
+
+            <!-- Elemento 5 -->
+            <li class="flex flex-col items-center w-1/6 min-w-[100px] text-white">
+                <div
+                    class="border-2 rounded-full w-20 h-20 color-verde-detalles flex items-center justify-center p-1">
+                    <p class="text-center text-xs sm:text-sm  leading-tight">Hidratos</p>
                 </div>
-                <p>Proteinas</p>
+                <p class="text-center mt-2 font-medium color-texto-blanco">
+                    {{receta.hidratos}}
+                </p>
             </li>
         </ul>
     </div>

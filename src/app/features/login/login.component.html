@@ -19,12 +19,23 @@
       <!-- Campo de Contraseña -->
       <div class="mb-6">
         <label class="block text-sm font-medium text-gray-700">Contraseña</label>
-        <input
-          type="password"
-          formControlName="contrasenya"
-          placeholder="Introduzca su contraseña"
-          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
-        />
+        <div class="relative">
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            formControlName="contrasenya"
+            placeholder="Introduzca su contraseña"
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
+          />
+          <button
+            type="button"
+            (mousedown)="showPassword = true"
+            (mouseup)="showPassword = false"
+            (mouseleave)="showPassword = false"
+            class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-600 hover:text-gray-800 focus:outline-none"
+          >
+            <ion-icon name="eye" class="h-5 w-5"></ion-icon>
+          </button>
+        </div>
         <div *ngIf="loginForm.get('contrasenya')?.hasError('required') && loginForm.get('contrasenya')?.touched" class="text-red-500 text-sm mt-1">
           La contraseña es obligatoria.
         </div>
@@ -44,7 +55,7 @@
       <!-- Enlaces de Recuperación y Registro -->
       <div class="flex justify-between text-sm mt-4">
         <a href="/registro" class="text-indigo-600 hover:underline">¿No tienes cuenta?</a>
-        <a [routerLink]="['/resetPassword']" class="text-indigo-600 hover:underline">¿Has olvidado tu contraseña?</a>
+        <a [routerLink]="['/cambioPassword']" class="text-indigo-600 hover:underline">¿Has olvidado tu contraseña?</a>
       </div>
 
     </form>

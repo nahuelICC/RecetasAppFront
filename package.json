@@ -20,7 +20,8 @@
     "@ionic/angular": "^8.5.0",
     "@stomp/stompjs": "^6.1.2",
     "@zxing/ngx-scanner": "^19.0.0",
-    "ionicons": "^7.4.0",
+    "howler": "^2.2.4",
+    "ionicons": "^8.0.8",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
@@ -30,6 +31,7 @@
     "@angular/cli": "^19.2.4",
     "@angular/compiler-cli": "^19.2.0",
     "@ionic/angular-toolkit": "latest",
+    "@types/howler": "^2.2.12",
     "@types/jasmine": "~5.1.0",
     "@types/sockjs-client": "^1.5.4",
     "@types/stompjs": "^2.3.9",
