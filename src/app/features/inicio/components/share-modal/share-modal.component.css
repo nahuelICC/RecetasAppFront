@@ -1,0 +1,8 @@
+/* share-modal.component.css */
+:host {
+  display: block;
+}
+
+.color-texto {
+  color: var(--color-texto);
+}

@@ -9,6 +9,7 @@ import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {AuthService} from '../../../../core/services/auth.service';
 import {EncryptService} from '../../../../core/services/encrypt.service';
 import {ellipsisHorizontalOutline, ellipsisVertical} from 'ionicons/icons';
+import {ShareModalComponent} from '../share-modal/share-modal.component';
 
 @Component({
   selector: 'app-publicacion',
@@ -22,7 +23,8 @@ import {ellipsisHorizontalOutline, ellipsisVertical} from 'ionicons/icons';
     BotonComponent,
     AlertInfoComponent,
     RouterLink,
-    NgClass
+    NgClass,
+    ShareModalComponent
   ]
 })
 export class PublicacionComponent  implements OnInit {
@@ -37,6 +39,7 @@ export class PublicacionComponent  implements OnInit {
   mostrarAnimacionGuardar: boolean = false;
   alertVisible: boolean = false;
   alertMessage: string = '';
+  mostrarShareModal = false;
   alertType: 'success' | 'error' | 'warning' = 'success';
 
   constructor(private inicioService: InicioService, private authService: AuthService,private router:Router,private zone: NgZone,private encryptService:EncryptService) {}
@@ -180,6 +183,11 @@ export class PublicacionComponent  implements OnInit {
         window.location.reload();
       });
     });
+  }
+  abrirShareModal(): void {
+    this.menuAbierto = false;
+    this.mostrarShareModal = true;
+    console.log('Modal de compartir abierto para receta:', this.receta.id);
   }
 
 

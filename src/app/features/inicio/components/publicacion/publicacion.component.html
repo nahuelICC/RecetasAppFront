@@ -29,6 +29,13 @@
         class="text-3xl cursor-pointer hover:scale-110 transition-transform">
       </ion-icon>
     </button>
+
+    <button (click)="$event.stopPropagation(); abrirShareModal()" class="flex flex-col items-center">
+      <ion-icon
+        name="paper-plane-outline"
+        class="text-3xl text-white cursor-pointer hover:scale-110 transition-transform">
+      </ion-icon>
+    </button>
     <button (click)="$event.stopPropagation(); agregarIngredientes()" class="flex flex-col items-center">
       <ion-icon
         name="ellipsis-horizontal-outline"
@@ -41,6 +48,12 @@
   <div class="absolute bottom-0 w-full color-verde-claro-tranlucido p-2 backdrop-blur-sm">
     <p class="font-semibold color-texto truncate text-center text-sm">{{ receta.titulo }}</p>
   </div>
+  @if (mostrarShareModal) {
+    <app-share-modal
+      [recetaId]="receta.id.toString()"
+      (closeModal)="mostrarShareModal = false"
+    ></app-share-modal>
+  }
 
 </div>
 

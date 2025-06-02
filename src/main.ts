@@ -49,7 +49,7 @@ import {
   checkmarkDone,
   sunny,
   moon,
-  radioButtonOn
+  radioButtonOn,
 } from "ionicons/icons";
 
 addIcons({
