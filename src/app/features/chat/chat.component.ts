@@ -14,6 +14,7 @@ import { FormsModule } from "@angular/forms";
 import {Platform} from '@ionic/angular';
 import {AudioService} from '../../core/services/audio.service';
 import { ChangeDetectorRef } from '@angular/core';
+import {PreviewRecetaComponent} from '../receta-view/components/preview-receta/preview-receta.component';
 
 @Component({
   selector: 'app-chat',
@@ -25,7 +26,8 @@ import { ChangeDetectorRef } from '@angular/core';
     NgIf,
     FormsModule,
     NgClass,
-    NgStyle
+    NgStyle,
+    PreviewRecetaComponent
   ],
   styleUrls: ['./chat.component.css']
 })
@@ -499,6 +501,14 @@ export class ChatComponent implements OnInit, OnDestroy {
   irAlPerfil(usuarioId: number): void {
     const idEncrypt = this.encryptService.encriptar(usuarioId.toString()); // Encripta el ID del usuario
     this.router.navigate(['/perfil', idEncrypt]); // Redirige al perfil con el ID encriptado
+  }
+  esLinkDeReceta(texto: string): boolean {
+    return /\/receta\/[a-zA-Z0-9\-_]+/.test(texto);
+  }
+
+  getIdRecetaEncriptado(texto: string): string | null {
+    const match = texto.match(/\/receta\/([a-zA-Z0-9\-_]+)/);
+    return match ? match[1] : null;
   }
 
 }
