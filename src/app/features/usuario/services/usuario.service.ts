@@ -128,4 +128,9 @@ export class UsuarioService {
     return this.http.get<ListaCompraDTO[]>(`${this.apiUrlListaCompra}/personal/${cookerId}`);
   }
 
+  isBlocked(id: string): Observable<boolean> {
+    return this.http.get<boolean>(`${this.apiUrl}/tieneBloqueado/${id}`, {
+    });
+  }
+
 }
