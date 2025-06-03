@@ -237,4 +237,24 @@ export class RecetaViewComponent implements OnInit {
   // }
 
 
+  mostrarAlertaIngredientes($event: string) {
+    if ($event === 'Ingredientes añadidos a la lista de compra') {
+      this.AlertVisible = true;
+      this.alertType = 'success';
+      this.alertMessage = $event;
+
+      setTimeout(() => {
+        this.AlertVisible = false;
+      }, 3000);
+    }else {
+      this.AlertVisible = true;
+      this.alertType = 'error';
+      this.alertMessage = $event;
+
+      setTimeout(() => {
+        this.AlertVisible = false;
+      }, 3000);
+    }
+
+  }
 }
