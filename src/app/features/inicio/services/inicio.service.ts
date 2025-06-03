@@ -60,17 +60,14 @@ export class InicioService {
     });
   }
 
-  getUltimasRecetas(cookerId: number): Observable<RecetaInicioDTO[]> {
-    return this.http.get<RecetaInicioDTO[]>(`${this.apiUrl}/nuevas`, {
-      params: new HttpParams().set('cookerId', cookerId.toString()) // Envía el parámetro
-    });
+  getUltimasRecetas(): Observable<RecetaInicioDTO[]> {
+    return this.http.get<RecetaInicioDTO[]>(`${this.apiUrl}/nuevas`);
   }
 
-  getTop10RecetasFavoritas(cookerId: number): Observable<RecetaInicioDTO[]> {
-    return this.http.get<RecetaInicioDTO[]>(`${this.apiUrl}/favoritas`, {
-      params: new HttpParams().set('cookerId', cookerId.toString()) // Envía el parámetro
-    });
+  getTop10RecetasFavoritas(): Observable<RecetaInicioDTO[]> {
+    return this.http.get<RecetaInicioDTO[]>(`${this.apiUrl}/topFavoritas`);
   }
+
 
 
 }
