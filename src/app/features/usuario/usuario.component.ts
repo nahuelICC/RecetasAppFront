@@ -381,26 +381,38 @@ export class UsuarioComponent  implements OnInit {
   toggleBloquearPerfil() {
     const id = this.route.snapshot.paramMap.get('id') || '';
     const idDecrypt = this.encryptService.desencriptar(id);
+    let isBlocked: boolean = false;
 
-      this.usuarioService.changeBloqueo(idDecrypt).subscribe((response) => {
-        this.alertMessage = "Estado de bloqueo cambiado";
-        console.log(response);
-        this.alertType = 'success';
-        this.isAlertVisible = true;
-        this.usuarioService.listaSeguidores(this.esPerfilPropio, this.route.snapshot.paramMap.get('id') || '').subscribe((response) => {
-          this.seguidores = response;
-        });
-        this.usuarioService.getPerfilId(idDecrypt).subscribe((response) => {
-          this.perfil = response;
-        });
-      }, (error) => {
-        console.error('Error al cambiar el estado de bloqueo:', error);
-        this.alertMessage = error.error;
-        this.alertType = 'error';
-        this.isAlertVisible = true;
+    this.usuarioService.changeBloqueo(idDecrypt).subscribe((response) => {
+      this.alertMessage = "Estado de bloqueo cambiado";
+      console.log(response);
+      this.alertType = 'success';
+      this.isAlertVisible = true;
+      this.usuarioService.listaSeguidores(this.esPerfilPropio, this.route.snapshot.paramMap.get('id') || '').subscribe((response) => {
+        this.seguidores = response;
       });
+      this.usuarioService.getPerfilId(idDecrypt).subscribe((response) => {
+        this.perfil = response;
+      });
+    }, (error) => {
+      console.error('Error al cambiar el estado de bloqueo:', error);
+      this.alertMessage = error.error;
+      this.alertType = 'error';
+      this.isAlertVisible = true;
+    });
 
-    this.perfilBloqueado = !this.perfilBloqueado;
+    this.usuarioService.isBlocked(idDecrypt).subscribe((response) => {
+      isBlocked = response as boolean;
+    });
+
+    console.log('Perfil bloqueado:', isBlocked);
+
+    if (isBlocked) {
+      this.perfilBloqueado = true;
+    }else {
+      this.perfilBloqueado = !this.perfilBloqueado;
+    }
+
     this.perfil.bloqueado  = !this.perfil.bloqueado;
     setTimeout(() => {
       this.isAlertVisible = false;

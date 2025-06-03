@@ -50,6 +50,7 @@ import {
   sunny,
   moon,
   radioButtonOn,
+  cart
 } from "ionicons/icons";
 
 addIcons({
@@ -97,7 +98,8 @@ addIcons({
   sunny,
   moon,
   radioButtonOn,
-  notificationsOutline
+  notificationsOutline,
+  cart
 
 });
 

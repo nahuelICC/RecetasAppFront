@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {IonFab, IonFabButton, IonIcon} from '@ionic/angular/standalone';
+import {cart} from 'ionicons/icons';
+import {InicioService} from '../../../features/inicio/services/inicio.service';
 
 @Component({
   selector: 'app-boton-modo-oscuro',
@@ -14,32 +16,13 @@ import {IonFab, IonFabButton, IonIcon} from '@ionic/angular/standalone';
 })
 export class BotonModoOscuroComponent  implements OnInit {
 
-  isLightMode = false;
 
-  constructor() { }
+  @Input() idReceta: string = '';
+
+  constructor(private inicioService:InicioService) { }
 
   ngOnInit() {
-    const savedTheme = localStorage.getItem('theme');
-    this.isLightMode = savedTheme === 'light';
-    this.applyTheme();
-  }
 
-  toggleTheme() {
-    this.isLightMode = !this.isLightMode;
-    localStorage.setItem('theme', this.isLightMode ? 'light' : 'dark');
-    this.applyTheme();
-  }
-
-
-  applyTheme() {
-    const classList = document.documentElement.classList;
-    if (this.isLightMode) {
-      classList.add('light-theme');
-      classList.remove('dark-theme');
-    } else {
-      classList.remove('light-theme');
-      classList.add('dark-theme');
-    }
   }
 
 

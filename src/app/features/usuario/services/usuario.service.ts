@@ -134,4 +134,9 @@ export class UsuarioService {
   }
 
 
+  isBlocked(id: string): Observable<boolean> {
+    return this.http.get<boolean>(`${this.apiUrl}/tieneBloqueado/${id}`, {
+    });
+  }
+
 }
