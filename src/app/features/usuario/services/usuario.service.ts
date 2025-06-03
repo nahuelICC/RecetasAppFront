@@ -128,4 +128,10 @@ export class UsuarioService {
     return this.http.get<ListaCompraDTO[]>(`${this.apiUrlListaCompra}/personal/${cookerId}`);
   }
 
+  eliminarRecetaListaCompra(idReceta: number): Observable<any> {
+    const params = new HttpParams().set('idReceta', idReceta.toString());
+    return this.http.delete(`${this.apiUrlListaCompra}/eliminar-receta`, { params: {idReceta},  responseType: 'text'  });
+  }
+
+
 }

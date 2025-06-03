@@ -21,6 +21,8 @@ export class ListaCompraComponent  implements OnChanges {
   @Input() isOpen = false;
   @Input() cookerId!: number;
   @Output() close = new EventEmitter<void>();
+  @Output() solicitarConfirmacionEliminar = new EventEmitter<number>();
+  @Output() recetaEliminada = new EventEmitter<void>();
 
 
   recetas: ListaCompraDTO[] = [];
@@ -49,6 +51,7 @@ export class ListaCompraComponent  implements OnChanges {
           );
 
           return {
+            idReceta: receta.idReceta,
             tituloReceta: receta.tituloReceta,
             ingredientes: receta.ingredientes.map(ingrediente => {
               const ingGuardado = recetaGuardada?.ingredientes.find(
@@ -106,6 +109,26 @@ export class ListaCompraComponent  implements OnChanges {
 
     localStorage.setItem(this.getStorageKey(), JSON.stringify(estado));
   }
+
+  onSolicitarEliminar(idReceta: number) {
+    this.solicitarConfirmacionEliminar.emit(idReceta);
+    this.onClose();
+  }
+
+  eliminarRecetaConfirmada(idReceta: number) {
+    this.usuarioService.eliminarRecetaListaCompra(idReceta).subscribe({
+      next: () => {
+        this.recetas = this.recetas.filter(r => r.idReceta !== idReceta);
+        this.guardarEstado();
+        this.recetaEliminada.emit();
+      },
+      error: (err) => {
+        console.error(err);
+        // Podrías emitir error si quisieras mostrarlo también
+      }
+    });
+  }
+
 
 
 }

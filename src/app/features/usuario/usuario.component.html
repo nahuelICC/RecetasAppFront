@@ -1,5 +1,5 @@
 <!-- perfil-usuario.component.html -->
-<div class="p-6 color-verde-oscuro text-white min-h-screen mt-12 md:mx-16 lg:mx-20 xl:mx-48 2xl:mx-64">
+<div class="p-6 color-verde-oscuro text-white min-h-screen mt-12 mx-auto px-8 py-8">
   <!-- Perfil del usuario -->
   <div class="flex items-center gap-4 mb-12">
     <div class="relative w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full overflow-hidden shrink-0 group">
@@ -217,7 +217,7 @@
     </form>
 
     <div class="mt-4 flex justify-start">
-      <app-boton label="Guardar" [size]="'small'" (click)="showConfirmPassword = true" [disabled]="cambioContrasenaForm.invalid"></app-boton>
+      <app-boton label="Guardar" [size]="'small'" (click)="onGuardarContrasena()" [disabled]="cambioContrasenaForm.invalid"></app-boton>
     </div>
   </div>
 
@@ -549,12 +549,15 @@
   *ngIf="mostrarListaCompra"
   [isOpen]="mostrarListaCompra"
   [cookerId]="idPropietario"
-  (close)="toggleListaCompra()"> <!-- Asegurar que tenemos este output -->
+  (close)="toggleListaCompra()"
+  (solicitarConfirmacionEliminar)="mostrarAlertaConfirmarEliminar($event)">
 </app-lista-compra>
 
 <app-alert-confirmar
-  *ngIf="showConfirmPassword" [message]="'¿Estás seguro de que quieres cambiar tu contraseña?'"
-  (confirm)="onGuardarContrasena()" (cancel)="showConfirmPassword = false">
+  *ngIf="mostrarAlertaConfirmar"
+  [message]="mensajeAlertaConfirmar"
+  (confirm)="accionConfirmada()"
+  (cancel)="mostrarAlertaConfirmar = false">
 </app-alert-confirmar>
 
 

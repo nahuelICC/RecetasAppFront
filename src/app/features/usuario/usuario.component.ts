@@ -92,7 +92,10 @@ export class UsuarioComponent  implements OnInit {
   showPassword = false;
   showNewPassword = false;
   showRepeatPassword = false;
-
+  recetaAEliminar: number | null = null;
+  mostrarAlertaConfirmar: boolean = false;
+  mensajeAlertaConfirmar: string = '';
+  accionConfirmada: () => void = () => {};
 
 
   constructor(private usuarioService:UsuarioService,private registroService:RegistroService,private headerService: HeaderService,private route: ActivatedRoute,private authService: AuthService,private zone: NgZone,private fb: FormBuilder, private router:Router, private encryptService:EncryptService, private cdr: ChangeDetectorRef) { }
@@ -207,28 +210,37 @@ export class UsuarioComponent  implements OnInit {
 
   onGuardarContrasena() {
     if (this.cambioContrasenaForm.valid) {
-      this.showConfirmPassword = false;
-      console.log('Formulario válido:', this.cambioContrasenaForm.value);
-      this.usuarioService.cambiarContrasena(this.cambioContrasenaForm.value).subscribe(
-        (response) => {
-          console.log(response);
-          this.alertMessage = response;
-          this.alertType = 'success';
-          this.isAlertVisible = true;
-        },
-        (error) => {
-          console.error('Error al cambiar la contraseña:', error);
-          this.alertMessage = error.error;
-          this.isAlertVisible = true;
-          this.alertType = 'error';
-        }
-      );
-      this.mostrandoCambioContrasena = false;
-      this.cambioContrasenaForm.reset();
+      this.mensajeAlertaConfirmar = '¿Estás seguro de que quieres cambiar tu contraseña?';
+      this.accionConfirmada = () => {
+        this.usuarioService.cambiarContrasena(this.cambioContrasenaForm.value).subscribe(
+          (response) => {
+            console.log(response);
+            this.alertMessage = response;
+            this.alertType = 'success';
+            this.isAlertVisible = true;
 
-      setTimeout(() => {
-        this.isAlertVisible = false;
-      }, 2000);
+            // Opcional: resetear el formulario
+            this.cambioContrasenaForm.reset();
+
+            // Cerrar alerta después de un tiempo
+            setTimeout(() => {
+              this.isAlertVisible = false;
+            }, 3000);
+          },
+          (error) => {
+            console.error('Error al cambiar la contraseña:', error);
+            this.alertMessage = error.error;
+            this.alertType = 'error';
+            this.isAlertVisible = true;
+          }
+        );
+
+        // ✅ Cerrar la alerta y el formulario
+        this.mostrarAlertaConfirmar = false;
+        this.mostrandoCambioContrasena = false;
+
+      };
+      this.mostrarAlertaConfirmar = true;
     }
   }
 
@@ -241,7 +253,7 @@ export class UsuarioComponent  implements OnInit {
       alergenosSeleccionados: this.alergenosSeleccionados.map(a => a.id)
     };
 
-    if (!this.datosEdicion.nombre || !this.datosEdicion.apellidos || !this.datosEdicion.descripcion) {
+    if (!this.datosEdicion.nombre || !this.datosEdicion.apellidos) {
       this.alertMessage = 'Por favor, completa todos los campos.';
       this.isAlertVisible = true;
       this.alertType = 'error';
@@ -506,7 +518,6 @@ export class UsuarioComponent  implements OnInit {
       },
       (error) => {
         this.alertMessage = error.error;
-        this.alertType = 'error';
         this.isAlertVisible = true
       }
     );
@@ -644,4 +655,48 @@ export class UsuarioComponent  implements OnInit {
       this.perfil.numeroRecetas++;
     }
   }
+
+  mostrarAlertaConfirmarEliminar(idReceta: number) {
+    this.mensajeAlertaConfirmar = '¿Estás seguro de que quieres eliminar esta receta de tu lista de la compra?';
+    this.accionConfirmada = () => this.eliminarRecetaConfirmada(idReceta);
+    this.mostrarAlertaConfirmar = true;
+  }
+
+  eliminarRecetaConfirmada(idReceta: number) {
+    // Limpiar cualquier alerta anterior
+    this.alertMessage = '';
+    this.alertType = 'success';
+    this.isAlertVisible = false;
+
+    this.usuarioService.eliminarRecetaListaCompra(idReceta).subscribe({
+      next: () => {
+        this.usuarioService.ListaCompraByCooker(this.idPropietario).subscribe(data => {
+          this.recetasGuardadas = data;
+          this.recetasGuardadasMostradas = data.slice(0, this.guardadasPerPage);
+
+
+          this.alertMessage = 'Receta eliminada correctamente.';
+          this.alertType = 'success';
+          this.isAlertVisible = true;
+
+          setTimeout(() => {
+            this.isAlertVisible = false;
+          }, 3000);
+        });
+      },
+      error: (err) => {
+        console.error('Error al eliminar receta de la lista de compra', err);
+        this.alertMessage = 'Error al eliminar la receta.';
+        this.alertType = 'error';
+        this.isAlertVisible = true;
+
+        setTimeout(() => {
+          this.isAlertVisible = false;
+        }, 3000);
+      }
+    });
+
+    this.mostrarAlertaConfirmar = false;
+  }
+
 }
