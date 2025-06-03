@@ -64,22 +64,19 @@ export class PublicacionComponent  implements OnInit {
   }
 
   agregarIngredientes() {
-    this.inicioService.agregarIngredientesALaListaCompra(this.receta.id, this.cookerId).subscribe({
+    this.inicioService.agregarIngredientesALaListaCompra(this.receta.id).subscribe({
       next: (res) => {
         console.log('Ingredientes añadidos a la lista de compra:', res);
 
-        // Mostrar alerta
         this.alertMessage = 'Ingredientes añadidos a la lista de la compra';
         this.alertType = 'success';
         this.alertVisible = true;
 
-        // Ocultar alerta después de 3 segundos
         setTimeout(() => this.alertVisible = false, 3000);
       },
       error: (err) => {
         console.error('Error al añadir ingredientes a la lista de compra:', err);
 
-        // También podrías mostrar una alerta de error si lo deseas
         this.alertMessage = 'Error al añadir ingredientes';
         this.alertType = 'error';
         this.alertVisible = true;

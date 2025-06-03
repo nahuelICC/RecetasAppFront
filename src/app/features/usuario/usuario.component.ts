@@ -682,7 +682,7 @@ export class UsuarioComponent  implements OnInit {
 
     this.usuarioService.eliminarRecetaListaCompra(idReceta).subscribe({
       next: () => {
-        this.usuarioService.ListaCompraByCooker(this.idPropietario).subscribe(data => {
+        this.usuarioService.ListaCompraByCooker().subscribe(data => {
           this.recetasGuardadas = data;
           this.recetasGuardadasMostradas = data.slice(0, this.guardadasPerPage);
 

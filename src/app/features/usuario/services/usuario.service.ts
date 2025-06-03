@@ -124,8 +124,8 @@ export class UsuarioService {
     });
   }
 
-  ListaCompraByCooker(cookerId: number): Observable<ListaCompraDTO[]> {
-    return this.http.get<ListaCompraDTO[]>(`${this.apiUrlListaCompra}/personal/${cookerId}`);
+  ListaCompraByCooker(): Observable<ListaCompraDTO[]> {
+    return this.http.get<ListaCompraDTO[]>(`${this.apiUrlListaCompra}/personal`);
   }
 
   eliminarRecetaListaCompra(idReceta: number): Observable<any> {
