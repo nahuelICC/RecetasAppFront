@@ -57,14 +57,6 @@ export class HeaderComponent implements OnInit {
         this.imagenPerfil = response;
       }
     });
-
-    const idUsuario = this.authService.getUserId();
-    if (idUsuario) {
-      this.notificacionesService.actualizarContadorNotificaciones(idUsuario);
-      this.notificacionesService.notificacionesNoLeidasCount$.subscribe(count => {
-        this.notificacionesNoLeidasCount = count;
-      });
-    }
     const savedTheme = localStorage.getItem('theme');
     this.isLightMode = savedTheme === 'light';
     this.applyTheme();
@@ -89,6 +81,10 @@ export class HeaderComponent implements OnInit {
             .reduce((total, conv) => total + 1, 0);
         })
       );
+      this.notificacionesService.actualizarContadorNotificaciones();
+      this.notificacionesService.notificacionesNoLeidasCount$.subscribe(count => {
+        this.notificacionesNoLeidasCount = count;
+      });
     }
   }
 
@@ -110,10 +106,7 @@ export class HeaderComponent implements OnInit {
     if (this.menuOpen) this.menuOpen = false;
 
     if (this.mostrarNotificaciones) {
-      const idUsuario = this.authService.getUserId();
-      if (idUsuario) {
-        this.notificacionesService.actualizarContadorNotificaciones(idUsuario);
-      }
+      this.notificacionesService.actualizarContadorNotificaciones();
     }
   }
 

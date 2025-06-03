@@ -61,7 +61,17 @@
 
 <div *ngIf="isMobile" class="fixed top-0 left-0 right-0 color-verde-claro p-4 flex justify-between items-center z-50 border-b border-b-gray-300">
   <span class="text-lg font-bold texto-logo">Cookers</span>
-  <div class="flex items-center gap-4">
+  <div class="flex gap-5 justify-center">
+    <ion-icon [name]="isLightMode ? 'sunny' : 'moon'" class="text-2xl" (click)="toggleTheme()"></ion-icon>
+
+    <!-- Icono de chat con notificación (versión móvil) -->
+    <div class="relative">
+      <ion-icon name="paper-plane-outline" class="text-2xl" [routerLink]="'/chat'"></ion-icon>
+      <span *ngIf="mensajesNoLeidos > 0"
+            class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+        {{ mensajesNoLeidos > 9 ? '9+' : mensajesNoLeidos }}
+      </span>
+    </div>
     <div class="relative" *ngIf="authService.isLogged()">
       <ion-icon name="notifications-outline" class="text-2xl cursor-pointer" (click)="toggleNotificaciones()"></ion-icon>
 
@@ -76,18 +86,6 @@
           (cerrarNotificaciones)="handleCerrarNotificaciones()">
         </app-notificaciones>
       </div>
-    </div>
-  </div>
-  <div class="flex gap-5 justify-center">
-    <ion-icon [name]="isLightMode ? 'sunny' : 'moon'" class="text-2xl" (click)="toggleTheme()"></ion-icon>
-
-    <!-- Icono de chat con notificación (versión móvil) -->
-    <div class="relative">
-      <ion-icon name="paper-plane-outline" class="text-2xl" [routerLink]="'/chat'"></ion-icon>
-      <span *ngIf="mensajesNoLeidos > 0"
-            class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-        {{ mensajesNoLeidos > 9 ? '9+' : mensajesNoLeidos }}
-      </span>
     </div>
   </div>
 </div>
