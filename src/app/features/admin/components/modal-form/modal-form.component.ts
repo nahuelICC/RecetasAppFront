@@ -1,6 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output, OnChanges, SimpleChanges} from '@angular/core'; // Añadido OnChanges, SimpleChanges
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {NgForOf, NgIf, NgSwitch, NgSwitchCase} from '@angular/common';
+import {AlertInfoComponent} from '../../../../shared/components/alert-info/alert-info.component';
 
 
 export interface FormOption {
@@ -33,7 +34,8 @@ export interface FormConfig {
     ReactiveFormsModule,
     NgForOf,
     NgSwitch,
-    NgSwitchCase
+    NgSwitchCase,
+    AlertInfoComponent
   ]
 })
 export class ModalFormComponent implements OnInit, OnChanges { // Implementa OnChanges

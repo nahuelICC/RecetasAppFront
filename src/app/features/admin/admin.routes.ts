@@ -61,8 +61,8 @@ export const ingredientesConfigResolver: ResolveFn<EntityConfiguration> = (route
         tableColumns: [
           { key: 'id', label: 'ID' },
           { key: 'nombre', label: 'Nombre Ingrediente' },
-          { key: 'alergeno.nombre', label: 'Alérgeno' },
-          { key: 'categoria.nombre', label: 'Categoría' },
+          { key: 'alergeno.nombre', label: 'Alérgeno', isSelect: true },
+          { key: 'categoria.nombre', label: 'Categoría', isSelect: true },
           { key: 'proteinas', label: 'Proteínas (g)' },
           { key: 'hidratos', label: 'Hidratos (g)' },
           { key: 'grasas', label: 'Grasas (g)' }
@@ -91,13 +91,18 @@ export const ingredientesConfigResolver: ResolveFn<EntityConfiguration> = (route
             { name: 'grasas', label: 'Grasas (por 100g)', type: 'number', required: true, min: 0, step: 0.1 }
           ]
         },
+        tableActions: {
+          edit: true,
+          delete: true,
+          view: false,
+        },
         fetchData: (page: number, itemsPerPage: number, searchTerm: string) =>
           ingredienteService.getIngredientes(page, itemsPerPage, searchTerm),
         createEntity: (data: any) =>
           ingredienteService.crearIngrediente ? ingredienteService.crearIngrediente(data) : of({ error: 'createIngrediente no implementado'}),
         updateEntity: (id: any, data: any) =>
           ingredienteService.actualizarIngrediente ? ingredienteService.actualizarIngrediente(id, data) : of({ error: 'updateIngrediente no implementado'}),
-        // deleteEntity: (id: any) => ingredienteService.deleteIngrediente ? ingredienteService.deleteIngrediente(id) : of({ error: 'deleteIngrediente no implementado'}),
+        deleteEntity: (id: any) => ingredienteService.ocultarIngrediente ? ingredienteService.ocultarIngrediente(id) : of({ error: 'deleteIngrediente no implementado'}),
       };
     })
   );

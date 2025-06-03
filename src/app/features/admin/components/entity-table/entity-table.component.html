@@ -1,6 +1,6 @@
 <div class="space-y-6" *ngIf="config">
   <header class="flex flex-col sm:flex-row justify-between items-center gap-4 p-1 rounded-lg">
-  <h1 class="text-2xl sm:text-3xl font-bold text-[#004643]">{{ config.entityNamePlural }}</h1>
+  <h1 class="text-2xl sm:text-3xl font-bold color-texto-blanco">{{ config.entityNamePlural }}</h1>
   <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
     <div class="relative w-full sm:w-64">
       <input
@@ -8,13 +8,12 @@
         [(ngModel)]="searchTerm"
         (ngModelChange)="onSearch()"
         [placeholder]="'Buscar ' + config.entityName.toLowerCase() + '...'"
-        class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-full ..."
+        class="block w-full pl-10 pr-3 py-1 border border-gray-300 rounded-full ..."
       />
     </div>
-
-<button (click)="openAddModal()" type="button" class="w-full sm:w-auto px-6 py-2 rounded-full font-semibold color-boton-amarillo color-texto transition-colors duration-200 shadow-md flex items-center justify-center">
-  Añadir {{ config.entityName }}
-</button>
+    <button (click)="openAddModal()" type="button" class="w-full sm:w-auto px-6 py-2 rounded-full font-semibold color-boton-amarillo color-texto transition-colors duration-200 shadow-md flex items-center justify-center">
+      Añadir {{ config.entityName }}
+    </button>
   </div>
 </header>
 
@@ -42,5 +41,19 @@
     (formSubmitted)="onFormSubmit($event)"
     (modalClosed)="onModalClose()">
   </app-modal-form>
+  <app-alert-info
+    [isVisible]="alertVisible"
+    [message]="mensajeAlert"
+    [type]="tipoAlert">
+  </app-alert-info>
+  <app-alert-confirmar
+    *ngIf="showAlertConfirmar"
+    [message]="mensajeAlert"
+    (confirm)="onConfirm()"
+    (cancel)="onCalcel()"
+    [confirmLabel]="'Aceptar'"
+    [showCancelButton]="true"
+    [showIcon]="false">
+  </app-alert-confirmar>
 </div>
 <div *ngIf="!config" class="text-center text-gray-500 p-10">Cargando configuración de entidad...</div>

@@ -6,6 +6,8 @@ import {FormConfig, ModalFormComponent} from '../modal-form/modal-form.component
 import {Observable, Subscription} from 'rxjs';
 import {PaginationComponent} from '../pagination/pagination.component';
 import {ActivatedRoute, Router} from '@angular/router';
+import {AlertInfoComponent, AlertType} from '../../../../shared/components/alert-info/alert-info.component';
+import {AlertConfirmarComponent} from '../../../../shared/components/alert-confirmar/alert-confirmar.component';
 
 export interface EntityConfiguration {
   entityName: string;
@@ -37,7 +39,9 @@ export interface EntityConfiguration {
     NgIf,
     FormsModule,
     PaginationComponent,
-    ModalFormComponent
+    ModalFormComponent,
+    AlertInfoComponent,
+    AlertConfirmarComponent
   ]
 })
 export class EntityTableComponent  implements OnInit, OnDestroy{
@@ -60,8 +64,19 @@ export class EntityTableComponent  implements OnInit, OnDestroy{
   modalData: any | null = null;
   modalTitle: string = '';
 
+  // alert
+  alertVisible: boolean = false;
+  mensajeAlert: string ="";
+  tipoAlert: AlertType = "warning";
+
+  // alert confirmar
+  showAlertConfirmar: boolean = false;
+  private confirmar: boolean = false;
+
   private routeDataSub?: Subscription;
   private dataSub?: Subscription;
+  private item = null;
+
 
   constructor(
     private route: ActivatedRoute, // Inyectar ActivatedRoute
@@ -103,7 +118,7 @@ export class EntityTableComponent  implements OnInit, OnDestroy{
         next: (response: any) => {
           this.displayedData = response.data;
           this.totalItems = response.totalItems;
-          this.totalPages = response.totalPages;
+          this.totalPages = response.totalPages - 1;
           if (this.currentPage > this.totalPages && this.totalPages > 0) {
             this.currentPage = this.totalPages;
           } else if (this.currentPage < 1 && this.totalPages > 0) {
@@ -145,24 +160,39 @@ export class EntityTableComponent  implements OnInit, OnDestroy{
   }
 
   handleDelete(item: any): void {
-  //   if (!this.config.deleteEntity) {
-  //     console.warn("deleteEntity no configurado.");
-  //     return;
-  //   }
-  //   if (confirm(`¿Estás seguro de que quieres eliminar "${item.nombre || item.id}"?`)) {
-  //     this.isLoading = true;
-  //     this.config.deleteEntity(item.id).subscribe({
-  //       next: () => {
-  //         alert(`${this.config.entityName} eliminado.`);
-  //         this.resetAndLoadData(); // Recargar datos, idealmente a la página actual o la anterior si esta queda vacía
-  //       },
-  //       error: (err) => {
-  //         console.error("Error al eliminar:", err);
-  //         alert(`Error al eliminar ${this.config.entityName}.`);
-  //         this.isLoading = false;
-  //       }
-  //     });
-  //   }
+    if (!this.config.deleteEntity) {
+      console.warn("deleteEntity no configurado.");
+      return;
+    }
+    this.mensajeAlert = `¿Estás seguro de que quieres eliminar "${item.nombre || item.id}"?`;
+    this.showAlertConfirmar = true
+    this.item = item;
+  }
+  onConfirm() {
+    this.isLoading = true;
+    // @ts-ignore
+    this.config.deleteEntity(this.item.id).subscribe({
+      next: () => {
+        this.alertVisible = true;
+        this.tipoAlert = "success";
+        this.mensajeAlert = `${this.config.entityName} eliminado.`;
+        // alert(`${this.config.entityName} eliminado.`);
+        this.resetAndLoadData(); // Recargar datos, idealmente a la página actual o la anterior si esta queda vacía
+      },
+      error: (err) => {
+        this.alertVisible = true;
+        this.tipoAlert = "error";
+        this.mensajeAlert = `Error al eliminar ${this.config.entityName}.`;
+        console.error("Error al eliminar:", err);
+        // alert(`Error al eliminar ${this.config.entityName}.`);
+        this.isLoading = false;
+      }
+    });
+    this.showAlertConfirmar = false
+  }
+  onCalcel() {
+    this.showAlertConfirmar = false
+    this.item = null;
   }
 
   handleView(item: any): void {
@@ -177,6 +207,10 @@ export class EntityTableComponent  implements OnInit, OnDestroy{
     this.modalData = null;
   }
   //
+
+
+
+
   onFormSubmit(formData: any): void {
     this.isLoading = true;
     let operation: Observable<any>;
@@ -201,16 +235,24 @@ export class EntityTableComponent  implements OnInit, OnDestroy{
 
     operation.subscribe({
       next: () => {
-        alert(`${this.config.entityName} ${this.modalData?.id ? 'actualizado' : 'creado'}.`);
+        this.alertVisible = true;
+        this.tipoAlert = "success";
+        this.mensajeAlert = `${this.config.entityName} ${this.modalData?.id ? 'actualizado' : 'creado'}.`;
+        // alert(`${this.config.entityName} ${this.modalData?.id ? 'actualizado' : 'creado'}.`);
         this.isModalOpen = false;
         this.resetAndLoadData(); // Recarga los datos
       },
       error: (err) => {
+        this.alertVisible = true;
+        this.tipoAlert = "error";
+        this.mensajeAlert = `Error al guardar ${this.config.entityName}.`;
         console.error("Error al guardar:", err);
-        alert(`Error al guardar ${this.config.entityName}.`);
+        // alert(`Error al guardar ${this.config.entityName}.`);
         this.isLoading = false; // Mantener el modal abierto para corrección o reintento
       }
     });
   }
+
+
 
 }

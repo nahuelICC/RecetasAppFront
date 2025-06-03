@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {RouterOutlet} from '@angular/router';
 import {SidebarNavComponent} from './components/sidebar-nav/sidebar-nav.component';
+import {AlertInfoComponent} from '../../shared/components/alert-info/alert-info.component';
 
 @Component({
   selector: 'app-admin',
@@ -8,7 +9,8 @@ import {SidebarNavComponent} from './components/sidebar-nav/sidebar-nav.componen
   styleUrls: ['./admin.component.css'],
   imports: [
     RouterOutlet,
-    SidebarNavComponent
+    SidebarNavComponent,
+    AlertInfoComponent
   ],
   standalone: true
 })

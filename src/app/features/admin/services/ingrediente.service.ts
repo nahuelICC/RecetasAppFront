@@ -38,10 +38,10 @@ export class IngredienteService {
 
   actualizarIngrediente(id: number, ingredienteData: any): Observable<any> {
     ingredienteData.id = id;
-    return this.http.put<IngredienteAdminDTO>(`${this.apiUrl}/admin/actualizar`, ingredienteData);
+    return this.http.put<any>(`${this.apiUrl}/admin/actualizar`, ingredienteData);
   }
 
-  ocultarIngrediente(id: number): Observable<void> { // Delete a menudo no devuelve contenido
-    return this.http.delete<void>(`${this.apiUrl}/admin/eliminar/${id}`);
+  ocultarIngrediente(id: number): Observable<any> {
+    return this.http.put<void>(`${this.apiUrl}/admin/desactivar`, id);
   }
 }

@@ -1,6 +1,6 @@
-<div class="flex flex-col h-full color-verde-claro m-4">
+<div class="flex flex-col h-full color-verde-claro m-4 rounded-lg shadow-lg">
   <div class="px-6 py-4 border-b border-white/20">
-    <a routerLink="/admin" class="text-2xl font-bold text-white hover:text-gray-200">
+    <a routerLink="/admin" class="text-2xl font-bold color-texto-blanco">
       Panel Admin
     </a>
   </div>
@@ -10,13 +10,13 @@
        [routerLink]="item.path"
        routerLinkActive="color-boton-amarillo color-texto font-semibold shadow-md"
        [routerLinkActiveOptions]="{exact: item.path === './' || item.path === ''}"
-       class="color-texto flex items-center px-3 py-2.5 text-sm rounded-md hover: color-boton-amarillo">
+       class="flex items-center px-3 py-2.5 text-sm rounded-md hover:bg-[var(--color-amarillo-boton)]">
       <svg *ngIf="item.icon"
            class="mr-3 flex-shrink-0 h-5 w-5 color-texto"
            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" [attr.d]="item.icon"/>
       </svg>
-      <span>{{ item.label }}</span>
+      <span class="color-texto">{{ item.label }}</span>
     </a>
   </nav>
 
