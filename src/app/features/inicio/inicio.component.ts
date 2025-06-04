@@ -83,13 +83,13 @@ export class InicioComponent implements OnInit {
   }
 
   cargarUltimasRecetas() {
-    this.inicioService.getUltimasRecetas(this.cookerId).subscribe(recetas => {
+    this.inicioService.getUltimasRecetas().subscribe(recetas => {
       this.ultimasRecetas = recetas;
     });
   }
 
   cargarRecetasTop() {
-    this.inicioService.getTop10RecetasFavoritas(this.cookerId).subscribe(
+    this.inicioService.getTop10RecetasFavoritas().subscribe(
       (data) => {
         this.topRecetas = data;
       },
@@ -99,13 +99,4 @@ export class InicioComponent implements OnInit {
     );
   }
 
-  // mostrarParaTi() {
-  //   this.vista = 'paraTi';   // Cambia la vista a 'paraTi'
-  //   this.cargarRecetas();
-  // }
-  //
-  // mostrarSiguiendo() {
-  //   this.vista = 'siguiendo';  // Cambia la vista a 'siguiendo'
-  //   this.cargarRecetas();
-  // }
 }

@@ -1,8 +1,8 @@
 <!-- Contenedor principal del comentario -->
 <div
-  class="color-fondo-comentarios rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 mt-6 mb-6 w-full overflow-hidden group">
+  class="color-verde-claro rounded-lg shadow-lg hover:shadow-xl transition-all duration-500 mt-6 mb-6 w-full overflow-hidden group">
   <!-- Parte Superior -->
-  <div class="color-fondo-comentarios p-4 md:p-6">
+  <div class="color-verde-claro p-4 md:p-6">
     <div class="flex items-start space-x-4">
       <!-- Avatar del usuario -->
       <div class="relative flex-shrink-0">
@@ -16,15 +16,15 @@
       <div class="flex-1 min-w-0">
         <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between w-full">
           <div class="flex-1 min-w-0">
-            <h3 class="text-lg sm:text-xl font-bold color-texto-comentarios truncate mb-1">{{ comentario.username }}
+            <h3 class="text-lg sm:text-xl font-bold color-texto truncate mb-1">{{ comentario.username }}
             </h3>
             <div class="flex items-center text-sm color-texto-comentarios">
-              <div class="flex items-center color-fondo-comentarios rounded-full px-3 py-1">
-                <svg class="w-4 h-4 mr-2 color-texto-comentarios" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="flex items-center bg-white rounded-full px-3 py-1">
+                <svg class="w-4 h-4 mr-2 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span class="font-medium">{{ comentario.fecha | timeAgo }}</span>
+                <span class="font-medium text-black">{{ comentario.fecha | timeAgo }}</span>
               </div>
             </div>
           </div>
@@ -68,12 +68,12 @@
 
   <!-- Parte Medio -->
   <div class="px-4 py-6 md:px-6">
-    <p class="text-base sm:text-lg color-texto-comentarios leading-relaxed break-words font-medium">{{comentario.texto}}
+    <p class="text-base sm:text-lg color-texto leading-relaxed break-words font-medium">{{comentario.texto}}
     </p>
   </div>
 
   <!-- Parte inferior -->
-  <div class="px-4 py-4 md:px-6 color-fondo-comentarios flex flex-wrap justify-between items-center gap-3">
+  <div class="px-4 py-4 md:px-6 color-verde-claro flex flex-wrap justify-between items-center gap-3">
     <!-- Botón de responder -->
     <button (click)="mostrarCuadroRespuesta()"
       class="flex items-center bg-white hover:bg-[#004643] text-gray-700 hover:text-white font-semibold py-2 px-4 rounded-full border border-gray-200 hover:border-[#004643] shadow-sm hover:shadow-md transition-all duration-300 group/reply">
@@ -142,7 +142,7 @@
 <div *ngIf="mostrandoRespuestas" class="ml-6 sm:ml-8 md:ml-12 relative">
   <!-- Línea lateral decorativa -->
   <div
-    class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#004643] via-[#004643] to-transparent rounded-full">
+    class="absolute left-0 top-0 bottom-0 w-1 rounded-full">
   </div>
   <div class="pl-8 space-y-4">
     <app-respuesta *ngFor="let respuesta of respuestasVisibles" [respuesta]="respuesta" (respuestaEliminado)="recargarRespuestasComentario($event)"

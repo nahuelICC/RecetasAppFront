@@ -49,28 +49,20 @@ export class InicioService {
       responseType: 'text' as 'json'
     });
   }
-  agregarIngredientesALaListaCompra(idReceta: number, idCooker: number): Observable<string> {
-    const body = {
-      idReceta: idReceta,
-      idCooker: idCooker
-    };
-
-    return this.http.post<string>(`${this.listaCompraUrl}/agregar-ingredientes`, body, {
+  agregarIngredientesALaListaCompra(idReceta: number): Observable<string> {
+    return this.http.post<string>(`${this.listaCompraUrl}/agregar-ingredientes`, idReceta, {
       responseType: 'text' as 'json'
     });
   }
 
-  getUltimasRecetas(cookerId: number): Observable<RecetaInicioDTO[]> {
-    return this.http.get<RecetaInicioDTO[]>(`${this.apiUrl}/nuevas`, {
-      params: new HttpParams().set('cookerId', cookerId.toString()) // Envía el parámetro
-    });
+  getUltimasRecetas(): Observable<RecetaInicioDTO[]> {
+    return this.http.get<RecetaInicioDTO[]>(`${this.apiUrl}/nuevas`);
   }
 
-  getTop10RecetasFavoritas(cookerId: number): Observable<RecetaInicioDTO[]> {
-    return this.http.get<RecetaInicioDTO[]>(`${this.apiUrl}/favoritas`, {
-      params: new HttpParams().set('cookerId', cookerId.toString()) // Envía el parámetro
-    });
+  getTop10RecetasFavoritas(): Observable<RecetaInicioDTO[]> {
+    return this.http.get<RecetaInicioDTO[]>(`${this.apiUrl}/topFavoritas`);
   }
+
 
 
 }

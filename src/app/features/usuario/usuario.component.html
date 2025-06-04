@@ -1,8 +1,8 @@
 <!-- perfil-usuario.component.html -->
-<div class="p-6 color-verde-oscuro text-white min-h-screen mt-12 md:mx-16 lg:mx-20 xl:mx-48 2xl:mx-64">
+<div class="p-6 color-verde-oscuro text-white min-h-screen mt-12 mx-auto px-8 py-8">
   <!-- Perfil del usuario -->
-  <div class="flex items-center gap-4 mb-12">
-    <div class="relative w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full overflow-hidden shrink-0 group">
+  <div class="flex flex-col sm:flex-row items-center gap-4 mb-12">
+    <div class="relative w-20 h-20  md:w-24 md:h-24 rounded-full overflow-hidden shrink-0 group">
       <!-- Imagen de perfil -->
       <img
         alt="Avatar"
@@ -46,7 +46,7 @@
             class="w-full sm:w-1/2 px-3 py-1.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-black text-sm transition-all"
           />
         </div>
-        <div class="flex flex-wrap gap-3 mt-0 lg:mt-4 mb-4 lg:mb-0">
+        <div class="flex flex-wrap gap-3 mt-0 lg:mt-4 mb-4 lg:mb-0" *ngIf="!esPerfilPropio && !perfilBloqueado">
           <app-boton
             [color]="'var(--color-verde-boton)'"
             size="small"
@@ -106,19 +106,19 @@
     </div>
   </div>
 
-  <div class="flex gap-4 sm:gap-20 xxl:gap-4 mb-16 w-full lg:w-1/6" *ngIf="esPerfilPropio">
+  <div class="flex gap-4 sm:gap-10 xxl:gap-4 mb-16 w-full lg:w-1/6" *ngIf="esPerfilPropio">
     <app-boton
       [color]="'var(--color-verde-boton)'"
       size="small"
       [label]="'Lista de la compra'"
-      class="w-full max-w-xs"
+      class=" max-w-xs"
       (click)="toggleListaCompra()">
     </app-boton>
     <app-boton
       [color]="'var(--color-amarillo-boton)'"
       size="small"
       [label]="'Cambiar Contraseña'"
-      class="w-full max-w-xs"
+      class="max-w-xs"
       (click)="mostrandoCambioContrasena = !mostrandoCambioContrasena">
     </app-boton>
   </div>
@@ -217,7 +217,7 @@
     </form>
 
     <div class="mt-4 flex justify-start">
-      <app-boton label="Guardar" [size]="'small'" (click)="showConfirmPassword = true" [disabled]="cambioContrasenaForm.invalid"></app-boton>
+      <app-boton label="Guardar" [size]="'small'" (click)="onGuardarContrasena()" [disabled]="cambioContrasenaForm.invalid"></app-boton>
     </div>
   </div>
 
@@ -549,12 +549,15 @@
   *ngIf="mostrarListaCompra"
   [isOpen]="mostrarListaCompra"
   [cookerId]="idPropietario"
-  (close)="toggleListaCompra()"> <!-- Asegurar que tenemos este output -->
+  (close)="toggleListaCompra()"
+  (solicitarConfirmacionEliminar)="mostrarAlertaConfirmarEliminar($event)">
 </app-lista-compra>
 
 <app-alert-confirmar
-  *ngIf="showConfirmPassword" [message]="'¿Estás seguro de que quieres cambiar tu contraseña?'"
-  (confirm)="onGuardarContrasena()" (cancel)="showConfirmPassword = false">
+  *ngIf="mostrarAlertaConfirmar"
+  [message]="mensajeAlertaConfirmar"
+  (confirm)="accionConfirmada()"
+  (cancel)="mostrarAlertaConfirmar = false">
 </app-alert-confirmar>
 
 

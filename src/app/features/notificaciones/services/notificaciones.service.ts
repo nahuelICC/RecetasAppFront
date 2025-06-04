@@ -12,16 +12,16 @@ export class NotificacionesService {
   notificacionesNoLeidasCount$ = this.notificacionesNoLeidasCountSubject.asObservable();
   constructor(private http: HttpClient) { }
 
-  obtenerNotificacionesPorUsuario(idUsuario: number): Observable<GetNotificacionDTO[]> {
-    return this.http.get<GetNotificacionDTO[]>(`${this.apiUrl}/usuario/${idUsuario}`);
+  obtenerNotificacionesPorUsuario(): Observable<GetNotificacionDTO[]> {
+    return this.http.get<GetNotificacionDTO[]>(`${this.apiUrl}/personales`);
   }
 
-  marcarNotificacionesComoLeidas(idUsuario: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/marcar-leidas/${idUsuario}`, null);
+  marcarNotificacionesComoLeidas(): Observable<any> {
+    return this.http.put(`${this.apiUrl}/notificaciones/leer`, null);
   }
 
-  actualizarContadorNotificaciones(idUsuario: number) {
-    this.obtenerNotificacionesPorUsuario(idUsuario).subscribe({
+  actualizarContadorNotificaciones() {
+    this.obtenerNotificacionesPorUsuario().subscribe({
       next: (notificaciones) => {
         const noLeidas = notificaciones.filter(n => !n.leida).length;
         this.notificacionesNoLeidasCountSubject.next(noLeidas);

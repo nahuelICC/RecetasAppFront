@@ -5,6 +5,7 @@ export interface ListaIngredienteDTO {
 }
 
 export interface ListaCompraDTO {
+  idReceta: number;
   tituloReceta: string;
   ingredientes: ListaIngredienteDTO[];
 }

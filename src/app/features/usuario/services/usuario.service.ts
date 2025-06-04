@@ -124,8 +124,19 @@ export class UsuarioService {
     });
   }
 
-  ListaCompraByCooker(cookerId: number): Observable<ListaCompraDTO[]> {
-    return this.http.get<ListaCompraDTO[]>(`${this.apiUrlListaCompra}/personal/${cookerId}`);
+  ListaCompraByCooker(): Observable<ListaCompraDTO[]> {
+    return this.http.get<ListaCompraDTO[]>(`${this.apiUrlListaCompra}/personal`);
+  }
+
+  eliminarRecetaListaCompra(idReceta: number): Observable<any> {
+    const params = new HttpParams().set('idReceta', idReceta.toString());
+    return this.http.delete(`${this.apiUrlListaCompra}/eliminar-receta`, { params: {idReceta},  responseType: 'text'  });
+  }
+
+
+  isBlocked(id: string): Observable<boolean> {
+    return this.http.get<boolean>(`${this.apiUrl}/tieneBloqueado/${id}`, {
+    });
   }
 
 }

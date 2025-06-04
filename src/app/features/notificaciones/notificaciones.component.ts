@@ -43,15 +43,9 @@ export class NotificacionesComponent implements OnInit {
 
   cargarNotificaciones(): void {
     this.cargando = true;
-    const idUsuario = this.authService.getUserId(); // Este debe ser el id del Cooker/Usuario
 
-    if (idUsuario == null) {
-      this.error = 'No se pudo obtener el ID del usuario';
-      this.cargando = false;
-      return;
-    }
-
-    this.notificacionesService.obtenerNotificacionesPorUsuario(idUsuario).subscribe({
+    // Eliminamos la verificación del ID de usuario
+    this.notificacionesService.obtenerNotificacionesPorUsuario().subscribe({
       next: (data: GetNotificacionDTO[]) => {
         this.notificaciones = data.map((n: GetNotificacionDTO): NotificacionEncriptadaDTO => {
           let encryptedId: string | undefined;
@@ -65,7 +59,6 @@ export class NotificacionesComponent implements OnInit {
           return { ...n, encryptedId: encryptedId };
         });
 
-
         this.noLeidas = this.notificaciones.filter((n: GetNotificacionDTO) => !n.leida);
         this.leidas = this.notificaciones.filter((n: GetNotificacionDTO) => n.leida);
         this.error = null;
@@ -77,25 +70,20 @@ export class NotificacionesComponent implements OnInit {
         this.cargando = false;
       }
     });
-
   }
 
   cerrar(): void {
-    const idUsuario = this.authService.getUserId();
-    if (idUsuario != null) {
-      this.notificacionesService.marcarNotificacionesComoLeidas(idUsuario).subscribe({
-        next: () => {
-          this.notificacionesService.actualizarContadorNotificaciones(idUsuario);
-          this.cerrarNotificaciones.emit();
-        },
-        error: err => {
-          console.error('Error al marcar notificaciones como leídas', err);
-          this.cerrarNotificaciones.emit();
-        }
-      });
-    } else {
-      this.cerrarNotificaciones.emit();
-    }
+    this.notificacionesService.marcarNotificacionesComoLeidas().subscribe({
+      next: () => {
+        // Actualizar contador sin parámetros
+        this.notificacionesService.actualizarContadorNotificaciones();
+        this.cerrarNotificaciones.emit();
+      },
+      error: err => {
+        console.error('Error al marcar notificaciones como leídas', err);
+        this.cerrarNotificaciones.emit();
+      }
+    });
   }
 
 
