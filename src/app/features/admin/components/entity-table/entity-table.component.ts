@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {GenericTableComponent, TableActionsConfig, TableColumn} from '../generic-table/generic-table.component';
-import {NgIf} from '@angular/common';
+import {NgClass, NgIf} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {FormConfig, ModalFormComponent} from '../modal-form/modal-form.component';
 import {Observable, Subscription} from 'rxjs';
@@ -22,6 +22,7 @@ export interface EntityConfiguration {
     page: number,
     itemsPerPage: number,
     searchTerm: string,
+    mostrarActivos: boolean,
     // otrosFiltros?: any // Si tienes más filtros específicos de entidad
   ) => Observable<{ data: any[], totalItems: number , totalPages: number}>;
   createEntity?: (data: any) => Observable<any>;
@@ -41,7 +42,8 @@ export interface EntityConfiguration {
     PaginationComponent,
     ModalFormComponent,
     AlertInfoComponent,
-    AlertConfirmarComponent
+    AlertConfirmarComponent,
+    NgClass
   ]
 })
 export class EntityTableComponent  implements OnInit, OnDestroy{
@@ -57,6 +59,8 @@ export class EntityTableComponent  implements OnInit, OnDestroy{
   itemsPerPage: number = 8;
   totalItems: number = 0;
   totalPages: number = 0;
+
+  showingActivos: boolean = true;
 
   // --- Estado de UI ---
   isLoading: boolean = false;
@@ -104,6 +108,11 @@ export class EntityTableComponent  implements OnInit, OnDestroy{
     this.loadData();
   }
 
+  toggleActivosEliminados(): void {
+    this.showingActivos = !this.showingActivos;
+    this.resetAndLoadData(); // Recargar los datos con el nuevo estado
+  }
+
   loadData(): void {
     if (!this.config || !this.config.fetchData) {
       console.warn("FetchData no configurado para la entidad actual.");
@@ -113,7 +122,7 @@ export class EntityTableComponent  implements OnInit, OnDestroy{
       return;
     }
     this.isLoading = true;
-    this.dataSub = this.config.fetchData(this.currentPage, this.itemsPerPage, this.searchTerm)
+    this.dataSub = this.config.fetchData(this.currentPage, this.itemsPerPage, this.searchTerm, this.showingActivos)
       .subscribe({
         next: (response: any) => {
           this.displayedData = response.data;
@@ -153,7 +162,8 @@ export class EntityTableComponent  implements OnInit, OnDestroy{
   handleEdit(item: any): void {
     this.modalData = { ...item,
       alergenoId: item.alergeno ? item.alergeno.id : null,
-      categoriaId: item.categoria ? item.categoria.id : null
+      categoriaId: item.categoria ? item.categoria.id : null,
+      rol: item.rol ? item.rol : null,
     };
     this.modalTitle = `Editar ${this.config.entityName}`;
     this.isModalOpen = true;
@@ -165,6 +175,15 @@ export class EntityTableComponent  implements OnInit, OnDestroy{
       return;
     }
     this.mensajeAlert = `¿Estás seguro de que quieres eliminar "${item.nombre || item.id}"?`;
+    this.showAlertConfirmar = true
+    this.item = item;
+  }
+  handleRestore(item: any): void {
+    if (!this.config.deleteEntity) {
+      console.warn("deleteEntity no configurado.");
+      return;
+    }
+    this.mensajeAlert = `¿Estás seguro de que quieres restaurar "${item.nombre || item.usuario || item.id}"?`;
     this.showAlertConfirmar = true
     this.item = item;
   }

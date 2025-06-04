@@ -11,7 +11,8 @@ import {FormOption} from './components/modal-form/modal-form.component';
 import {AlergenoNoImgDTO} from './models/AlergenoNoImgDTO';
 import {CategoriaNoMedidaDTO} from './models/CategoriaNoMedidaDTO';
 import {AlergenoService} from './services/alergeno.service';
-import {CategoriaService} from './services/categoria.service'; // Asumo que tienes este DTO o similar
+import {CategoriaService} from './services/categoria.service';
+import {UsuarioService} from './services/usuario.service'; // Asumo que tienes este DTO o similar
 
 
 @Component({
@@ -96,8 +97,8 @@ export const ingredientesConfigResolver: ResolveFn<EntityConfiguration> = (route
           delete: true,
           view: false,
         },
-        fetchData: (page: number, itemsPerPage: number, searchTerm: string) =>
-          ingredienteService.getIngredientes(page, itemsPerPage, searchTerm),
+        fetchData: (page: number, itemsPerPage: number, searchTerm: string, showingActivos: boolean) =>
+          ingredienteService.getIngredientes(page, itemsPerPage, searchTerm, showingActivos),
         createEntity: (data: any) =>
           ingredienteService.crearIngrediente ? ingredienteService.crearIngrediente(data) : of({ error: 'createIngrediente no implementado'}),
         updateEntity: (id: any, data: any) =>
@@ -108,6 +109,54 @@ export const ingredientesConfigResolver: ResolveFn<EntityConfiguration> = (route
   );
 };
 
+export const usuariosConfigResolver: ResolveFn<EntityConfiguration> = (route, state) => {
+  const usuarioService = inject(UsuarioService);
+  // Aquí puedes definir las opciones de rol si es necesario
+  // Por ejemplo, si los roles son estáticos:
+  // const rolesOptions: FormOption[] = [
+  //   { value: 'ADMIN', label: 'Administrador' },
+  //   { value: 'COOKER', label: 'Cocinero' }
+    return {
+      entityName: 'Usuario',
+      entityNamePlural: 'Usuarios',
+      tableColumns: [
+        { key: 'id', label: 'ID' },
+        { key: 'usuario', label: 'Nombre usuaio' },
+        { key: 'email', label: 'Email'},
+        { key: 'fechaCreacion', label: 'Fehca creación' },
+        { key: 'rol', label: 'Rol', isSelect: true },
+      ],
+      formConfig: {
+        fields: [
+          { name: 'usuario', label: 'Nombre Usuario', type: 'text', required: true },
+          { name: 'email', label: 'Email', type: 'text', disabledOnEdit: true },
+          {
+            name: 'rol',
+            label: 'Rol',
+            type: 'select',
+            options: [
+              { value: 'ADMIN', label: 'Admin' },
+              { value: 'COOKER', label: 'Cooker' }
+            ], // Opciones estáticas
+            placeholder: 'Seleccionar Rol',
+            required: false
+          }
+        ]
+      },
+      tableActions: {
+        edit: true,
+        delete: true,
+        view: false,
+      },
+      fetchData: (page: number, itemsPerPage: number, searchTerm: string, showingActivos: boolean) =>
+        usuarioService.getUsuarios(page, itemsPerPage, searchTerm, showingActivos),
+      // createEntity: (data: any) =>
+      //   ingredienteService.crearIngrediente ? ingredienteService.crearIngrediente(data) : of({ error: 'createIngrediente no implementado'}),
+      updateEntity: (id: any, data: any) =>
+         usuarioService.actualizarUsuario ? usuarioService.actualizarUsuario(id, data) : of({ error: 'updateUsuario no implementado'}),
+      deleteEntity: (id: any) => usuarioService.ocultarUsuario ? usuarioService.ocultarUsuario(id) : of({ error: 'deleteUsuairo no implementado'}),
+    };
+};
 
 // --- RUTAS PRINCIPALES DEL MÓDULO ADMIN ---
 export const ADMIN_ROUTES: Routes = [
@@ -126,6 +175,12 @@ export const ADMIN_ROUTES: Routes = [
         title: 'Admin - Gestión de Ingredientes'
       },
       {
+        path: 'usuarios',
+        component: EntityTableComponent,
+        resolve: { entityConfig: usuariosConfigResolver },
+        title: 'Admin - Gestión de Usuarios'
+      },
+      {
         path: 'productos',
         component: AdminPlaceholderComponent, // Reemplaza con EntityTableComponent y su resolver
         // resolve: { entityConfig: productosConfigResolver }, // Cuando lo tengas
@@ -137,12 +192,6 @@ export const ADMIN_ROUTES: Routes = [
         // resolve: { entityConfig: pedidosConfigResolver },
         title: 'Admin - Gestión de Pedidos'
       },
-      {
-        path: 'usuarios',
-        component: AdminPlaceholderComponent, // Reemplaza con EntityTableComponent y su resolver
-        // resolve: { entityConfig: usuariosConfigResolver },
-        title: 'Admin - Gestión de Usuarios'
-      }
     ]
   }
 ];
