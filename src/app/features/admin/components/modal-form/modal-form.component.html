@@ -26,6 +26,12 @@
               {{ option.label }}
             </option>
           </select>
+          <div *ngSwitchCase="'checkbox'" class="mt-2 flex items-center">
+            <input type="checkbox"
+                   [id]="field.name"
+                   [formControlName]="field.name"
+                   class="h-4 w-4 text-[#004643] border-gray-300 rounded focus:ring-[#f9bc60] focus:ring-offset-0">
+          </div>
         </ng-container>
       </div>
       <div class="flex justify-end space-x-3 pt-2">

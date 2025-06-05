@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, NgZone, OnDestroy, OnInit} from '@angular/core';
 import {GenericTableComponent, TableActionsConfig, TableColumn} from '../generic-table/generic-table.component';
 import {NgClass, NgIf} from '@angular/common';
 import {FormsModule} from '@angular/forms';
@@ -8,6 +8,7 @@ import {PaginationComponent} from '../pagination/pagination.component';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AlertInfoComponent, AlertType} from '../../../../shared/components/alert-info/alert-info.component';
 import {AlertConfirmarComponent} from '../../../../shared/components/alert-confirmar/alert-confirmar.component';
+import {EncryptService} from '../../../../core/services/encrypt.service';
 
 export interface EntityConfiguration {
   entityName: string;
@@ -83,7 +84,10 @@ export class EntityTableComponent  implements OnInit, OnDestroy{
 
 
   constructor(
-    private route: ActivatedRoute, // Inyectar ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router,
+    private zone: NgZone,
+    private encryptService: EncryptService,
   ) {}
 
   ngOnInit(): void {
@@ -213,12 +217,21 @@ export class EntityTableComponent  implements OnInit, OnDestroy{
     this.showAlertConfirmar = false
     this.item = null;
   }
-
+  redireccionar(id: string, ruta: string): void {
+    this.zone.run(() => {
+      const idEncrypt = this.encryptService.encriptar(id);
+      this.router.navigate([`/${ruta}`, idEncrypt]).then(() => {
+        window.location.reload();
+      });
+    });
+  }
   handleView(item: any): void {
-    console.log(`Ver ${this.config.entityName}:`, item);
-    // Implementa navegación o un modal de vista detallada
-    // Ejemplo: this.router.navigate([`/admin/${this.config.entityName.toLowerCase()}/view`, item.id]);
-    alert(`Viendo detalles de: ${JSON.stringify(item)}`);
+    if (this.config.entityName == 'Usuario'){
+      this.redireccionar(item.id, 'perfil');
+    }
+    if (this.config.entityName == 'Receta'){
+      this.redireccionar(item.id, 'receta');
+    }
   }
 
   onModalClose(): void {

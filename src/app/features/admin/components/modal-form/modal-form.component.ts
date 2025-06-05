@@ -12,7 +12,7 @@ export interface FormOption {
 export interface FormField {
   name: string;
   label: string;
-  type: 'text' | 'textarea' | 'number' | 'date' | 'select';
+  type: 'text' | 'textarea' | 'number' | 'date' | 'select' | 'checkbox' | 'radio';
   options?: FormOption[];
   required?: boolean;
   placeholder?: string;

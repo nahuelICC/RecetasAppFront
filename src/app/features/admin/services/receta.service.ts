@@ -1,18 +1,17 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {map, Observable} from 'rxjs';
-import {IngredienteAdminDTO} from '../models/IngredienteAdminDTO';
-import {Page} from '../models/Page';
 import {UsuarioAdminDTO} from '../models/UsuarioAdminDTO';
+import {Page} from '../models/Page';
 
 @Injectable({
   providedIn: 'root'
 })
-export class UsuarioService {
-  private apiUrl = '/api/usuario';
+export class RecetaService {
+  private apiUrl = '/api/receta';
   constructor( private http: HttpClient ) { }
 
-  getUsuarios(page: number, size: number, searchTerm: string, showingActivos: boolean): Observable<{ data: UsuarioAdminDTO[], totalItems: number , totalPages: number}> {
+  getRecetas(page: number, size: number, searchTerm: string, showingActivos: boolean): Observable<{ data: UsuarioAdminDTO[], totalItems: number , totalPages: number}> {
     let params = new HttpParams()
       .set('page', (page - 1).toString())
       .set('size', size.toString())
@@ -26,7 +25,6 @@ export class UsuarioService {
             return { data: [], totalItems: 0 , totalPages: 0}; // Fallback
           }
           return {
-
             data: springPage.content, // El array de IngredienteAdminDTO
             totalItems: springPage.totalElements, // El número total de elementos
             totalPages: springPage.totalPages
@@ -34,12 +32,12 @@ export class UsuarioService {
         })
       );
   }
-  actualizarUsuario(id: number, ingredienteData: any): Observable<any> {
-    ingredienteData.id = id;
-    return this.http.put<any>(`${this.apiUrl}/admin/actualizar`, ingredienteData);
-  }
+  // actualizarReceta(id: number, ingredienteData: any): Observable<any> {
+  //   ingredienteData.id = id;
+  //   return this.http.put<any>(`${this.apiUrl}/admin/actualizar`, ingredienteData);
+  // }
 
-  ocultarUsuario(id: number): Observable<any> {
+  ocultarReceta(id: number): Observable<any> {
     return this.http.put<void>(`${this.apiUrl}/admin/desactivar`, id);
   }
 }

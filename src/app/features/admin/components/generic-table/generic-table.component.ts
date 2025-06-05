@@ -7,6 +7,7 @@ export interface TableColumn {
   isDate?: boolean;
   isCurrency?: boolean;
   isSelect?: boolean;
+  isBoolean?: boolean;
   customClass?: string;
 }
 

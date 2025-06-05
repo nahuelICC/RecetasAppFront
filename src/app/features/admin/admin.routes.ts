@@ -12,7 +12,8 @@ import {AlergenoNoImgDTO} from './models/AlergenoNoImgDTO';
 import {CategoriaNoMedidaDTO} from './models/CategoriaNoMedidaDTO';
 import {AlergenoService} from './services/alergeno.service';
 import {CategoriaService} from './services/categoria.service';
-import {UsuarioService} from './services/usuario.service'; // Asumo que tienes este DTO o similar
+import {UsuarioService} from './services/usuario.service';
+import {RecetaService} from './services/receta.service'; // Asumo que tienes este DTO o similar
 
 
 @Component({
@@ -123,7 +124,7 @@ export const usuariosConfigResolver: ResolveFn<EntityConfiguration> = (route, st
         { key: 'id', label: 'ID' },
         { key: 'usuario', label: 'Nombre usuaio' },
         { key: 'email', label: 'Email'},
-        { key: 'fechaCreacion', label: 'Fehca creación' },
+        { key: 'fechaCreacion', label: 'Fehca creación', isDate:true},
         { key: 'rol', label: 'Rol', isSelect: true },
       ],
       formConfig: {
@@ -146,7 +147,7 @@ export const usuariosConfigResolver: ResolveFn<EntityConfiguration> = (route, st
       tableActions: {
         edit: true,
         delete: true,
-        view: false,
+        view: true,
       },
       fetchData: (page: number, itemsPerPage: number, searchTerm: string, showingActivos: boolean) =>
         usuarioService.getUsuarios(page, itemsPerPage, searchTerm, showingActivos),
@@ -156,6 +157,46 @@ export const usuariosConfigResolver: ResolveFn<EntityConfiguration> = (route, st
          usuarioService.actualizarUsuario ? usuarioService.actualizarUsuario(id, data) : of({ error: 'updateUsuario no implementado'}),
       deleteEntity: (id: any) => usuarioService.ocultarUsuario ? usuarioService.ocultarUsuario(id) : of({ error: 'deleteUsuairo no implementado'}),
     };
+};
+
+export const recetasConfigResolver: ResolveFn<EntityConfiguration> = (route, state) => {
+  const recetaService = inject(RecetaService);
+  // Aquí puedes definir las opciones de rol si es necesario
+  // Por ejemplo, si los roles son estáticos:
+  // const rolesOptions: FormOption[] = [
+  //   { value: 'ADMIN', label: 'Administrador' },
+  //   { value: 'COOKER', label: 'Cocinero' }
+  return {
+    entityName: 'Receta',
+    entityNamePlural: 'Recetas',
+    tableColumns: [
+      { key: 'id', label: 'ID' },
+      { key: 'nombre', label: 'Nombre receta' },
+      { key: 'fecha', label: 'Fecha creción', isDate: true },
+      { key: 'esVisible', label: 'Visibilidad', isBoolean: true },
+      { key: 'usuario', label: 'Usuario'},
+    ],
+    formConfig: {
+      fields: [
+        { name: 'nombre', label: 'Nombre receta', type: 'text', disabledOnEdit: true },
+        { name: 'fecha', label: 'Fecha creción', type: 'date', disabledOnEdit: true },
+        { name: 'esVisible', label: 'Visibilidad', type: 'checkbox', required: true},
+        { name: 'usuario', label: 'Usuario', type: 'text', disabledOnEdit: true },
+      ]
+    },
+    tableActions: {
+      edit: true,
+      delete: true,
+      view: true,
+    },
+    fetchData: (page: number, itemsPerPage: number, searchTerm: string, showingActivos: boolean) =>
+      recetaService.getRecetas(page, itemsPerPage, searchTerm, showingActivos),
+    // createEntity: (data: any) =>
+    //   ingredienteService.crearIngrediente ? ingredienteService.crearIngrediente(data) : of({ error: 'createIngrediente no implementado'}),
+    // updateEntity: (id: any, data: any) =>
+    //   recetaService.actualizarUsuario ? recetaService.actualizarUsuario(id, data) : of({ error: 'updateUsuario no implementado'}),
+    // deleteEntity: (id: any) => recetaService.ocultarUsuario ? recetaService.ocultarUsuario(id) : of({ error: 'deleteUsuairo no implementado'}),
+  };
 };
 
 // --- RUTAS PRINCIPALES DEL MÓDULO ADMIN ---
@@ -181,9 +222,9 @@ export const ADMIN_ROUTES: Routes = [
         title: 'Admin - Gestión de Usuarios'
       },
       {
-        path: 'productos',
-        component: AdminPlaceholderComponent, // Reemplaza con EntityTableComponent y su resolver
-        // resolve: { entityConfig: productosConfigResolver }, // Cuando lo tengas
+        path: 'recetas',
+        component: EntityTableComponent, // Reemplaza con EntityTableComponent y su resolver
+        resolve: { entityConfig: recetasConfigResolver }, // Cuando lo tengas
         title: 'Admin - Gestión de Productos'
       },
       {
