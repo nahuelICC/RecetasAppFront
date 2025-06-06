@@ -8,6 +8,9 @@ import { AlertInfoComponent} from '../../shared/components/alert-info/alert-info
 import { AlertConfirmarComponent} from '../../shared/components/alert-confirmar/alert-confirmar.component';
 import {PantallaCargaComponent} from '../../shared/components/pantalla-carga/pantalla-carga.component';
 
+/**
+ * Componente para crear una nueva receta.
+ */
 @Component({
   selector: 'app-crear-receta',
   templateUrl: './crear-receta.component.html',

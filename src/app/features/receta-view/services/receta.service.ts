@@ -18,10 +18,18 @@ export class RecetaService {
   constructor(private http: HttpClient) {
   }
 
+  /**
+   * Obtiene la información de una receta por su ID.
+   * @param id
+   */
   getInfoReceta(id: string): Observable<RecetaViewResponse> {
     return this.http.get<RecetaViewResponse>(`${this.apiUrl}/${id}`);
   }
 
+  /**
+   * Obtiene los pasos de una receta por su ID.
+   * @param id
+   */
   getPasosReceta(id: string): Observable<PasoResponse[]> {
     return this.http.get<PasoResponse[]>(`${this.apiUrl}/pasos/${id}`);
   }

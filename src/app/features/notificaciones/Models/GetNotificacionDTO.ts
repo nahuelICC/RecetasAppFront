@@ -1,4 +1,6 @@
-
+/**
+ * DTO para obtener notificaciones
+ */
 export interface GetNotificacionDTO {
   id: number;
   tipo: string;

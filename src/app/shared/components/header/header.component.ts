@@ -2,18 +2,19 @@ import { Component, OnInit } from '@angular/core';
 import {Platform} from '@ionic/angular';
 import {IonAvatar, IonIcon} from '@ionic/angular/standalone';
 import {NgIf} from '@angular/common';
-
 import {AuthService} from '../../../core/services/auth.service';
 import {HeaderService} from '../../services/header.service';
 import {RouterLink} from '@angular/router';
 import {NotificacionesComponent} from '../../../features/notificaciones/notificaciones.component';
-import {notificationsOutline} from 'ionicons/icons';
 import {NotificacionesService} from '../../../features/notificaciones/services/notificaciones.service';
 import {ChatService} from '../../../features/chat/chat.service';
 import { UsuarioService } from '../../../features/usuario/services/usuario.service';
 import { Subscription, forkJoin, of } from 'rxjs';
 import { switchMap, map, catchError } from 'rxjs/operators';
 
+/**
+ * HeaderComponent
+ */
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
@@ -88,19 +89,32 @@ export class HeaderComponent implements OnInit {
     }
   }
 
+  /**
+   * ngOnDestroy
+   * Unsubscribe from all subscriptions to prevent memory leaks
+   */
   ngOnDestroy(): void {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
+  /**
+   * Logout
+   */
   logout(): void {
     this.authService.logout();
     window.location.href = '/login';
   }
 
+  /**
+   * Abre y cierra el menú de navegación
+   */
   toggleMenu(): void {
     this.menuOpen = !this.menuOpen;
   }
 
+  /**
+   * Abre y cierra el menú de notificaciones
+   */
   toggleNotificaciones() {
     this.mostrarNotificaciones = !this.mostrarNotificaciones;
     if (this.menuOpen) this.menuOpen = false;
@@ -110,16 +124,25 @@ export class HeaderComponent implements OnInit {
     }
   }
 
+  /**
+   * Cierra el menú de notificaciones
+   */
   handleCerrarNotificaciones() {
     this.mostrarNotificaciones = false;
   }
 
+  /**
+   * Cambia el tema de la aplicación entre claro y oscuro
+   */
   toggleTheme() {
     this.isLightMode = !this.isLightMode;
     localStorage.setItem('theme', this.isLightMode ? 'light' : 'dark');
     this.applyTheme();
   }
 
+  /**
+   * Aplica el tema actual al documento al recargar la página
+   */
   applyTheme() {
     const classList = document.documentElement.classList;
     if (this.isLightMode) {

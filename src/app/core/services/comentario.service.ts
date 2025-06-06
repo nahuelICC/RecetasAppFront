@@ -2,8 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ComentarioResponse } from '../models/ComentarioResponse';
 import { Observable } from 'rxjs';
-import { Respuesta } from '../../features/receta-view/models/Respuesta';
-import { CrearRespuesta } from '../models/CrearRespuesta';
 import { CrearComentario } from '../models/CrearComentario';
 
 /**

@@ -1,11 +1,11 @@
 // comentario.component.ts
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { CommonModule, NgIf, NgFor } from '@angular/common';
+import { NgIf, NgFor } from '@angular/common';
 import { TimeAgoPipe } from '../../pipes/time-ago.pipe';
 import { RespuestaComponent } from '../respuesta/respuesta.component';
 import { ComentarioResponse } from '../../../../core/models/ComentarioResponse';
 import { RespuestaService } from '../../services/respuesta.service';
-import { FormsModule, NgModel } from '@angular/forms';
+import { FormsModule} from '@angular/forms';
 import { CrearRespuesta } from '../../../../core/models/CrearRespuesta';
 import { IonIcon } from '@ionic/angular/standalone';
 import { AuthService } from '../../../../core/services/auth.service';

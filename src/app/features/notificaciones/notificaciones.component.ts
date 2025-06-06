@@ -1,12 +1,14 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {NotificacionesService} from './services/notificaciones.service';
-import {NotificacionDTO} from './Models/NotificacionDTO';
 import {DatePipe, NgClass, NgForOf, NgIf} from '@angular/common';
 import {AuthService} from '../../core/services/auth.service';
 import {GetNotificacionDTO, NotificacionEncriptadaDTO} from './Models/GetNotificacionDTO';
 import {RouterLink} from '@angular/router';
 import {EncryptService} from '../../core/services/encrypt.service';
 
+/**
+ * Componente para mostrar notificaciones del usuario.
+ */
 @Component({
   selector: 'app-notificaciones',
   standalone: true,
@@ -41,6 +43,10 @@ export class NotificacionesComponent implements OnInit {
     this.cargarNotificaciones();
   }
 
+  /**
+   * Carga las notificaciones del usuario autenticado.
+   * Si el usuario no está autenticado, no se cargan notificaciones.
+   */
   cargarNotificaciones(): void {
     this.cargando = true;
 
@@ -72,6 +78,9 @@ export class NotificacionesComponent implements OnInit {
     });
   }
 
+  /**
+   * Marca todas las notificaciones como leídas y cierra el panel de notificaciones.
+   */
   cerrar(): void {
     this.notificacionesService.marcarNotificacionesComoLeidas().subscribe({
       next: () => {

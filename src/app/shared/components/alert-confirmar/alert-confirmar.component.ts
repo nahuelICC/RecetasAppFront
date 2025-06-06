@@ -3,6 +3,9 @@ import { BotonComponent } from '../boton/boton.component';
 import { NgClass, NgIf } from '@angular/common';
 import {IonIcon} from "@ionic/angular/standalone";
 
+/**
+ * Componente de alerta de confirmación
+ */
 @Component({
   selector: 'app-alert-confirmar',
   imports: [

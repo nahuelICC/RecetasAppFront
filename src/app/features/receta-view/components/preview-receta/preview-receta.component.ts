@@ -4,6 +4,9 @@ import { RouterModule } from '@angular/router';
 import { RecetaService} from '../../services/receta.service';
 import { EncryptService } from '../../../../core/services/encrypt.service';
 
+/**
+ * Componente para previsualizar una receta.
+ */
 @Component({
   selector: 'app-preview-receta',
   standalone: true,

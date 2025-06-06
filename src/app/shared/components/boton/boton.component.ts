@@ -1,6 +1,9 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {NgClass, NgStyle} from '@angular/common';
+import {Component, Input} from '@angular/core';
+import {NgStyle} from '@angular/common';
 
+/**
+ * Componente Boton
+ */
 @Component({
   selector: 'app-boton',
   imports: [

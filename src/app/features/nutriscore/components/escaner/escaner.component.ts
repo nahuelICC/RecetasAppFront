@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {NgForOf, NgIf} from '@angular/common';
 import {ZXingScannerModule} from '@zxing/ngx-scanner';
 import { BarcodeFormat } from '@zxing/library';
@@ -6,6 +6,9 @@ import {HttpClient} from '@angular/common/http';
 import {BotonComponent} from '../../../../shared/components/boton/boton.component';
 import {PantallaCargaComponent} from '../../../../shared/components/pantalla-carga/pantalla-carga.component';
 
+/**
+ * Componente para el escáner de códigos de barras
+ */
 @Component({
   selector: 'app-escaner',
   templateUrl: './escaner.component.html',
@@ -31,6 +34,10 @@ export class EscanerComponent {
 
   constructor(private http: HttpClient) {}
 
+  /**
+   * Manejador para cuando se encuentran cámaras disponibles
+   * @param cameras
+   */
   camerasFoundHandler(cameras: MediaDeviceInfo[]) {
     this.cameras = cameras;
     if (this.cameras.length > 0) {
@@ -38,6 +45,10 @@ export class EscanerComponent {
     }
   }
 
+  /**
+   * Manejador para cuando se escanea un código de barras exitosamente
+   * @param barcode
+   */
   async scanSuccessHandler(barcode: string) {
     try {
       this.loading = true;
@@ -50,6 +61,10 @@ export class EscanerComponent {
     }
   }
 
+  /**
+   * Manejador selecciona una cámara específica
+   * @param error
+   */
   selectCamera(cameraLabel: string) {
     const selectedCamera = this.cameras.find(camera =>
       camera.label.includes(cameraLabel)
