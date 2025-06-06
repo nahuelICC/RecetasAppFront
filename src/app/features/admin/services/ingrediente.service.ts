@@ -5,6 +5,9 @@ import {Page} from '../models/Page';
 import {IngredienteListarDTO} from '../../explorador/models/IngredienteListarDTO';
 import {IngredienteAdminDTO} from '../models/IngredienteAdminDTO';
 
+/**
+ * Servicio para manejar los ingredientes en el panel de administración
+ */
 @Injectable({
   providedIn: 'root'
 })

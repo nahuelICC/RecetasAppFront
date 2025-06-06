@@ -6,6 +6,9 @@ import { AuthService } from '../../core/services/auth.service';
 import { WebsocketService } from '../../core/services/websocket.service';
 import { ChatDTO, ConversacionDTO } from './models/chat.dto';
 
+/**
+ * Servicio para manejar la lógica del chat, incluyendo la obtención de conversaciones,
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -22,6 +25,10 @@ export class ChatService {
     this.loadConversaciones();
   }
 
+  /**
+   * Endpoint que carga las conversaciones del usuario desde el servidor y las almacena en un BehaviorSubject.
+   * @private
+   */
   private loadConversaciones(): void {
     const userId = this.authService.getUserId();
     if (!userId) return;
@@ -38,6 +45,13 @@ export class ChatService {
       });
   }
 
+  /**
+   * Endpoint que obtiene los mensajes entre dos usuarios.
+   * @param remitenteId
+   * @param destinatarioId
+   * @param page
+   * @param size
+   */
   getMensajes(remitenteId: number, destinatarioId: number, page: number = 0, size: number = 10): Observable<ChatDTO[]> {
     if (remitenteId === destinatarioId) {
       return throwError(() => new Error('Los IDs no pueden ser iguales'));
@@ -52,6 +66,10 @@ export class ChatService {
     );
   }
 
+  /**
+   * Endpoint que envía un mensaje al servidor y actualiza las conversaciones.
+   * @param mensaje
+   */
   enviarMensaje(mensaje: ChatDTO): Observable<ChatDTO> {
     return this.http.post<ChatDTO>(`${this.apiUrl}/enviar`, mensaje).pipe(
       tap(() => this.loadConversaciones()), // Actualizar conversaciones después de enviar
@@ -62,6 +80,11 @@ export class ChatService {
     );
   }
 
+  /**
+   * Endpoint que marca un mensaje como leído entre dos usuarios.
+   * @param remitenteId
+   * @param destinatarioId
+   */
   marcarComoLeido(remitenteId: number, destinatarioId: number): Observable<void> {
     return this.http.put<void>(
       `${this.apiUrl}/marcar-leido?remitenteId=${remitenteId}&destinatarioId=${destinatarioId}`,
@@ -79,10 +102,18 @@ export class ChatService {
     return this.websocketService.getMessages();
   }
 
+  /**
+   * Endpoint que refresca las conversaciones del usuario.
+   */
   refreshConversaciones(): void {
     this.loadConversaciones();
   }
 
+  /**
+   * Endpoint que marca un mensaje como borrado para un usuario específico.
+   * @param mensajeId
+   * @param usuarioId
+   */
   marcarComoBorrado(mensajeId: number, usuarioId: number): Observable<ChatDTO> {
     return this.http.put<ChatDTO>(
       `${this.apiUrl}/borrar/${mensajeId}?usuarioId=${usuarioId}`,

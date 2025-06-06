@@ -3,6 +3,9 @@ import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {AlergenoNoImgDTO} from '../models/AlergenoNoImgDTO';
 
+/**
+ * Servicio para manejar los alérgenos de los ingredientes en el panel de administración.
+ */
 @Injectable({
   providedIn: 'root'
 })

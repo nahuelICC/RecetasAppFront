@@ -4,6 +4,9 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { ChatDTO } from '../../features/chat/models/chat.dto';
 import { AuthService } from './auth.service';
 
+/**
+ * Servicio para manejar la conexión WebSocket y la comunicación en tiempo real del chat.
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -14,6 +17,9 @@ export class WebsocketService {
 
   constructor(private authService: AuthService) {}
 
+  /**
+   * Endpoint que establece la conexión WebSocket.
+   */
   connect(): void {
     if (this.stompClient?.connected) {
       return;
@@ -46,6 +52,10 @@ export class WebsocketService {
     this.stompClient.activate();
   }
 
+  /**
+   * Endpoint que maneja la conexión exitosa y suscribe al usuario a los mensajes.
+   * @param userId ID del usuario para suscribirse a los mensajes.
+   */
   private onConnectSuccess(userId: number): void {
     this.connectionStatus.next(true);
 
@@ -74,6 +84,9 @@ export class WebsocketService {
     }
   }
 
+  /**
+   * Endpoint que desconecta el cliente WebSocket.
+   */
   disconnect(): void {
     if (this.stompClient?.active) {
       this.stompClient.deactivate();
@@ -83,6 +96,9 @@ export class WebsocketService {
     this.stompClient = null;
   }
 
+  /**
+   * Endpoint que obtiene los mensajes del chat.
+   */
   getMessages(): Observable<ChatDTO | null> {
     return this.messageSubject.asObservable();
   }

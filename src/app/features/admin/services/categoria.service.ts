@@ -3,6 +3,9 @@ import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {CategoriaNoMedidaDTO} from '../models/CategoriaNoMedidaDTO';
 
+/**
+ * Servicio para manejar las categorías de los ingredientes en el panel de administración
+ */
 @Injectable({
   providedIn: 'root'
 })

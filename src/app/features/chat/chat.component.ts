@@ -79,6 +79,9 @@ export class ChatComponent implements OnInit, OnDestroy,AfterViewInit   {
     this.platform.resize.subscribe(() => this.checkMobile());
   }
 
+  /**
+   * Método que se ejecuta al inicializar el componente
+   */
   ngOnInit(): void {
     this.initConversaciones();
     this.initRouteListening();
@@ -86,9 +89,18 @@ export class ChatComponent implements OnInit, OnDestroy,AfterViewInit   {
     this.initWebSocket();
     this.cargarUsuariosSeguidos();
   }
+
+  /**
+   * Método que se ejecuta después de que la vista se haya inicializado
+   */
   ngAfterViewInit(): void {
     this.setupMutationObserver();
   }
+
+  /**
+   * Metodo que configura un MutationObserver para detectar cambios en el contenedor de scroll
+   * @private
+   */
   private setupMutationObserver(): void {
     if (!this.scrollContainer) return;
 
@@ -104,10 +116,18 @@ export class ChatComponent implements OnInit, OnDestroy,AfterViewInit   {
     });
   }
 
+  /**
+   * Método que verifica si el dispositivo es móvil
+   * @private
+   */
   private checkMobile(): void {
     this.isMobile = this.platform.width() < 768;
   }
 
+  /**
+   * Método que carga los usuarios seguidos del usuario actual
+   * @private
+   */
   private cargarUsuariosSeguidos(): void {
     this.usuarioService.listaSeguidos(true).subscribe({
       next: (seguidos) => {
@@ -119,6 +139,10 @@ export class ChatComponent implements OnInit, OnDestroy,AfterViewInit   {
     });
   }
 
+  /**
+   * Método que inicializa las conversaciones del usuario actual
+   * @private
+   */
   private initConversaciones(): void {
     this.loading = true;
     this.subscriptions.push(
@@ -156,6 +180,10 @@ export class ChatComponent implements OnInit, OnDestroy,AfterViewInit   {
     this.chatService.refreshConversaciones();
   }
 
+  /**
+   * Método que agrega una nueva conversación si no existe con el usuario destino
+   * @private
+   */
   private agregarConversacionSiNecesario(): void {
     if (!this.usuarioDestinoId || this.conversaciones.some(c => c.otroUsuarioId === this.usuarioDestinoId)) {
       return;
@@ -173,6 +201,10 @@ export class ChatComponent implements OnInit, OnDestroy,AfterViewInit   {
     this.conversaciones = [nuevaConversacion, ...this.conversaciones];
   }
 
+  /**
+   * Método que inicializa la escucha de cambios en la ruta
+   * @private
+   */
   private initRouteListening(): void {
     this.subscriptions.push(
       this.route.params.subscribe({
@@ -201,6 +233,10 @@ export class ChatComponent implements OnInit, OnDestroy,AfterViewInit   {
     );
   }
 
+  /**
+   * Método que verifica si el perfil del usuario destino está bloqueado
+   * @private
+   */
   private verificarBloqueo(): void {
     if (!this.usuarioDestinoId) return;
 
@@ -231,6 +267,11 @@ export class ChatComponent implements OnInit, OnDestroy,AfterViewInit   {
       }
     });
   }
+
+  /**
+   * Método que inicializa el WebSocket para recibir mensajes
+   * @private
+   */
   private initWebSocket(): void {
     this.subscriptions.push(
       this.websocketService.getMessages().subscribe({
@@ -270,6 +311,10 @@ export class ChatComponent implements OnInit, OnDestroy,AfterViewInit   {
     );
   }
 
+  /**
+   * Maneja la nueva conversación cuando se selecciona un usuario destino
+   * @private
+   */
   private handleNewConversation(): void {
     if (!this.usuarioDestinoId || this.perfilBloqueado) return;
 
@@ -287,6 +332,10 @@ export class ChatComponent implements OnInit, OnDestroy,AfterViewInit   {
     this.cargarInformacionUsuarioDestino();
   }
 
+  /**
+   * Carga la información del usuario destino, incluyendo nombre y foto de perfil
+   * @private
+   */
   private cargarInformacionUsuarioDestino(): void {
     const usuarioDestinoId = this.usuarioDestinoId;
 
@@ -327,10 +376,20 @@ export class ChatComponent implements OnInit, OnDestroy,AfterViewInit   {
     });
   }
 
+  /**
+   * Genera un ID de sala único basado en los IDs de los usuarios
+   * @param user1Id
+   * @param user2Id
+   * @private
+   */
   private getRoomId(user1Id: number, user2Id: number): string {
     return [user1Id, user2Id].sort().join('_');
   }
 
+  /**
+   *  Maneja el evento de scroll en el contenedor de mensajes
+   * @param event
+   */
   onScroll(event: Event): void {
     if (this.perfilBloqueado) return;
 
@@ -353,6 +412,9 @@ export class ChatComponent implements OnInit, OnDestroy,AfterViewInit   {
     }
   }
 
+  /**
+   * Desplaza el contenedor de mensajes hacia abajo
+   */
   scrollToBottom(): void {
     try {
       if (this.scrollContainer && this.scrollContainer.nativeElement) {
@@ -364,6 +426,10 @@ export class ChatComponent implements OnInit, OnDestroy,AfterViewInit   {
     }
   }
 
+  /**
+   * Carga los mensajes del chat entre el usuario actual y el usuario destino.
+   * @param loadMore
+   */
   cargarMensajes(loadMore: boolean = false): void {
     if (!this.usuarioDestinoId || this.perfilBloqueado) return;
 
@@ -414,6 +480,10 @@ export class ChatComponent implements OnInit, OnDestroy,AfterViewInit   {
     });
   }
 
+  /**
+   * Selecciona una conversación para chatear con un usuario específico.
+   * @param usuarioId
+   */
   seleccionarConversacion(usuarioId: number): void {
     if (usuarioId === this.usuarioActualId) {
       this.error = 'No puedes chatear contigo mismo';
@@ -428,6 +498,9 @@ export class ChatComponent implements OnInit, OnDestroy,AfterViewInit   {
     this.router.navigate(['/chat', encryptedId]);
   }
 
+  /**
+   * Envía un mensaje al usuario destino.
+   */
   enviarMensaje(): void {
     if (!this.nuevoMensaje.trim() || !this.usuarioDestinoId || this.perfilBloqueado) return;
 
@@ -464,6 +537,9 @@ export class ChatComponent implements OnInit, OnDestroy,AfterViewInit   {
     });
   }
 
+  /**
+   * Marca los mensajes del usuario destino como leídos.
+   */
   marcarMensajesComoLeidos(): void {
     if (!this.usuarioDestinoId || this.perfilBloqueado) return;
 
@@ -474,12 +550,20 @@ export class ChatComponent implements OnInit, OnDestroy,AfterViewInit   {
     );
   }
 
+  /**
+   * Obtiene el nombre del usuario destino para mostrar en la conversación.
+   * @param usuarioId
+   */
   getNombreUsuario(usuarioId: number | null): string {
     if (!usuarioId) return 'Chat';
     const conversacion = this.conversaciones.find(c => c.otroUsuarioId === usuarioId);
     return conversacion?.otroUsuarioNombre || this.nombreUsuarioDestino || 'Usuario desconocido';
   }
 
+  /**
+   * Obtiene la foto del usuario destino para mostrar en la conversación.
+   * @param usuarioId
+   */
   getFotoUsuario(usuarioId: number | null): string {
     if (!usuarioId) return 'assets/frutero.png';
     const conversacion = this.conversaciones.find(c => c.otroUsuarioId === usuarioId);
@@ -490,12 +574,19 @@ export class ChatComponent implements OnInit, OnDestroy,AfterViewInit   {
     return this.conversaciones.some(conversacion => conversacion.noLeidos);
   }
 
+  /**
+   * Desconecta el WebSocket y limpia las suscripciones al destruir el componente.
+   */
   ngOnDestroy(): void {
     this.mutationObserver?.disconnect();
     this.subscriptions.forEach(sub => sub.unsubscribe());
     this.websocketService.disconnect();
   }
 
+  /**
+   * Borra un mensaje del chat.
+   * @param mensaje
+   */
   borrarMensaje(mensaje: ChatDTO): void {
     if (mensaje.remitenteId !== this.usuarioActualId || this.perfilBloqueado) return;
 
@@ -510,6 +601,10 @@ export class ChatComponent implements OnInit, OnDestroy,AfterViewInit   {
     });
   }
 
+  /**
+   * Obtiene el texto del mensaje, considerando si está borrado o no.
+   * @param mensaje
+   */
   getMensajeTexto(mensaje: ChatDTO): string {
     if (mensaje.borrado) {
       return mensaje.remitenteId === this.usuarioActualId
@@ -519,14 +614,27 @@ export class ChatComponent implements OnInit, OnDestroy,AfterViewInit   {
     return mensaje.texto;
   }
 
+  /**
+   * Navega al perfil del usuario destino.
+   * @param usuarioId
+   */
   irAlPerfil(usuarioId: number): void {
     const idEncrypt = this.encryptService.encriptar(usuarioId.toString()); // Encripta el ID del usuario
     this.router.navigate(['/perfil', idEncrypt]); // Redirige al perfil con el ID encriptado
   }
+
+  /**
+   * Verifica si el texto es un enlace a una receta.
+   * @param texto
+   */
   esLinkDeReceta(texto: string): boolean {
     return /\/receta\/[a-zA-Z0-9\-_]+/.test(texto);
   }
 
+  /**
+   * Obtiene el ID de la receta encriptado desde un texto.
+   * @param texto
+   */
   getIdRecetaEncriptado(texto: string): string | null {
     const match = texto.match(/\/receta\/([a-zA-Z0-9\-_]+)/);
     return match ? match[1] : null;

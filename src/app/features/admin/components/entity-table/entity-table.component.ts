@@ -67,6 +67,9 @@ export class EntityTableComponent  implements OnInit, OnDestroy{
     private route: ActivatedRoute, // Inyectar ActivatedRoute
   ) {}
 
+  /**
+   * Inicializa el componente y suscribe a los datos de la ruta para obtener la configuración de la entidad.
+   */
   ngOnInit(): void {
     this.routeDataSub = this.route.data.subscribe(data => {
       if (data && data['entityConfig']) {
@@ -79,16 +82,25 @@ export class EntityTableComponent  implements OnInit, OnDestroy{
     });
   }
 
+  /**
+   * Limpia las suscripciones al destruir el componente.
+   */
   ngOnDestroy(): void {
     this.routeDataSub?.unsubscribe();
     this.dataSub?.unsubscribe();
   }
 
+  /**
+   * Reinicia la paginación y carga los datos de la entidad.
+   */
   resetAndLoadData(): void {
     this.currentPage = 1;
     this.loadData();
   }
 
+  /**
+   * Carga los datos de la entidad.
+   */
   loadData(): void {
     if (!this.config || !this.config.fetchData) {
       console.warn("FetchData no configurado para la entidad actual.");
@@ -120,21 +132,35 @@ export class EntityTableComponent  implements OnInit, OnDestroy{
       });
   }
 
+  /**
+   * Maneja la búsqueda de entidades.
+   */
   onSearch(): void {
     this.resetAndLoadData();
   }
 
+  /**
+   * Maneja el cambio de página en la paginación.
+   * @param page
+   */
   onPageChanged(page: number): void {
     this.currentPage = page;
     this.loadData();
   }
 
+  /**
+   * Abre el modal para añadir una nueva entidad.
+   */
   openAddModal(): void {
     this.modalData = null;
     this.modalTitle = `Añadir ${this.config.entityName}`;
     this.isModalOpen = true;
   }
 
+  /**
+   * Maneja la edición de una entidad existente.
+   * @param item
+   */
   handleEdit(item: any): void {
     this.modalData = { ...item,
       alergenoId: item.alergeno ? item.alergeno.id : null,
@@ -144,6 +170,10 @@ export class EntityTableComponent  implements OnInit, OnDestroy{
     this.isModalOpen = true;
   }
 
+  /**
+   * Maneja la eliminación de una entidad.
+   * @param item
+   */
   handleDelete(item: any): void {
   //   if (!this.config.deleteEntity) {
   //     console.warn("deleteEntity no configurado.");
@@ -165,6 +195,10 @@ export class EntityTableComponent  implements OnInit, OnDestroy{
   //   }
   }
 
+  /**
+   * Maneja la visualización de una entidad.
+   * @param item
+   */
   handleView(item: any): void {
     console.log(`Ver ${this.config.entityName}:`, item);
     // Implementa navegación o un modal de vista detallada
@@ -172,11 +206,18 @@ export class EntityTableComponent  implements OnInit, OnDestroy{
     alert(`Viendo detalles de: ${JSON.stringify(item)}`);
   }
 
+  /**
+   * Cierra el modal y resetea los datos.
+   */
   onModalClose(): void {
     this.isModalOpen = false;
     this.modalData = null;
   }
   //
+  /**
+   * Maneja el envío del formulario del modal.
+   * @param formData
+   */
   onFormSubmit(formData: any): void {
     this.isLoading = true;
     let operation: Observable<any>;

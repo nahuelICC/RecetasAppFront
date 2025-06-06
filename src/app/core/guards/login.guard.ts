@@ -9,6 +9,9 @@ import { Observable } from 'rxjs';
 export class LoginGuard implements CanActivate {
   constructor(private authService: AuthService, private router: Router) {}
 
+  /**
+   * Metodo para determinar si el usuario puede acceder la ruta.
+   */
   canActivate(): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
     if (this.authService.isLogged()) {
       return true;
