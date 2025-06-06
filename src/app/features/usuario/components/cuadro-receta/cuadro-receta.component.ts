@@ -14,7 +14,7 @@ import { EncryptService } from '../../../../core/services/encrypt.service';
   templateUrl: './cuadro-receta.component.html',
   styleUrls: ['./cuadro-receta.component.css'],
   standalone: true,
-  imports: [IonIcon, NgIf, RouterLink]
+  imports: [IonIcon, NgIf]
 })
 export class CuadroRecetaComponent  implements OnInit {
 

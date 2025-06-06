@@ -8,9 +8,9 @@ import {UsuarioService} from '../../../usuario/services/usuario.service';
   selector: 'app-usuario-explorador',
   templateUrl: './usuario-explorador.component.html',
   styleUrls: ['./usuario-explorador.component.css'],
-  imports: [
-    RouterLink
-  ],
+  // imports: [
+  //   RouterLink
+  // ],
   standalone: true
 })
 export class UsuarioExploradorComponent  implements OnInit {

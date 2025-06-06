@@ -21,11 +21,6 @@ import {ShareModalComponent} from '../share-modal/share-modal.component';
   standalone: true,
   imports: [
     IonicModule,
-    NgForOf,
-    NgIf,
-    BotonComponent,
-    AlertInfoComponent,
-    RouterLink,
     NgClass,
     ShareModalComponent
   ]

@@ -12,7 +12,6 @@ import {NgIf} from '@angular/common';
   imports: [
     IonicModule,
     RouterLink,
-    NgIf
   ],
   templateUrl: './boton-add-receta.component.html',
   standalone: true,

@@ -18,7 +18,6 @@ import { EncryptService } from '../../../../core/services/encrypt.service';
     NgClass,
     NgForOf,
     NgIf,
-    RouterLink
   ]
 })
 export class ColeccionRecetasComponent  implements OnInit {

@@ -18,7 +18,6 @@ import {Router, RouterLink} from '@angular/router';
     IonIcon,
     IonTabBar,
     IonTabButton,
-    IonTabs,
     NgIf,
     IonFooter,
     IonToolbar,

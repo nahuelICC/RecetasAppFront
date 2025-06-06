@@ -14,8 +14,6 @@ import {InicioService} from '../../../features/inicio/services/inicio.service';
     IonFab,
     IonFabButton,
     IonIcon,
-    IonPopover,
-    IonContent
   ]
 })
 export class BotonModoOscuroComponent  implements OnInit {

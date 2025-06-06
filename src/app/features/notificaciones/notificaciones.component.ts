@@ -15,7 +15,6 @@ import {EncryptService} from '../../core/services/encrypt.service';
   templateUrl: './notificaciones.component.html',
   styleUrls: ['./notificaciones.component.css'],
   imports: [
-    NgClass,
     NgIf,
     NgForOf,
     DatePipe,

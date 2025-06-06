@@ -14,7 +14,6 @@ import {EncryptService} from '../../../../core/services/encrypt.service';
     DuracionSinSegundosPipe,
     RouterLink,
     NgIf,
-    DecimalPipe
   ],
   standalone: true
 })
