@@ -98,6 +98,7 @@ export class UsuarioComponent  implements OnInit {
   recetaAEliminar: number | null = null;
   mostrarAlertaConfirmar: boolean = false;
   mensajeAlertaConfirmar: string = '';
+  yoHeBloqueado = false;
   accionConfirmada: () => void = () => {};
 
 
@@ -107,71 +108,50 @@ export class UsuarioComponent  implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     const idDecrypt = this.encryptService.desencriptar(id || '');
     this.idPropietario = this.authService.getUserId() || 0;
+
     if (id && idDecrypt !== this.idPropietario.toString()) {
-      this.usuarioService.getPerfilId(idDecrypt).subscribe((response) => {
-        this.perfil = response;
-        this.recetas = response.recetas;
-        this.recetasVisibles = response.recetas.filter((receta: any) => receta.esVisible);
-        this.colecciones = response.colecciones;
-        if (!this.perfil.ingredientesFavoritos) this.perfil.ingredientesFavoritos = [];
-        if (!this.perfil.alergenos) this.perfil.alergenos = [];
+      this.esPerfilPropio = false;
 
-        this.recetasMostradas = this.recetas.slice(0, this.recetasPerPage);
-        this.coleccionesMostradas = this.colecciones.slice(0, this.coleccionesPerPage);
-      });
-      this.usuarioService.perfilBloqueado(idDecrypt).subscribe((response) => {
-        this.perfilBloqueado = response as boolean;
-      });
+      // Verificar si el perfil está bloqueado (yo lo he bloqueado o él me ha bloqueado)
+      this.usuarioService.perfilBloqueado(idDecrypt).subscribe({
+        next: (response: any) => {
+          this.perfilBloqueado = response as boolean;
 
-      this.usuarioService.fotoPerfilVisita(idDecrypt).subscribe((response: any) => {
-        if (response !== 'sin foto') {
-          this.imagenPerfilUsuario = response;
-        }else {
-          this.imagenPerfilUsuario = 'https://ionicframework.com/docs/img/demos/avatar.svg';
+          // Verificar si yo tengo bloqueado a este usuario
+          this.usuarioService.isBlocked(idDecrypt).subscribe({
+            next: (isBlocked: boolean) => {
+              this.yoHeBloqueado = isBlocked;
+
+              // Solo cargar perfil si no hay bloqueo mutuo
+              if (!this.perfilBloqueado && !this.yoHeBloqueado) {
+                this.cargarPerfilUsuario(idDecrypt);
+              }
+            },
+            error: (error) => {
+              console.error('Error al verificar bloqueo:', error);
+            }
+          });
+        },
+        error: (error) => {
+          console.error('Error al verificar perfil bloqueado:', error);
         }
       });
-      this.esPerfilPropio = false;
+
+      this.usuarioService.fotoPerfilVisita(idDecrypt).subscribe({
+        next: (response: any) => {
+          if (response !== 'sin foto') {
+            this.imagenPerfilUsuario = response;
+          } else {
+            this.imagenPerfilUsuario = 'https://ionicframework.com/docs/img/demos/avatar.svg';
+          }
+        },
+        error: (error) => {
+          console.error('Error al cargar foto de perfil:', error);
+        }
+      });
     } else {
       this.esPerfilPropio = true;
-      this.usuarioService.getPerfil().subscribe((response) => {
-        this.perfil = response;
-        this.recetas = response.recetas;
-        this.colecciones = response.colecciones;
-        this.recetasVisibles = response.recetas.filter((receta: any) => receta.esVisible);
-        this.recetasGuardadas = response.recetasGuardadas;
-        this.alergenosSeleccionados = response.alergenos ? [...response.alergenos] : [];
-        this.ingredientesSeleccionados = response.ingredientesFavoritos ? [...response.ingredientesFavoritos] : [];
-
-        this.recetasMostradas = this.recetas.slice(0, this.recetasPerPage);
-        this.coleccionesMostradas = this.colecciones.slice(0, this.coleccionesPerPage);
-        this.recetasGuardadasMostradas = this.recetasGuardadas.slice(0, this.guardadasPerPage);
-      });
-
-      this.headerService.getFotoPerfil().subscribe((response: any) => {
-        if (response !== 'sin foto') {
-          this.imagenPerfilUsuario = response;
-        }else {
-          this.imagenPerfilUsuario = 'https://ionicframework.com/docs/img/demos/avatar.svg';
-        }
-      });
-      this.registroService.getAlergenosImagen().subscribe(
-        (response) => {
-          this.alergenos = response;
-          console.log(this.alergenos);
-        },
-        (error) => {
-          console.error('Error al obtener los alergenos', error);
-        }
-      );
-      this.registroService.getIngredientesBuscador().subscribe(
-        (response) => {
-          this.ingredientes = response;
-          console.log(this.ingredientes);
-        },
-        (error) => {
-          console.error('Error al obtener los ingredientes', error);
-        }
-      );
+      this.cargarPerfilPropio();
     }
 
     this.cambioContrasenaForm = this.fb.group({
@@ -187,20 +167,96 @@ export class UsuarioComponent  implements OnInit {
       repetir: ['', Validators.required]
     }, { validators: this.passwordsIguales });
 
-    const paramId = this.route.snapshot.paramMap.get('id') || '';
+    // Cargar seguidos y seguidores si hay ID
+    if (id) {
+      this.usuarioService.listaSeguidos(this.esPerfilPropio, idDecrypt).subscribe({
+        next: (response) => {
+          this.seguidos = response;
+        },
+        error: (error) => {
+          console.error('Error al cargar seguidos:', error);
+        }
+      });
 
-    this.usuarioService.listaSeguidos(this.esPerfilPropio, idDecrypt).subscribe((response) => {
-      this.seguidos = response;
-    });
-
-    this.usuarioService.listaSeguidores(this.esPerfilPropio, idDecrypt).subscribe((response) => {
-      this.seguidores = response;
-    });
-
-
-
+      this.usuarioService.listaSeguidores(this.esPerfilPropio, idDecrypt).subscribe({
+        next: (response) => {
+          this.seguidores = response;
+        },
+        error: (error) => {
+          console.error('Error al cargar seguidores:', error);
+        }
+      });
+    }
   }
 
+  private cargarPerfilUsuario(id: string) {
+    this.usuarioService.getPerfilId(id).subscribe({
+      next: (response) => {
+        this.perfil = response;
+        this.recetas = response.recetas;
+        this.recetasVisibles = response.recetas.filter((receta: any) => receta.esVisible);
+        this.colecciones = response.colecciones;
+        if (!this.perfil.ingredientesFavoritos) this.perfil.ingredientesFavoritos = [];
+        if (!this.perfil.alergenos) this.perfil.alergenos = [];
+        this.recetasMostradas = this.recetas.slice(0, this.recetasPerPage);
+        this.coleccionesMostradas = this.colecciones.slice(0, this.coleccionesPerPage);
+      },
+      error: (error) => {
+        console.error('Error al cargar perfil:', error);
+      }
+    });
+  }
+
+  private cargarPerfilPropio() {
+    this.usuarioService.getPerfil().subscribe({
+      next: (response) => {
+        this.perfil = response;
+        this.recetas = response.recetas;
+        this.colecciones = response.colecciones;
+        this.recetasVisibles = response.recetas.filter((receta: any) => receta.esVisible);
+        this.recetasGuardadas = response.recetasGuardadas;
+        this.alergenosSeleccionados = response.alergenos ? [...response.alergenos] : [];
+        this.ingredientesSeleccionados = response.ingredientesFavoritos ? [...response.ingredientesFavoritos] : [];
+        this.recetasMostradas = this.recetas.slice(0, this.recetasPerPage);
+        this.coleccionesMostradas = this.colecciones.slice(0, this.coleccionesPerPage);
+        this.recetasGuardadasMostradas = this.recetasGuardadas.slice(0, this.guardadasPerPage);
+      },
+      error: (error) => {
+        console.error('Error al cargar perfil propio:', error);
+      }
+    });
+
+    this.headerService.getFotoPerfil().subscribe({
+      next: (response: any) => {
+        if (response !== 'sin foto') {
+          this.imagenPerfilUsuario = response;
+        } else {
+          this.imagenPerfilUsuario = 'https://ionicframework.com/docs/img/demos/avatar.svg';
+        }
+      },
+      error: (error: any) => {
+        console.error('Error al cargar foto de perfil:', error);
+      }
+    });
+
+    this.registroService.getAlergenosImagen().subscribe({
+      next: (response) => {
+        this.alergenos = response;
+      },
+      error: (error) => {
+        console.error('Error al obtener los alergenos', error);
+      }
+    });
+
+    this.registroService.getIngredientesBuscador().subscribe({
+      next: (response) => {
+        this.ingredientes = response;
+      },
+      error: (error) => {
+        console.error('Error al obtener los ingredientes', error);
+      }
+    });
+  }
   /**
    * Valida que las contraseñas nueva y repetir sean iguales.
    * @param form
@@ -421,43 +477,35 @@ export class UsuarioComponent  implements OnInit {
   toggleBloquearPerfil() {
     const id = this.route.snapshot.paramMap.get('id') || '';
     const idDecrypt = this.encryptService.desencriptar(id);
-    let isBlocked: boolean = false;
 
-    this.usuarioService.changeBloqueo(idDecrypt).subscribe((response) => {
-      this.alertMessage = "Estado de bloqueo cambiado";
-      console.log(response);
-      this.alertType = 'success';
-      this.isAlertVisible = true;
-      this.usuarioService.listaSeguidores(this.esPerfilPropio, this.route.snapshot.paramMap.get('id') || '').subscribe((response) => {
-        this.seguidores = response;
-      });
-      this.usuarioService.getPerfilId(idDecrypt).subscribe((response) => {
-        this.perfil = response;
-      });
-    }, (error) => {
-      console.error('Error al cambiar el estado de bloqueo:', error);
-      this.alertMessage = error.error;
-      this.alertType = 'error';
-      this.isAlertVisible = true;
+    this.usuarioService.changeBloqueo(idDecrypt).subscribe({
+      next: (response) => {
+        // Invertir el estado
+        this.yoHeBloqueado = !this.yoHeBloqueado;
+        this.perfilBloqueado = this.yoHeBloqueado;
+
+        this.alertMessage = this.yoHeBloqueado ? "Usuario bloqueado" : "Usuario desbloqueado";
+        this.alertType = 'success';
+        this.isAlertVisible = true;
+
+        // Recargar los datos del perfil
+        if (!this.yoHeBloqueado) {
+          this.usuarioService.getPerfilId(idDecrypt).subscribe(
+            (response) => this.perfil = response
+          );
+        }
+      },
+      error: (error) => {
+        console.error('Error al cambiar el estado de bloqueo:', error);
+        this.alertMessage = error.error;
+        this.alertType = 'error';
+        this.isAlertVisible = true;
+      }
     });
 
-    this.usuarioService.isBlocked(idDecrypt).subscribe((response) => {
-      isBlocked = response as boolean;
-    });
-
-    console.log('Perfil bloqueado:', isBlocked);
-
-    if (isBlocked) {
-      this.perfilBloqueado = true;
-    }else {
-      this.perfilBloqueado = !this.perfilBloqueado;
-    }
-
-    this.perfil.bloqueado  = !this.perfil.bloqueado;
     setTimeout(() => {
       this.isAlertVisible = false;
     }, 2000);
-
   }
 
   /**
