@@ -49,13 +49,8 @@ export class InicioService {
       responseType: 'text' as 'json'
     });
   }
-  agregarIngredientesALaListaCompra(idReceta: number, idCooker: number): Observable<string> {
-    const body = {
-      idReceta: idReceta,
-      idCooker: idCooker
-    };
-
-    return this.http.post<string>(`${this.listaCompraUrl}/agregar-ingredientes`, body, {
+  agregarIngredientesALaListaCompra(idReceta: number): Observable<string> {
+    return this.http.post<string>(`${this.listaCompraUrl}/agregar-ingredientes`, idReceta, {
       responseType: 'text' as 'json'
     });
   }

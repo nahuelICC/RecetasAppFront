@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {CurrencyPipe, DatePipe, NgClass, NgForOf, NgIf} from '@angular/common';
+import {CurrencyPipe, DatePipe, NgClass, NgForOf, NgIf, TitleCasePipe} from '@angular/common';
 
 export interface TableColumn {
   key: string;
@@ -14,6 +14,7 @@ export interface TableActionsConfig {
   edit?: boolean;
   delete?: boolean;
   view?: boolean;
+  restore?: boolean;
 }
 
 @Component({
@@ -26,7 +27,8 @@ export interface TableActionsConfig {
     CurrencyPipe,
     NgIf,
     NgForOf,
-    NgClass
+    NgClass,
+    TitleCasePipe
   ]
 })
 export class GenericTableComponent  implements OnInit {
@@ -34,10 +36,12 @@ export class GenericTableComponent  implements OnInit {
   @Input() data: any[] = [];
   @Input() actionsConfig: TableActionsConfig = { edit: false, delete: false, view: false }
   @Input() isLoading: boolean = false;
+  @Input() showingActivos!: boolean;
 
   @Output() editClicked = new EventEmitter<any>();
   @Output() deleteClicked = new EventEmitter<any>();
   @Output() viewClicked = new EventEmitter<any>();
+  @Output() restoreClicked = new EventEmitter<any>();
   constructor() { }
 
   ngOnInit() {}
@@ -67,6 +71,10 @@ export class GenericTableComponent  implements OnInit {
     this.deleteClicked.emit(item);
   }
 
+  onRestore(item: any): void {
+    this.restoreClicked.emit(item);
+  }
+
   /**
    * Maneja el evento de visualización de una fila.
    * @param item
@@ -79,7 +87,8 @@ export class GenericTableComponent  implements OnInit {
    * Determina si la columna de acciones debe mostrarse.
    */
   // Determina si la columna de acciones debe mostrarse
+
   showActionsColumn(): boolean {
-    return !!(this.actionsConfig.edit || this.actionsConfig.delete || this.actionsConfig.view);
+    return !!(this.actionsConfig.edit || this.actionsConfig.delete || this.actionsConfig.view || this.actionsConfig.restore);
   }
 }

@@ -1,11 +1,13 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {GenericTableComponent, TableActionsConfig, TableColumn} from '../generic-table/generic-table.component';
-import {NgIf} from '@angular/common';
+import {NgClass, NgIf} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {FormConfig, ModalFormComponent} from '../modal-form/modal-form.component';
 import {Observable, Subscription} from 'rxjs';
 import {PaginationComponent} from '../pagination/pagination.component';
 import {ActivatedRoute, Router} from '@angular/router';
+import {AlertInfoComponent, AlertType} from '../../../../shared/components/alert-info/alert-info.component';
+import {AlertConfirmarComponent} from '../../../../shared/components/alert-confirmar/alert-confirmar.component';
 
 export interface EntityConfiguration {
   entityName: string;
@@ -20,6 +22,7 @@ export interface EntityConfiguration {
     page: number,
     itemsPerPage: number,
     searchTerm: string,
+    mostrarActivos: boolean,
     // otrosFiltros?: any // Si tienes más filtros específicos de entidad
   ) => Observable<{ data: any[], totalItems: number , totalPages: number}>;
   createEntity?: (data: any) => Observable<any>;
@@ -37,7 +40,10 @@ export interface EntityConfiguration {
     NgIf,
     FormsModule,
     PaginationComponent,
-    ModalFormComponent
+    ModalFormComponent,
+    AlertInfoComponent,
+    AlertConfirmarComponent,
+    NgClass
   ]
 })
 export class EntityTableComponent  implements OnInit, OnDestroy{
@@ -54,14 +60,27 @@ export class EntityTableComponent  implements OnInit, OnDestroy{
   totalItems: number = 0;
   totalPages: number = 0;
 
+  showingActivos: boolean = true;
+
   // --- Estado de UI ---
   isLoading: boolean = false;
   isModalOpen: boolean = false;
   modalData: any | null = null;
   modalTitle: string = '';
 
+  // alert
+  alertVisible: boolean = false;
+  mensajeAlert: string ="";
+  tipoAlert: AlertType = "warning";
+
+  // alert confirmar
+  showAlertConfirmar: boolean = false;
+  private confirmar: boolean = false;
+
   private routeDataSub?: Subscription;
   private dataSub?: Subscription;
+  private item = null;
+
 
   constructor(
     private route: ActivatedRoute, // Inyectar ActivatedRoute
@@ -98,6 +117,11 @@ export class EntityTableComponent  implements OnInit, OnDestroy{
     this.loadData();
   }
 
+  toggleActivosEliminados(): void {
+    this.showingActivos = !this.showingActivos;
+    this.resetAndLoadData(); // Recargar los datos con el nuevo estado
+  }
+
   /**
    * Carga los datos de la entidad.
    */
@@ -110,12 +134,12 @@ export class EntityTableComponent  implements OnInit, OnDestroy{
       return;
     }
     this.isLoading = true;
-    this.dataSub = this.config.fetchData(this.currentPage, this.itemsPerPage, this.searchTerm)
+    this.dataSub = this.config.fetchData(this.currentPage, this.itemsPerPage, this.searchTerm, this.showingActivos)
       .subscribe({
         next: (response: any) => {
           this.displayedData = response.data;
           this.totalItems = response.totalItems;
-          this.totalPages = response.totalPages;
+          this.totalPages = response.totalPages - 1;
           if (this.currentPage > this.totalPages && this.totalPages > 0) {
             this.currentPage = this.totalPages;
           } else if (this.currentPage < 1 && this.totalPages > 0) {
@@ -164,7 +188,8 @@ export class EntityTableComponent  implements OnInit, OnDestroy{
   handleEdit(item: any): void {
     this.modalData = { ...item,
       alergenoId: item.alergeno ? item.alergeno.id : null,
-      categoriaId: item.categoria ? item.categoria.id : null
+      categoriaId: item.categoria ? item.categoria.id : null,
+      rol: item.rol ? item.rol : null,
     };
     this.modalTitle = `Editar ${this.config.entityName}`;
     this.isModalOpen = true;
@@ -175,24 +200,48 @@ export class EntityTableComponent  implements OnInit, OnDestroy{
    * @param item
    */
   handleDelete(item: any): void {
-  //   if (!this.config.deleteEntity) {
-  //     console.warn("deleteEntity no configurado.");
-  //     return;
-  //   }
-  //   if (confirm(`¿Estás seguro de que quieres eliminar "${item.nombre || item.id}"?`)) {
-  //     this.isLoading = true;
-  //     this.config.deleteEntity(item.id).subscribe({
-  //       next: () => {
-  //         alert(`${this.config.entityName} eliminado.`);
-  //         this.resetAndLoadData(); // Recargar datos, idealmente a la página actual o la anterior si esta queda vacía
-  //       },
-  //       error: (err) => {
-  //         console.error("Error al eliminar:", err);
-  //         alert(`Error al eliminar ${this.config.entityName}.`);
-  //         this.isLoading = false;
-  //       }
-  //     });
-  //   }
+    if (!this.config.deleteEntity) {
+      console.warn("deleteEntity no configurado.");
+      return;
+    }
+    this.mensajeAlert = `¿Estás seguro de que quieres eliminar "${item.nombre || item.id}"?`;
+    this.showAlertConfirmar = true
+    this.item = item;
+  }
+  handleRestore(item: any): void {
+    if (!this.config.deleteEntity) {
+      console.warn("deleteEntity no configurado.");
+      return;
+    }
+    this.mensajeAlert = `¿Estás seguro de que quieres restaurar "${item.nombre || item.usuario || item.id}"?`;
+    this.showAlertConfirmar = true
+    this.item = item;
+  }
+  onConfirm() {
+    this.isLoading = true;
+    // @ts-ignore
+    this.config.deleteEntity(this.item.id).subscribe({
+      next: () => {
+        this.alertVisible = true;
+        this.tipoAlert = "success";
+        this.mensajeAlert = `${this.config.entityName} eliminado.`;
+        // alert(`${this.config.entityName} eliminado.`);
+        this.resetAndLoadData(); // Recargar datos, idealmente a la página actual o la anterior si esta queda vacía
+      },
+      error: (err) => {
+        this.alertVisible = true;
+        this.tipoAlert = "error";
+        this.mensajeAlert = `Error al eliminar ${this.config.entityName}.`;
+        console.error("Error al eliminar:", err);
+        // alert(`Error al eliminar ${this.config.entityName}.`);
+        this.isLoading = false;
+      }
+    });
+    this.showAlertConfirmar = false
+  }
+  onCalcel() {
+    this.showAlertConfirmar = false
+    this.item = null;
   }
 
   /**
@@ -242,16 +291,24 @@ export class EntityTableComponent  implements OnInit, OnDestroy{
 
     operation.subscribe({
       next: () => {
-        alert(`${this.config.entityName} ${this.modalData?.id ? 'actualizado' : 'creado'}.`);
+        this.alertVisible = true;
+        this.tipoAlert = "success";
+        this.mensajeAlert = `${this.config.entityName} ${this.modalData?.id ? 'actualizado' : 'creado'}.`;
+        // alert(`${this.config.entityName} ${this.modalData?.id ? 'actualizado' : 'creado'}.`);
         this.isModalOpen = false;
         this.resetAndLoadData(); // Recarga los datos
       },
       error: (err) => {
+        this.alertVisible = true;
+        this.tipoAlert = "error";
+        this.mensajeAlert = `Error al guardar ${this.config.entityName}.`;
         console.error("Error al guardar:", err);
-        alert(`Error al guardar ${this.config.entityName}.`);
+        // alert(`Error al guardar ${this.config.entityName}.`);
         this.isLoading = false; // Mantener el modal abierto para corrección o reintento
       }
     });
   }
+
+
 
 }

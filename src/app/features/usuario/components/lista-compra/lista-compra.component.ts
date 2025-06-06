@@ -40,7 +40,7 @@ export class ListaCompraComponent  implements OnChanges {
   }
   private cargarListaCompra() {
     this.loading = true;
-    this.usuarioService.ListaCompraByCooker(this.cookerId).subscribe({
+    this.usuarioService.ListaCompraByCooker().subscribe({
       next: (data: ListaCompraDTO[]) => {
         const saved = localStorage.getItem(this.getStorageKey());
         const savedState = saved ? JSON.parse(saved) : [];

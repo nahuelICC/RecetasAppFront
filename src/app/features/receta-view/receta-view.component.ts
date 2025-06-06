@@ -20,6 +20,7 @@ import { Alergeno } from './models/Alergeno';
 import { AlertInfoComponent, AlertType } from '../../shared/components/alert-info/alert-info.component';
 import { AlertConfirmarComponent } from '../../shared/components/alert-confirmar/alert-confirmar.component';
 import { InfiniteScrollCustomEvent, IonAvatar, IonContent, IonInfiniteScroll, IonInfiniteScrollContent, IonItem, IonLabel, IonList } from '@ionic/angular/standalone';
+import {BotonModoOscuroComponent} from '../../shared/components/boton-modo-oscuro/boton-modo-oscuro.component';
 
 @Component({
   selector: 'app-receta-view',
@@ -44,7 +45,8 @@ import { InfiniteScrollCustomEvent, IonAvatar, IonContent, IonInfiniteScroll, Io
     IonLabel,
     IonList,
     InfoPlatoComponent,
-    AlergenoComponent
+    AlergenoComponent,
+    BotonModoOscuroComponent
   ],
   templateUrl: './receta-view.component.html',
   styleUrls: ['./receta-view.component.css'],
@@ -235,4 +237,24 @@ export class RecetaViewComponent implements OnInit {
   // }
 
 
+  mostrarAlertaIngredientes($event: string) {
+    if ($event === 'Ingredientes añadidos a la lista de compra') {
+      this.AlertVisible = true;
+      this.alertType = 'success';
+      this.alertMessage = $event;
+
+      setTimeout(() => {
+        this.AlertVisible = false;
+      }, 3000);
+    }else {
+      this.AlertVisible = true;
+      this.alertType = 'error';
+      this.alertMessage = $event;
+
+      setTimeout(() => {
+        this.AlertVisible = false;
+      }, 3000);
+    }
+
+  }
 }

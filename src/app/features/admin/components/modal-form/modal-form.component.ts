@@ -1,6 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output, OnChanges, SimpleChanges} from '@angular/core'; // Añadido OnChanges, SimpleChanges
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {NgForOf, NgIf, NgSwitch, NgSwitchCase} from '@angular/common';
+import {AlertInfoComponent} from '../../../../shared/components/alert-info/alert-info.component';
 
 
 export interface FormOption {
@@ -17,6 +18,7 @@ export interface FormField {
   placeholder?: string;
   min?: number;
   step?: number;
+  disabledOnEdit?: boolean;
 }
 
 export interface FormConfig {
@@ -33,7 +35,8 @@ export interface FormConfig {
     ReactiveFormsModule,
     NgForOf,
     NgSwitch,
-    NgSwitchCase
+    NgSwitchCase,
+    AlertInfoComponent
   ]
 })
 export class ModalFormComponent implements OnInit, OnChanges { // Implementa OnChanges
@@ -95,44 +98,42 @@ export class ModalFormComponent implements OnInit, OnChanges { // Implementa OnC
    * Construye el formulario basado en la configuración actual.
    */
   buildForm(): void {
-    if (!this.currentFormConfig || !this.fb) return; // Comprobar fb también
+    if (!this.currentFormConfig || !this.fb) {
+      return;
+    }
 
     const group: any = {};
+    // Determinar si estamos en modo edición (asumiendo que `initialData` con un `id` significa edición)
+    const isEditMode = !!(this.initialData && this.initialData.id !== undefined && this.initialData.id !== null);
+
+    console.log('[ModalForm] buildForm - Modo Edición:', isEditMode, 'Initial Data:', this.initialData);
+
+
     this.currentFormConfig.fields.forEach(field => {
       const validators = field.required ? [Validators.required] : [];
-      let initialValueForControl: any;
+      let valueForControl: any = field.type === 'select' ? null : '';
 
-      // Determinar el valor inicial del control
       if (this.initialData && this.initialData.hasOwnProperty(field.name)) {
-        initialValueForControl = this.initialData[field.name];
-      } else {
-        // Default para diferentes tipos si no hay initialData o la propiedad no existe
-        initialValueForControl = field.type === 'select' ? null : ''; // null para selects, '' para otros
+        valueForControl = this.initialData[field.name];
+        if (field.type === 'select' && valueForControl === undefined) {
+          valueForControl = null;
+        }
       }
 
-      // Asegurar que si el valor es undefined para un select, se use null
-      if (field.type === 'select' && initialValueForControl === undefined) {
-        initialValueForControl = null;
-      }
-      // Para números, si el valor es '' o undefined y no es requerido, podría ser null o 0
-      if (field.type === 'number' && (initialValueForControl === '' || initialValueForControl === undefined) && !field.required) {
-        initialValueForControl = null;
-      }
+      // ****** LÓGICA PARA DESHABILITAR EL CAMPO ******
+      const isDisabled = isEditMode && field.disabledOnEdit === true;
+      // ************************************************
 
+      group[field.name] = [{
+        value: valueForControl,
+        disabled: isDisabled // Aplicar el estado 'disabled' al crear el control
+      }, validators];
 
-      group[field.name] = [initialValueForControl, validators];
+      console.log(`[ModalForm] buildForm - Campo '${field.name}': Valor inicial:`, valueForControl, `Deshabilitado: ${isDisabled}`);
     });
 
-    // Si el formulario ya existe, podemos actualizar sus controles en lugar de reemplazar el FormGroup
-    // Esto es mejor si tienes suscripciones a valueChanges en el formulario.
-    // Pero para este caso, reemplazar el grupo si la config cambia es más simple via el setter.
     this.entityForm = this.fb.group(group);
-
-    // El patchValue después de crear el grupo con valores iniciales es redundante
-    // si los valores iniciales ya se tomaron de initialData.
-    // Sin embargo, si initialData llega después de la primera construcción del form via formConfig,
-    // un patchValue (posiblemente en ngOnChanges) es necesario.
-    // La lógica actual con el setter de formConfig y el ngOnChanges para initialData debería cubrirlo.
+    console.log('[ModalForm] buildForm - Formulario CREADO/ACTUALIZADO. Valor:', this.entityForm.getRawValue());
   }
 
   /**

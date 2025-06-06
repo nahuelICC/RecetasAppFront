@@ -15,7 +15,7 @@
           <select *ngSwitchCase="'select'"
                   [id]="field.name"
                   [formControlName]="field.name"
-                  class="form-input appearance-none">
+                  class="form-input appearance-none color-verde-claro">
             <option [ngValue]="null" *ngIf="!field.required">
               {{ field.placeholder || '-- Ninguno --' }}
             </option>
@@ -35,3 +35,4 @@
     </form>
   </div>
 </div>
+
