@@ -3,6 +3,9 @@ import {IonIcon} from '@ionic/angular/standalone';
 import {Router, RouterLink} from '@angular/router';
 import { EncryptService } from '../../../../core/services/encrypt.service';
 
+/**
+ * Componente para mostrar un cuadro de receta guardada.
+ */
 @Component({
   selector: 'app-cuadro-receta-guardada',
   templateUrl: './cuadro-receta-guardada.component.html',
@@ -27,6 +30,10 @@ export class CuadroRecetaGuardadaComponent  implements OnInit {
     idReceta: string;
   };
 
+  /**
+   * Redirecciona a la receta al hacer clic en el cuadro.
+   * @param id
+   */
   redireccionarReceta(id: string): void {
     this.zone.run(() => {
       const idEncrypt = this.encryptService.encriptar(id);

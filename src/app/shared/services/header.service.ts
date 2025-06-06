@@ -10,6 +10,9 @@ export class HeaderService {
 
   constructor(private http:HttpClient) { }
 
+  /**
+   * Obtiene la foto de perfil del cooker.
+   */
   getFotoPerfil(): any {
     return this.http.get(`${this.apiUrl}/foto`, { responseType: 'text' });
   }

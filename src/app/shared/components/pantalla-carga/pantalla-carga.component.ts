@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 
+/**
+ * Componente de pantalla de carga.
+ */
 @Component({
   selector: 'app-pantalla-carga',
   templateUrl: './pantalla-carga.component.html',

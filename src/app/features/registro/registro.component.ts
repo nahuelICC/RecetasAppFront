@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, input, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {NgClass, NgForOf, NgIf} from '@angular/common';
 import {BotonComponent} from '../../shared/components/boton/boton.component';
@@ -9,7 +9,9 @@ import {AlertConfirmarComponent} from '../../shared/components/alert-confirmar/a
 import {Router} from '@angular/router';
 import {PantallaCargaComponent} from '../../shared/components/pantalla-carga/pantalla-carga.component';
 
-
+/**
+ * Componente de registro de usuario.
+ */
 @Component({
   selector: 'app-registro',
   imports: [
@@ -102,18 +104,33 @@ export class RegistroComponent implements OnInit {
     );
   }
 
+  /**
+   * Validador personalizado para verificar que las contraseñas coincidan.
+   * @param form FormGroup del formulario de registro.
+   * @returns Un objeto con el error si las contraseñas no coinciden, o null si son válidas.
+   */
   validadorCoincideContrasena(form: FormGroup): { [key: string]: any } | null {
     const password = form.get('password')?.value;
     const confirmPassword = form.get('confirmPassword')?.value;
     return password === confirmPassword ? null : { mismatch: true };
   }
 
+  /**
+   * Validador personalizado para verificar conflictos entre alérgenos e ingredientes seleccionados.
+   * @returns true si hay un conflicto, false en caso contrario.
+   */
   validadorConflictoAlergenos(): boolean {
     return this.ingredientesSeleccionados.some(ingrediente =>
       this.alergenosSeleccionados.some(alergeno => alergeno.id === ingrediente.alergenoId)
     );
   }
 
+  /**
+   * Validador personalizado para verificar la fecha de nacimiento.
+   * Debe ser una fecha válida, no puede ser posterior a hoy y debe tener al menos 16 años.
+   * @param control AbstractControl del formulario.
+   * @returns Un objeto con el error si la fecha es inválida, o null si es válida.
+   */
   validadorFecha(control: AbstractControl): { [key: string]: any } | null {
     const fechaNacimiento = new Date(control.value);
     const hoy = new Date();
@@ -132,6 +149,10 @@ export class RegistroComponent implements OnInit {
   }
 
 
+  /**
+   * Avanza al siguiente paso del formulario de registro.
+   * Si se llega al último paso, muestra la confirmación de registro.
+   */
   nextStep() {
     if (this.currentStep < 4) {
       this.currentStep++;
@@ -140,6 +161,10 @@ export class RegistroComponent implements OnInit {
     }
   }
 
+  /**
+   * Retrocede al paso anterior del formulario de registro.
+   * Si se regresa al primer paso, se actualiza la imagen de portada si está disponible.
+   */
   previousStep() {
     if (this.currentStep > 1) {
       this.currentStep--;
@@ -154,6 +179,10 @@ export class RegistroComponent implements OnInit {
     }
   }
 
+  /**
+   * Verifica si el formulario del paso actual es válido.
+   * @returns true si el formulario es válido, false en caso contrario.
+   */
   isCurrentStepValid(): boolean {
     switch(this.currentStep) {
       case 1: return this.formStep1.valid;
@@ -163,6 +192,11 @@ export class RegistroComponent implements OnInit {
     }
   }
 
+  /**
+   * Envía el formulario de registro.
+   * Valida los datos, crea un FormData y envía la solicitud al servicio de registro.
+   * Muestra mensajes de éxito o error según la respuesta del servidor.
+   */
   envioFormulario() {
     this.isloading = true;
     this.cdr.detectChanges();
@@ -208,6 +242,9 @@ export class RegistroComponent implements OnInit {
     }, 2000);
   }
 
+  /**
+   * Muestra la vista previa de la imagen seleccionada para el perfil.
+   */
   onFileSelect(event: Event): void {
     const input = event.target as HTMLInputElement;
 
@@ -231,6 +268,9 @@ export class RegistroComponent implements OnInit {
   }
 
 
+  /**
+   * Limpia la vista previa de la imagen seleccionada y el campo del formulario.
+   */
   limpiarVistaPrevia(): void {
     this.imagenPreview = null;
     this.portadaSeleccionada = null;
@@ -243,6 +283,11 @@ export class RegistroComponent implements OnInit {
     }
   }
 
+  /**
+   * Filtra los ingredientes según el término de búsqueda ingresado.
+   * Muestra solo los primeros 5 resultados.
+   * @param event Evento de entrada del campo de búsqueda.
+   */
   filtrarIngredientes(event: Event): void {
     const input = event.target as HTMLInputElement;
     const term = input.value.trim().toLowerCase();
@@ -257,6 +302,11 @@ export class RegistroComponent implements OnInit {
       .slice(0, 5); // Mostrar solo los primeros 5 resultados
   }
 
+  /**
+   * Selecciona un ingrediente de la lista filtrada.
+   * Si ya se han seleccionado 3 ingredientes o el ingrediente ya está seleccionado, no hace nada.
+   * @param ingrediente El ingrediente a seleccionar.
+   */
   seleccionarIngrediente(ingrediente: any): void {
     if (this.ingredientesSeleccionados.length >= 3 ||
       this.ingredientesSeleccionados.some(item => item.id === ingrediente.id)) {
@@ -267,11 +317,20 @@ export class RegistroComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  /**
+   * Elimina un ingrediente seleccionado.
+   * @param index El índice del ingrediente a eliminar.
+   */
   eliminarIngrediente(index: number): void {
     this.ingredientesSeleccionados.splice(index, 1);
     this.actualizarIngredientesForm();
   }
 
+  /**
+   * Selecciona o deselecciona un alérgeno.
+   * Si el alérgeno ya está seleccionado, lo elimina; si no, lo agrega a la lista de seleccionados.
+   * @param alergeno El alérgeno a seleccionar o deseleccionar.
+   */
   toggleAlergeno(alergeno: any): void {
     const index = this.alergenosSeleccionados.findIndex(a => a.id === alergeno.id);
     index === -1 ? this.alergenosSeleccionados.push(alergeno) : this.alergenosSeleccionados.splice(index, 1);
@@ -279,18 +338,32 @@ export class RegistroComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  /**
+   * Actualiza el formulario con los IDs de los ingredientes seleccionados.
+   */
   actualizarIngredientesForm(): void {
     this.formStep3.get('ingredientesIds')?.setValue(this.ingredientesSeleccionados.map(i => i.id));
   }
 
+  /**
+   * Actualiza el formulario con los IDs de los alérgenos seleccionados.
+   */
   actualizarAlergenosForm(): void {
     this.formStep3.get('alergenosIds')?.setValue(this.alergenosSeleccionados.map(a => a.id));
   }
 
+  /**
+   * Verifica si un ingrediente está seleccionado.
+   * @param ingrediente El ingrediente a verificar.
+   * @returns true si el ingrediente está seleccionado, false en caso contrario.
+   */
   esAlergenoSeleccionado(alergeno: any): boolean {
     return this.alergenosSeleccionados.some((a) => a.id === alergeno.id);
   }
 
+  /**
+   * Cierra la alerta de confirmación de registro.
+   */
   onConfirm() {
     this.showAlertConfirmar = false;
     this.router.navigate(['login']);

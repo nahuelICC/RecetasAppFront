@@ -8,6 +8,9 @@ import { AlertInfoComponent} from '../../shared/components/alert-info/alert-info
 import { AlertConfirmarComponent} from '../../shared/components/alert-confirmar/alert-confirmar.component';
 import {PantallaCargaComponent} from '../../shared/components/pantalla-carga/pantalla-carga.component';
 
+/**
+ * Componente para crear una nueva receta.
+ */
 @Component({
   selector: 'app-crear-receta',
   templateUrl: './crear-receta.component.html',
@@ -61,6 +64,9 @@ export class CrearRecetaComponent implements OnInit {
     this.loadIngredientes();
   }
 
+  /**
+   * Carga los ingredientes disponibles desde el servicio.
+   */
   loadIngredientes(): void {
     this.crearRecetaService.getIngredientes().subscribe({
       next: (ingredientes) => {
@@ -75,6 +81,9 @@ export class CrearRecetaComponent implements OnInit {
     });
   }
 
+  /**
+   * Filtra los ingredientes según la búsqueda del usuario.
+   */
   filterIngredientes(): void {
     if (!this.ingredienteSearch) {
       this.filteredIngredientes = [];
@@ -87,12 +96,19 @@ export class CrearRecetaComponent implements OnInit {
       );
   }
 
+  /**
+   * Selecciona un ingrediente de la lista filtrada.
+   * @param ingrediente
+   */
   selectIngrediente(ingrediente: Ingrediente): void {
     this.selectedIngrediente = ingrediente;
     this.ingredienteSearch = ingrediente.nombre;
     this.filteredIngredientes = [];
   }
 
+  /**
+   * Agrega un ingrediente a la receta.
+   */
   addIngrediente(): void {
     if (!this.selectedIngrediente || this.cantidad <= 0 ||
       this.receta.ingredientes.some(ing => ing.idIngrediente === this.selectedIngrediente!.id)) {
@@ -112,15 +128,27 @@ export class CrearRecetaComponent implements OnInit {
     this.filteredIngredientes = [];
   }
 
+  /**
+   * Elimina un ingrediente de la receta.
+   * @param index
+   */
   removeIngrediente(index: number): void {
     this.receta.ingredientes.splice(index, 1);
   }
 
+  /**
+   * Obtiene el nombre de un ingrediente por su ID.
+   * @param id
+   */
   getIngredienteName(id: number): string {
     const ingrediente = this.allIngredientes.find(ing => ing.id === id);
     return ingrediente ? ingrediente.nombre : 'Ingrediente desconocido';
   }
 
+  /**
+   * Obtiene la medida de un ingrediente por su ID.
+   * @param id
+   */
   getIngredienteMeasure(id: number): string {
     const ingrediente = this.allIngredientes.find(ing => ing.id === id);
     if (!ingrediente) return '';
@@ -135,14 +163,25 @@ export class CrearRecetaComponent implements OnInit {
     return medida;
   }
 
+  /**
+   * Obtiene el minimo para la medida de un ingrediente.
+   * @param measure
+   */
   getStepForMeasure(measure: string): number {
     return (measure === 'g' || measure === 'ml') ? 10 : 1;
   }
 
+  /**
+   * Obtiene el máximo permitido para una medida específica.
+   * @param measure
+   */
   getMaxForMeasure(measure: string): number {
     return (measure === 'g' || measure === 'ml') ? 10000 : 100;
   }
 
+  /**
+   * Actualiza la duración de la receta en formato HH:MM:SS.
+   */
   updateDuration(): void {
     this.hours = Math.max(0, Math.min(23, this.hours || 0));
     this.minutes = Math.max(0, Math.min(59, this.minutes || 0));
@@ -155,6 +194,11 @@ export class CrearRecetaComponent implements OnInit {
     this.receta.duracion = `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
   }
 
+  /**
+   * Maneja la selección de archivos para imagen o video.
+   * @param event
+   * @param type
+   */
   onFileSelected(event: any, type: 'imagen' | 'video'): void {
     const file = event.target.files[0];
     if (!file) return;
@@ -172,11 +216,17 @@ export class CrearRecetaComponent implements OnInit {
     }
   }
 
+  /**
+   * Elimina la imagen o video seleccionado.
+   */
   removeFoto(): void {
     this.imagen = null;
     this.imagenPreview = null;
   }
 
+  /**
+   * Agrega un nuevo paso a la receta.
+   */
   addPaso(): void {
     if (!this.nuevoPaso.titulo || !this.nuevoPaso.descripcion) {
       this.alertMessage = 'El título y descripción del paso son obligatorios';
@@ -200,6 +250,10 @@ export class CrearRecetaComponent implements OnInit {
     this.resetPasoForm();
   }
 
+  /**
+   * Elimina un paso de la receta.
+   * @param index
+   */
   removePaso(index: number): void {
     this.receta.pasos.splice(index, 1);
     this.receta.pasos.forEach((paso, i) => {
@@ -207,6 +261,10 @@ export class CrearRecetaComponent implements OnInit {
     });
   }
 
+  /**
+   * Maneja la selección de archivos para la foto del paso.
+   * @param event
+   */
   onPasoFileSelected(event: any): void {
     const file = event.target.files[0];
     if (!file) return;
@@ -220,11 +278,17 @@ export class CrearRecetaComponent implements OnInit {
     reader.readAsDataURL(file);
   }
 
+  /**
+   * Elimina la foto del paso seleccionado.
+   */
   removePasoFoto(): void {
     this.pasoFotoFile = null;
     this.pasoFotoPreview = null;
   }
 
+  /**
+   * Resetea el formulario del paso para agregar un nuevo paso.
+   */
   resetPasoForm(): void {
     this.nuevoPaso = {
       titulo: '',
@@ -235,6 +299,9 @@ export class CrearRecetaComponent implements OnInit {
     this.pasoFotoPreview = null;
   }
 
+  /**
+   * Verifica si el formulario de creación de receta es válido.
+   */
   isFormValid(): boolean {
     return (
       this.receta.nombre.trim() !== '' &&
@@ -244,6 +311,9 @@ export class CrearRecetaComponent implements OnInit {
     );
   }
 
+  /**
+   * Registra la receta, mostrando un mensaje de alerta si el formulario no es válido.
+   */
   registrarReceta(): void {
     if (!this.isFormValid()) {
       this.alertMessage = 'Por favor, completa todos los campos obligatorios';
@@ -255,6 +325,9 @@ export class CrearRecetaComponent implements OnInit {
     this.showConfirm = true;
   }
 
+  /**
+   * Confirma el registro de la receta.
+   */
   onConfirm(): void {
     this.loading = true;
     this.showConfirm = false;
@@ -276,10 +349,16 @@ export class CrearRecetaComponent implements OnInit {
       });
   }
 
+  /**
+   * Cancela la confirmación de registro de la receta.
+   */
   onCancel(): void {
     this.showConfirm = false;
   }
 
+  /**
+   * Muestra u oculta los pasos de la receta.
+   */
   togglePasos(): void {
     this.mostrarPasos = !this.mostrarPasos;
   }

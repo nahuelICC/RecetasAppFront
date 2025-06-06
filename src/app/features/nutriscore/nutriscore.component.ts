@@ -7,6 +7,9 @@ import { IonInfiniteScroll, IonInfiniteScrollContent } from '@ionic/angular/stan
 import {BotonEscanerComponent} from './components/boton-escaner/boton-escaner.component';
 import {BotonAddRecetaComponent} from '../../shared/components/boton-add-receta/boton-add-receta.component';
 
+/**
+ * Componente principal para la búsqueda de productos Nutriscore
+ */
 @Component({
   selector: 'app-nutriscore',
   templateUrl: './nutriscore.component.html',
@@ -35,6 +38,9 @@ export class NutriscoreComponent {
 
   constructor(private http: HttpClient) {}
 
+  /**
+   * Realiza una búsqueda de productos en el backend
+   */
   buscar() {
     this.loading = true;
     this.currentPage = 1;
@@ -57,6 +63,10 @@ export class NutriscoreComponent {
     });
   }
 
+  /**
+   * Carga más productos al hacer scroll infinito
+   * @param event Evento de scroll infinito
+   */
   cargarMas(event: any) {
     this.currentPage++;
 

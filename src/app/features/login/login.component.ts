@@ -9,6 +9,9 @@ import {PantallaCargaComponent} from '../../shared/components/pantalla-carga/pan
 import {AlertInfoComponent, AlertType} from '../../shared/components/alert-info/alert-info.component';
 import {IonIcon} from '@ionic/angular/standalone';
 
+/**
+ * Componente para el login de la aplicación
+ */
 @Component({
   selector: 'app-login',
   imports: [

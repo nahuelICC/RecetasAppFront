@@ -5,12 +5,15 @@ import {NgClass, NgForOf, NgIf} from '@angular/common';
 import {InicioService} from '../../services/inicio.service';
 import {BotonComponent} from '../../../../shared/components/boton/boton.component';
 import {AlertInfoComponent} from '../../../../shared/components/alert-info/alert-info.component';
-import {ActivatedRoute, Router, RouterLink} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {AuthService} from '../../../../core/services/auth.service';
 import {EncryptService} from '../../../../core/services/encrypt.service';
 import {ellipsisHorizontalOutline, ellipsisVertical} from 'ionicons/icons';
 import {ShareModalComponent} from '../share-modal/share-modal.component';
 
+/**
+ * Componente que representa una publicación de receta en la página de inicio.
+ */
 @Component({
   selector: 'app-publicacion',
   templateUrl: './publicacion.component.html',
@@ -55,6 +58,10 @@ export class PublicacionComponent  implements OnInit {
     }
   }
 
+  /**
+   * Cierra el menú desplegable al hacer clic fuera de él.
+   * @param event
+   */
   @HostListener('document:click', ['$event'])
   cerrarMenu(event: Event) {
     const target = event.target as HTMLElement;
@@ -63,6 +70,9 @@ export class PublicacionComponent  implements OnInit {
     }
   }
 
+  /**
+   * Agrega los ingredientes de la receta a la lista de compra.
+   */
   agregarIngredientes() {
     this.inicioService.agregarIngredientesALaListaCompra(this.receta.id).subscribe({
       next: (res) => {
@@ -89,7 +99,9 @@ export class PublicacionComponent  implements OnInit {
   }
 
 
-
+  /**
+   * Verifica si el usuario ha dado "me gusta" a la receta.
+   */
   verificarEstadoMeGusta() {
     this.inicioService.verificarMeGusta(this.receta.id).subscribe({
       next: (estado) => {
@@ -100,6 +112,9 @@ export class PublicacionComponent  implements OnInit {
       }
     });
   }
+  /**
+   * Verifica si la receta está guardada por el usuario.
+   */
   verificarEstadoGuardado() {
     this.inicioService.verificarRecetaGuardada(this.receta.id).subscribe({
       next: (estado) => {
@@ -112,6 +127,9 @@ export class PublicacionComponent  implements OnInit {
   }
 
 
+  /**
+   *  Da "me gusta" a la receta o lo elimina si ya le gustaba.
+   */
   toggleLike() {
     if (this.recetaLeGusta) {
       this.inicioService.eliminarMeGusta(this.receta.id).subscribe({
@@ -138,6 +156,9 @@ export class PublicacionComponent  implements OnInit {
     }
   }
 
+  /**
+   * Alterna el estado de guardado de la receta.
+   */
   toggleGuardar() {
     if (this.recetaGuardada) {
       this.inicioService.eliminarRecetaGuardada(this.receta.id).subscribe({
@@ -164,6 +185,9 @@ export class PublicacionComponent  implements OnInit {
     }
   }
 
+  /**
+   * Redirecciona al perfil del usuario que creó la receta.
+   */
   redireccionarPerfil(id: string): void {
     this.zone.run(() => {
       const idEncrypt = this.encryptService.encriptar(id);
@@ -173,6 +197,10 @@ export class PublicacionComponent  implements OnInit {
     });
   }
 
+  /**
+   * Redirecciona a la página de la receta.
+   * @param id ID de la receta a redireccionar.
+   */
   redireccionarReceta(id: string): void {
     this.zone.run(() => {
       const idEncrypt = this.encryptService.encriptar(id);
@@ -181,6 +209,10 @@ export class PublicacionComponent  implements OnInit {
       });
     });
   }
+
+  /**
+   * Abre el menú de cpmpartir la receta.
+   */
   abrirShareModal(): void {
     this.menuAbierto = false;
     this.mostrarShareModal = true;

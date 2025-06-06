@@ -19,6 +19,10 @@ export class PaginationComponent  implements OnInit {
 
   ngOnInit() {}
 
+  /**
+   * Cambia la página actual y emite un evento.
+   * @param page
+   */
   changePage(page: number): void {
     if (page >= 1 && page <= this.totalPages) {
       this.pageChanged.emit(page);

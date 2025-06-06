@@ -48,6 +48,9 @@ export class InicioComponent implements OnInit {
     }
   }
 
+  /**
+   * Carga las recetas recomendadas para el usuario basándose en su ID de cooker.
+   */
   cargarParaTi() {
     this.inicioService.getTop10RecetasByCookerId().subscribe(recetas => {
       this.recetasParaTi = recetas;
@@ -55,6 +58,9 @@ export class InicioComponent implements OnInit {
     });
   }
 
+  /**
+   * Carga las recetas de los cooker que el usuario sigue.
+   */
   cargarSiguiendo() {
     this.inicioService.getRecetasSiguiendo().subscribe(recetas => {
       this.recetasSiguiendo = recetas;
@@ -62,32 +68,50 @@ export class InicioComponent implements OnInit {
     });
   }
 
+  /**
+   * Carga mas recetas recomendadas para el usuario
+   */
   verMasParaTi() {
     const siguiente = this.recetasParaTiVisible.length + 3;
     this.recetasParaTiVisible = this.recetasParaTi.slice(0, siguiente);
   }
 
+  /**
+   * Carga mas recetas de los cooker que el usuario sigue
+   */
   verMasSiguiendo() {
     const siguiente = this.recetasSiguiendoVisible.length + 3;
     this.recetasSiguiendoVisible = this.recetasSiguiendo.slice(0, siguiente);
   }
 
+  /**
+   * Carga menos recetas recomendadas para el usuario
+   */
   verMenosParaTi() {
     const nuevaCantidad = Math.max(this.cantidadInicialParaTi, this.recetasParaTiVisible.length - 3);
     this.recetasParaTiVisible = this.recetasParaTi.slice(0, nuevaCantidad);
   }
 
+  /**
+   * Carga menos recetas de los cooker que el usuario sigue
+   */
   verMenosSiguiendo() {
     const nuevaCantidad = Math.max(this.cantidadInicialSiguiendo, this.recetasSiguiendoVisible.length - 3);
     this.recetasSiguiendoVisible = this.recetasSiguiendo.slice(0, nuevaCantidad);
   }
 
+  /**
+   * Carga las últimas recetas publicadas.
+   */
   cargarUltimasRecetas() {
     this.inicioService.getUltimasRecetas().subscribe(recetas => {
       this.ultimasRecetas = recetas;
     });
   }
 
+  /**
+   * Carga las recetas más gustadas por los usuarios.
+   */
   cargarRecetasTop() {
     this.inicioService.getTop10RecetasFavoritas().subscribe(
       (data) => {

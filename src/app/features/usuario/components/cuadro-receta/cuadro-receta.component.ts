@@ -6,6 +6,9 @@ import {InicioService} from '../../../inicio/services/inicio.service';
 import {Router, RouterLink} from '@angular/router';
 import { EncryptService } from '../../../../core/services/encrypt.service';
 
+/**
+ * Componente para mostrar un cuadro de receta con sus detalles y acciones.
+ */
 @Component({
   selector: 'app-cuadro-receta',
   templateUrl: './cuadro-receta.component.html',
@@ -35,12 +38,19 @@ export class CuadroRecetaComponent  implements OnInit {
 
   @Output() editaVisibilidad = new EventEmitter<any>();
 
-toggleVisibilidad() {
+  /**
+   * Alterna la visibilidad de la receta.
+   */
+  toggleVisibilidad() {
   this.receta.esVisible = !this.receta.esVisible;
   this.usuarioService.editarVisibilidadReceta(this.receta.idReceta, this.receta.esVisible).subscribe(() => {
     this.editaVisibilidad.emit({ idReceta: this.receta.idReceta, esVisible: this.receta.esVisible });
   });
 }
+
+  /**
+   * Alterna el estado de "me gusta" de la receta.
+   */
   toggleLike() {
     if (this.receta.cookerGusta) {
       this.inicioService.eliminarMeGusta(this.receta.idReceta).subscribe({
@@ -66,6 +76,9 @@ toggleVisibilidad() {
     }
   }
 
+  /**
+   * Alterna el estado de guardado de la receta.
+   */
   toggleGuardar() {
     if (this.receta.cookerGuardada) {
       this.inicioService.eliminarRecetaGuardada(this.receta.idReceta).subscribe({
@@ -92,6 +105,10 @@ toggleVisibilidad() {
     this.editaGuardar.emit();
   }
 
+  /**
+   * Redirecciona a la página de detalles de la receta.
+   * @param id
+   */
   redireccionarReceta(id: string): void {
     this.zone.run(() => {
       const idEncrypt = this.encryptService.encriptar(id);

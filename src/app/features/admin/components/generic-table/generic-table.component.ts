@@ -47,14 +47,27 @@ export class GenericTableComponent  implements OnInit {
 
   ngOnInit() {}
 
+  /**
+   * Obtiene el valor de una celda en una fila dada.
+   * @param row
+   * @param columnKey
+   */
   getCellValue(row: any, columnKey: string): any {
     return columnKey.split('.').reduce((obj, key) => (obj && obj[key] !== 'undefined') ? obj[key] : '', row);
   }
 
+  /**
+   * Maneja el evento de edición de una fila.
+   * @param item
+   */
   onEdit(item: any): void {
     this.editClicked.emit(item);
   }
 
+  /**
+   * Maneja el evento de eliminación de una fila.
+   * @param item
+   */
   onDelete(item: any): void {
     this.deleteClicked.emit(item);
   }
@@ -63,10 +76,17 @@ export class GenericTableComponent  implements OnInit {
     this.restoreClicked.emit(item);
   }
 
+  /**
+   * Maneja el evento de visualización de una fila.
+   * @param item
+   */
   onView(item: any): void {
     this.viewClicked.emit(item);
   }
 
+  /**
+   * Determina si la columna de acciones debe mostrarse.
+   */
   // Determina si la columna de acciones debe mostrarse
 
   showActionsColumn(): boolean {

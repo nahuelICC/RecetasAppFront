@@ -1,4 +1,4 @@
-import { Component, NgZone, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
+import { Component, NgZone, OnInit, ChangeDetectorRef } from '@angular/core';
 import { InfoPlatoComponent } from './components/info-plato/info-plato.component';
 import { AlergenoComponent } from "./components/alergeno/alergeno.component";
 import { IonAccordion, IonAccordionGroup, IonIcon } from '@ionic/angular/standalone';
@@ -18,10 +18,12 @@ import { AuthService } from '../../core/services/auth.service';
 import { FormsModule } from '@angular/forms';
 import { Alergeno } from './models/Alergeno';
 import { AlertInfoComponent, AlertType } from '../../shared/components/alert-info/alert-info.component';
-import { AlertConfirmarComponent } from '../../shared/components/alert-confirmar/alert-confirmar.component';
 import { InfiniteScrollCustomEvent, IonAvatar, IonContent, IonInfiniteScroll, IonInfiniteScrollContent, IonItem, IonLabel, IonList } from '@ionic/angular/standalone';
 import {BotonModoOscuroComponent} from '../../shared/components/boton-modo-oscuro/boton-modo-oscuro.component';
 
+/**
+ * Componente para visualizar una receta.
+ */
 @Component({
   selector: 'app-receta-view',
   standalone: true,
@@ -97,6 +99,9 @@ export class RecetaViewComponent implements OnInit {
     });
   }
 
+  /**
+   * Obtiene la información de la receta desde el servicio.
+   */
   obtenerInfoReceta() {
     this.recetaService.getInfoReceta(this.idReceta).subscribe(
       (response) => {
@@ -109,6 +114,9 @@ export class RecetaViewComponent implements OnInit {
     );
   }
 
+  /**
+   * Obtiene los alérgenos de la receta y los filtra para eliminar duplicados.
+   */
   obtenerAlergenos() {
     if (!this.receta?.alergenos) return;
     const copia = new Set();
@@ -132,6 +140,9 @@ export class RecetaViewComponent implements OnInit {
     return columnas;
   }
 
+  /**
+   * Obtiene los pasos de la receta desde el servicio.
+   */
   obtenerPasosReceta() {
     this.recetaService.getPasosReceta(this.idReceta).subscribe(
       (response) => {
@@ -144,6 +155,9 @@ export class RecetaViewComponent implements OnInit {
     );
   }
 
+  /**
+   * Obtiene los comentarios de la receta desde el servicio.
+   */
   obtenerComentariosReceta() {
     this.comentarioService.getComentariosReceta(this.idReceta).subscribe(
       (response) => {
@@ -159,6 +173,10 @@ export class RecetaViewComponent implements OnInit {
     );
   }
 
+  /**
+   * Redirecciona al perfil del usuario que ha publicado la receta.
+   * @param id ID del usuario.
+   */
   redireccionarPerfil(id: string): void {
     this.zone.run(() => {
       const idEncrypt = this.encryptService.encriptar(id);
@@ -168,10 +186,17 @@ export class RecetaViewComponent implements OnInit {
     });
   }
 
+  /**
+   * Compara si el usuario está logueado.
+   * @returns true si el usuario está logueado, false en caso contrario.
+   */
   compararLogin(): boolean {
     return this.authService.isLogged();
   }
 
+  /**
+   * Responde a un comentario en la receta.
+   */
   responderReceta() {
     this.comentarioService.comentarReceta({ texto: this.textoComentario }, this.idReceta).subscribe({
       next: (nuevoComentario) => {
@@ -187,6 +212,9 @@ export class RecetaViewComponent implements OnInit {
     });
   }
 
+  /**
+   * Recarga los comentarios de la receta después de eliminar uno.
+   */
   recargarComentariosReceta() {
     this.currentItemsToShow = 5;
     this.obtenerComentariosReceta();
@@ -198,10 +226,16 @@ export class RecetaViewComponent implements OnInit {
     }, 3000);
   }
 
+  /**
+   * Cambia el estado del cuadro de comentario.
+   */
   mostrarCuadro() {
     this.cuadroComentarioOn = !this.cuadroComentarioOn;
   }
 
+  /**
+   * Carga más comentarios al hacer scroll infinito.
+   */
   onIonInfinite(event: InfiniteScrollCustomEvent) {
     setTimeout(() => {
       this.currentItemsToShow += 5;
@@ -214,6 +248,9 @@ export class RecetaViewComponent implements OnInit {
     }, 500);
   }
 
+  /**
+   * Muestra una alerta de éxito al denunciar un comentario.
+   */
   mostrarAlertaDenuncia() {
     this.AlertVisible = true;          // Mostrar la alerta
     this.alertType = 'success';        // Tipo de alerta
@@ -224,19 +261,11 @@ export class RecetaViewComponent implements OnInit {
     }, 3000);
   }
 
-  // generateItems() {
-  //   const newItems = this.comentariosReceta.slice(this.comentariosReceta.length, this.comentariosReceta.length + 5);
-  //   this.comentariosReceta.push(...newItems);
-  //   if (newItems.length === 0) {
-  //     this.isAlertVisible = true;
-  //     this.alertMessage = 'No hay más comentarios para mostrar';
-  //     setTimeout(() => {
-  //       this.isAlertVisible = false;
-  //     }, 3000);
-  //   }
-  // }
 
-
+  /**
+   * Muestra una alerta de éxito o error al añadir ingredientes a la lista de compra.
+   * @param $event Evento que contiene el mensaje de la alerta.
+   */
   mostrarAlertaIngredientes($event: string) {
     if ($event === 'Ingredientes añadidos a la lista de compra') {
       this.AlertVisible = true;

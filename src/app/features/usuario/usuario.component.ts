@@ -17,6 +17,9 @@ import {EncryptService} from '../../core/services/encrypt.service';
 import {RegistroService} from '../registro/services/registro.service';
 import {ListaCompraComponent} from './components/lista-compra/lista-compra.component';
 
+/**
+ * Componente que representa el perfil de usuario.
+ */
 @Component({
   selector: 'app-usuario',
   templateUrl: './usuario.component.html',
@@ -198,16 +201,26 @@ export class UsuarioComponent  implements OnInit {
 
   }
 
+  /**
+   * Valida que las contraseñas nueva y repetir sean iguales.
+   * @param form
+   */
   passwordsIguales(form: FormGroup) {
     const nueva = form.get('nueva')?.value;
     const repetir = form.get('repetir')?.value;
     return nueva === repetir ? null : { noCoinciden: true };
   }
 
+  /**
+   * Getter para acceder al campo de contraseña actual del formulario.
+   */
   get nuevaContrasena() {
     return this.cambioContrasenaForm.get('nueva');
   }
 
+  /**
+   * Función para cambiar la contraseña del usuario.
+   */
   onGuardarContrasena() {
     if (this.cambioContrasenaForm.valid) {
       this.mensajeAlertaConfirmar = '¿Estás seguro de que quieres cambiar tu contraseña?';
@@ -219,10 +232,8 @@ export class UsuarioComponent  implements OnInit {
             this.alertType = 'success';
             this.isAlertVisible = true;
 
-            // Opcional: resetear el formulario
             this.cambioContrasenaForm.reset();
 
-            // Cerrar alerta después de un tiempo
             setTimeout(() => {
               this.isAlertVisible = false;
             }, 3000);
@@ -235,7 +246,6 @@ export class UsuarioComponent  implements OnInit {
           }
         );
 
-        // ✅ Cerrar la alerta y el formulario
         this.mostrarAlertaConfirmar = false;
         this.mostrandoCambioContrasena = false;
 
@@ -244,6 +254,9 @@ export class UsuarioComponent  implements OnInit {
     }
   }
 
+  /**
+   * Funcion para guardar los cambios realizados en el perfil del usuario.
+   */
   guardarCambios() {
     this.datosEdicion = {
       nombre: this.perfil.nombre,
@@ -288,10 +301,17 @@ export class UsuarioComponent  implements OnInit {
 
 }
 
+  /**
+   * Función para manejar el cambio de imagen de perfil del usuario.
+   */
   triggerFileInput() {
     this.fileInput.nativeElement.click();
   }
 
+  /**
+   * Función que se ejecuta cuando se selecciona un archivo para subir como foto de perfil.
+   * @param event Evento de cambio del input de archivo.
+   */
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
@@ -321,14 +341,23 @@ export class UsuarioComponent  implements OnInit {
     }
   }
 
+  /**
+   * Muestra u oculta la sección de seguidos
+   */
   toggleSeguidos(): void {
     this.mostrarSeguidos = !this.mostrarSeguidos;
   }
 
+  /**
+   * Muestra u oculta la sección de seguidores
+   */
   toggleSeguidores(): void {
     this.mostrarSeguidores = !this.mostrarSeguidores;
   }
 
+  /**
+   * Redirecciona al perfil del usuario con el ID proporcionado.
+   */
   redireccionarPerfil(id: string): void {
     this.zone.run(() => {
       const idEncrypt = this.encryptService.encriptar(id);
@@ -338,6 +367,9 @@ export class UsuarioComponent  implements OnInit {
     });
   }
 
+  /**
+   * Carga más recetas
+   */
   loadMoreRecetas(event: any) {
     const startIndex = this.recetasMostradas.length;
     const endIndex = startIndex + this.recetasPerPage;
@@ -346,12 +378,14 @@ export class UsuarioComponent  implements OnInit {
     this.recetasMostradas = [...this.recetasMostradas, ...next];
     event.target.complete();
 
-    // Deshabilitar si no hay más datos
     if (this.recetasMostradas.length >= this.recetas.length) {
       event.target.disabled = true;
     }
   }
 
+  /**
+   * Carga más recetas guardadas
+   */
   loadMoreGuardadas(event: any) {
     const startIndex = this.recetasGuardadasMostradas.length;
     const endIndex = startIndex + this.guardadasPerPage;
@@ -365,6 +399,9 @@ export class UsuarioComponent  implements OnInit {
     }
   }
 
+  /**
+   * Carga más colecciones
+   */
   loadMoreColecciones(event: any) {
     const startIndex = this.coleccionesMostradas.length;
     const endIndex = startIndex + this.coleccionesPerPage;
@@ -378,6 +415,9 @@ export class UsuarioComponent  implements OnInit {
     }
   }
 
+  /**
+   * Cambia el estado de bloqueo del perfil del usuario.
+   */
   toggleBloquearPerfil() {
     const id = this.route.snapshot.paramMap.get('id') || '';
     const idDecrypt = this.encryptService.desencriptar(id);
@@ -420,6 +460,9 @@ export class UsuarioComponent  implements OnInit {
 
   }
 
+  /**
+   * Cambia el estado de seguimiento del perfil del usuario.
+   */
   toggleSeguirPerfil() {
     const id = this.route.snapshot.paramMap.get('id') || '';
     const idDecrypt = this.encryptService.desencriptar(id);
@@ -446,6 +489,9 @@ export class UsuarioComponent  implements OnInit {
     }, 2000);
   }
 
+  /**
+   * Muestra u oculta la sección de creación de colecciones.
+   */
   toggleCrearColeccion() {
     this.mostrarCrearColeccion = !this.mostrarCrearColeccion;
     this.modoEdicionColeccion = false;
@@ -455,6 +501,9 @@ export class UsuarioComponent  implements OnInit {
     }
   }
 
+  /**
+   * cambia el estado de selección de una receta en la colección.
+   */
   toggleReceta(idReceta: number) {
     if (this.recetasSeleccionadas.has(idReceta)) {
       this.recetasSeleccionadas.delete(idReceta);
@@ -463,6 +512,9 @@ export class UsuarioComponent  implements OnInit {
     }
   }
 
+  /**
+   * Función para guardar una nueva colección de recetas.
+   */
   onGuardarColeccion() {
     const titulo = this.coleccionEditando.titulo.trim();
 
@@ -519,6 +571,10 @@ export class UsuarioComponent  implements OnInit {
     );
   }
 
+  /**
+   * Elimina una colección de recetas.
+   * @param coleccion
+   */
   onEliminarColeccion(coleccion: any) {
     this.usuarioService.eliminarColeccion(coleccion.id).subscribe(
       (response) => {
@@ -538,6 +594,10 @@ export class UsuarioComponent  implements OnInit {
     }, 2000);
   }
 
+  /**
+   * Inicia la edición de una colección de recetas.
+   * @param coleccion
+   */
   iniciarEdicionColeccion(coleccion: any) {
     this.mostrarEditarColeccion = true;
     this.modoEdicionColeccion = true;
@@ -545,6 +605,9 @@ export class UsuarioComponent  implements OnInit {
     this.recetasSeleccionadas = new Set(coleccion.recetas.map((r: any) => r.idReceta));
   }
 
+  /**
+   * Funcion para editar una colección de recetas.
+   */
   onEditarColeccion() {
     const titulo = this.coleccionEditando.titulo.trim();
     const recetasIds = Array.from(this.recetasSeleccionadas);
@@ -586,6 +649,9 @@ export class UsuarioComponent  implements OnInit {
     this.coleccionEditando = {};
   }
 
+  /**
+   * Muestra u oculta la sección de edición de colecciones.
+   */
   toggleEditarColeccion() {
     this.mostrarEditarColeccion = !this.mostrarEditarColeccion;
     this.modoEdicionColeccion = false;
@@ -593,6 +659,9 @@ export class UsuarioComponent  implements OnInit {
   }
 
 
+  /**
+   * Actualiza la lista de recetas guardadas del usuario.
+   */
   actualizaGuardados($event: any) {
     this.usuarioService.getPerfil().subscribe((response) => {
       this.recetasGuardadas = response.recetasGuardadas;
@@ -600,9 +669,15 @@ export class UsuarioComponent  implements OnInit {
     });
   }
 
+  /**
+   * Funcion para mostrar u ocultar la sección de edición del perfil.
+   */
   toggleEditarPerfil() {
     this.editarPerfil = !this.editarPerfil;
   }
+  /**
+   * Filtra los ingredientes según el término de búsqueda ingresado.
+   */
   filtrarIngredientes(event: Event): void {
     const input = event.target as HTMLInputElement;
     const term = input.value.trim().toLowerCase();
@@ -613,24 +688,47 @@ export class UsuarioComponent  implements OnInit {
         i.nombre.toLowerCase().includes(term)
       ).slice(0, 5);
   }
+
+  /**
+   * Selecciona un ingrediente y lo agrega a la lista de ingredientes seleccionados.
+   * Si ya hay 3 ingredientes seleccionados o el ingrediente ya está seleccionado, no hace nada.
+   */
   seleccionarIngrediente(ingrediente: any): void {
     if (this.ingredientesSeleccionados.length >= 3 ||
       this.ingredientesSeleccionados.some(i => i.id === ingrediente.id)) return;
 
     this.ingredientesSeleccionados.push(ingrediente);
   }
+
+  /**
+   * Elimina un ingrediente de la lista de ingredientes seleccionados.
+   * @param index Índice del ingrediente a eliminar.
+   */
   eliminarIngrediente(index: number): void {
     this.ingredientesSeleccionados.splice(index, 1);
   }
+
+  /**
+   * Filtra los alérgenos según el término de búsqueda ingresado.
+   */
   esAlergenoSeleccionado(alergeno: any): boolean {
     return this.alergenosSeleccionados.some(a => a.id === alergeno.id);
   }
+
+  /**
+   * Selecciona o deselecciona un alérgeno.
+   * @param alergeno
+   */
   toggleAlergeno(alergeno: any): void {
     const index = this.alergenosSeleccionados.findIndex(a => a.id === alergeno.id);
     index === -1
       ? this.alergenosSeleccionados.push(alergeno)
       : this.alergenosSeleccionados.splice(index, 1);
   }
+
+  /**
+   * Valida si hay algún conflicto entre los ingredientes seleccionados y los alérgenos seleccionados.
+   */
   validadorConflictoAlergenos(): boolean {
     return this.ingredientesSeleccionados.some(ingrediente =>
       this.alergenosSeleccionados.some(alergeno =>
@@ -643,6 +741,9 @@ export class UsuarioComponent  implements OnInit {
     return this.ingredientesSeleccionados.some(i => i.id === ingrediente.id);
   }
 
+  /**
+   * Inicia un chat con el usuario actual.
+   */
   iniciarChat() {
     const id = this.route.snapshot.paramMap.get('id') || '';
     const idDecrypt = this.encryptService.desencriptar(id); // Desencripta el ID actual
@@ -650,12 +751,18 @@ export class UsuarioComponent  implements OnInit {
     this.router.navigate(['/chat', idEncrypt]); // Redirige con el ID encriptado
   }
 
-  // Modificar la función toggleListaCompra
+  /**
+   * Muestra u oculta la lista de compra.
+   */
   toggleListaCompra() {
     this.mostrarListaCompra = !this.mostrarListaCompra;
   }
 
 
+  /**
+   * Cambia la visibilidad de una receta en el perfil del usuario.
+   * @param $event Evento que contiene la información de la receta y su nueva visibilidad.
+   */
   onEditarVisibilidad($event: any) {
     if ($event.esVisible == false) {
     this.recetasVisibles = this.recetasVisibles.filter(receta => receta.idReceta !== $event.idReceta);
@@ -668,12 +775,20 @@ export class UsuarioComponent  implements OnInit {
     }
   }
 
+  /**
+   * Muestra una alerta de confirmación para eliminar una receta de la lista de compra.
+   * @param idReceta
+   */
   mostrarAlertaConfirmarEliminar(idReceta: number) {
     this.mensajeAlertaConfirmar = '¿Estás seguro de que quieres eliminar esta receta de tu lista de la compra?';
     this.accionConfirmada = () => this.eliminarRecetaConfirmada(idReceta);
     this.mostrarAlertaConfirmar = true;
   }
 
+  /**
+   * Elimina una receta de la lista de compra del usuario.
+   * @param idReceta
+   */
   eliminarRecetaConfirmada(idReceta: number) {
     // Limpiar cualquier alerta anterior
     this.alertMessage = '';

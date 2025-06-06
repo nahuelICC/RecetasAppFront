@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Howl } from 'howler';
 
+/**
+ * Servicio para manejar la reproducción de sonidos en los mensajes.
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -22,6 +25,10 @@ export class AudioService {
     this.initialized = true;
   }
 
+  /**
+   * Endpoint que reproduce un sonido específico.
+   * @param sonido
+   */
   reproducir(sonido: 'mensaje'): void {
     this.initialize(); // Ensure sounds are initialized
     const audio = this.sonidos[sonido];

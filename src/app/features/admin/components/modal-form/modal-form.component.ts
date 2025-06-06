@@ -71,6 +71,10 @@ export class ModalFormComponent implements OnInit, OnChanges { // Implementa OnC
     }
   }
 
+  /**
+   * Maneja cambios en initialData después de que el form ya está construido
+   * @param changes
+   */
   // ngOnChanges para manejar cambios en initialData después de que el form ya está construido
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['initialData'] && this.entityForm && this.currentFormConfig) {
@@ -90,6 +94,9 @@ export class ModalFormComponent implements OnInit, OnChanges { // Implementa OnC
     // Si formConfig cambia y el componente ya está inicializado, el setter se encarga.
   }
 
+  /**
+   * Construye el formulario basado en la configuración actual.
+   */
   buildForm(): void {
     if (!this.currentFormConfig || !this.fb) {
       return;
@@ -129,6 +136,9 @@ export class ModalFormComponent implements OnInit, OnChanges { // Implementa OnC
     console.log('[ModalForm] buildForm - Formulario CREADO/ACTUALIZADO. Valor:', this.entityForm.getRawValue());
   }
 
+  /**
+   * Maneja el envío del formulario.
+   */
   submitForm(): void {
     if (this.entityForm.valid) {
       this.formSubmitted.emit(this.entityForm.value);
@@ -141,6 +151,9 @@ export class ModalFormComponent implements OnInit, OnChanges { // Implementa OnC
     }
   }
 
+  /**
+   * Cierra el modal y emite el evento de cierre.
+   */
   close(): void {
     this.modalClosed.emit();
   }

@@ -7,6 +7,9 @@ import { UsuarioService } from '../../../usuario/services/usuario.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { EncryptService } from '../../../../core/services/encrypt.service';
 
+/**
+ * Componente para compartir recetas con usuarios seguidos.
+ */
 @Component({
   selector: 'app-share-modal',
   templateUrl: './share-modal.component.html',
@@ -34,6 +37,10 @@ export class ShareModalComponent {
     this.cargarUsuariosSeguidos();
   }
 
+  /**
+   * Carga la lista de usuarios seguidos al iniciar el componente.
+   * Utiliza el servicio de usuario para obtener la lista y maneja errores.
+   */
   private cargarUsuariosSeguidos(): void {
     this.loading = true;
     this.usuarioService.listaSeguidos(true).subscribe({
@@ -51,6 +58,10 @@ export class ShareModalComponent {
     });
   }
 
+  /**
+   * Filtra la lista de usuarios seguidos según el término de búsqueda.
+   * Actualiza la lista de usuarios filtrados.
+   */
   filtrarUsuarios(): void {
     const termino = this.terminoBusqueda.toLowerCase();
     this.usuariosFiltrados = this.usuariosSeguidos.filter(usuario =>
@@ -59,6 +70,11 @@ export class ShareModalComponent {
     );
   }
 
+  /**
+   * Alterna la selección de un usuario.
+   * Si el usuario ya está seleccionado, lo elimina del conjunto; si no, lo agrega.
+   * @param usuarioId ID del usuario a seleccionar o deseleccionar.
+   */
   toggleSeleccionUsuario(usuarioId: number): void {
     if (this.usuariosSeleccionados.has(usuarioId)) {
       this.usuariosSeleccionados.delete(usuarioId);
@@ -68,10 +84,20 @@ export class ShareModalComponent {
     console.log('Usuarios seleccionados:', this.usuariosSeleccionados);
   }
 
+  /**
+   * Verifica si un usuario está seleccionado.
+   * @param usuarioId ID del usuario a verificar.
+   * @returns true si el usuario está seleccionado, false en caso contrario.
+   */
   estaSeleccionado(usuarioId: number): boolean {
     return this.usuariosSeleccionados.has(usuarioId);
   }
 
+  /**
+   * Envía la receta a los usuarios seleccionados.
+   * Obtiene el perfil del usuario actual y envía un mensaje con el enlace de la receta.
+   * Maneja errores en la obtención del perfil y en el envío de mensajes.
+   */
   enviarReceta(): void {
     if (!this.recetaId || this.usuariosSeleccionados.size === 0) return;
 
@@ -115,6 +141,10 @@ export class ShareModalComponent {
     });
   }
 
+  /**
+   * Cierra el modal de compartir receta.
+   * Emite un evento para notificar al componente padre que el modal debe cerrarse.
+   */
   cerrarModal(): void {
     this.closeModal.emit();
   }
