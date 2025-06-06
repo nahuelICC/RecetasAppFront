@@ -8,14 +8,14 @@
       <div *ngFor="let field of currentFormConfig.fields" class="flex flex-col">
         <label [for]="field.name" class="mb-1 text-sm font-medium text-gray-700">{{ field.label }} <span *ngIf="field.required" class="text-red-500">*</span></label>
         <ng-container [ngSwitch]="field.type">
-          <input *ngSwitchCase="'text'" [type]="field.type" [id]="field.name" [formControlName]="field.name" class="form-input">
-          <input *ngSwitchCase="'number'" [type]="field.type" [id]="field.name" [formControlName]="field.name" class="form-input">
-          <input *ngSwitchCase="'date'" [type]="field.type" [id]="field.name" [formControlName]="field.name" class="form-input">
-          <textarea *ngSwitchCase="'textarea'" [id]="field.name" [formControlName]="field.name" class="form-input h-24"></textarea>
+          <input *ngSwitchCase="'text'" [type]="field.type" [id]="field.name" [formControlName]="field.name " class="form-input disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed">
+          <input *ngSwitchCase="'number'" [type]="field.type" [id]="field.name" [formControlName]="field.name" class="form-input disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed">
+          <input *ngSwitchCase="'date'" [type]="field.type" [id]="field.name" [formControlName]="field.name" class="form-input disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed">
+          <textarea *ngSwitchCase="'textarea'" [id]="field.name" [formControlName]="field.name" class="form-input h-24 disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"></textarea>
           <select *ngSwitchCase="'select'"
                   [id]="field.name"
                   [formControlName]="field.name"
-                  class="form-input appearance-none color-verde-claro">
+                  class="form-input appearance-none color-verde-claro disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed">
             <option [ngValue]="null" *ngIf="!field.required">
               {{ field.placeholder || '-- Ninguno --' }}
             </option>
@@ -26,11 +26,11 @@
               {{ option.label }}
             </option>
           </select>
-          <div *ngSwitchCase="'checkbox'" class="mt-2 flex items-center">
+          <div *ngSwitchCase="'checkbox'" class="mt-2 flex items-cente ">
             <input type="checkbox"
                    [id]="field.name"
                    [formControlName]="field.name"
-                   class="h-4 w-4 text-[#004643] border-gray-300 rounded focus:ring-[#f9bc60] focus:ring-offset-0">
+                   class="h-4 w-4 text-[#004643] border-gray-300 rounded focus:ring-[#f9bc60] focus:ring-offset-0 disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed">
           </div>
         </ng-container>
       </div>

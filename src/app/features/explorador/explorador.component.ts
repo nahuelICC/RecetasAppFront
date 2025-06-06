@@ -16,6 +16,7 @@ import {UsuarioService} from './services/usuario.service';
 import {UsuarioExploradorFiltroDTO} from './models/UsuarioExploradorFiltroDTO';
 import {InteraccionesUsuarioDTO} from './models/InteraccionesUsuarioDTO';
 import {BotonAddRecetaComponent} from '../../shared/components/boton-add-receta/boton-add-receta.component';
+import {ExploradorEstadoService, ExploradorState} from './services/explorador-estado.service';
 
 @Component({
   selector: 'app-explorador',
@@ -87,22 +88,74 @@ export class ExploradorComponent implements OnInit, OnDestroy {
       private alergenoService: AlergenoService,
       private ingredienteService: IngredienteService,
       private recetaService: RecetaService,
-      private usuarioService: UsuarioService
+      private usuarioService: UsuarioService,
+      private stateService: ExploradorEstadoService
   ) {}
 
   ngOnInit() {
-    this.cargarAlergenos();
-    this.cargarIngredientesCompletos();
-    this.cargarRecetas();
-    this.cargarUsuarios();
-    this.cargarRecetasInteracciones();
+    // Comprueba si hay un estado guardado al iniciar el componente
+    if (this.stateService.hasState()) {
+      console.log("Restaurando estado previo del explorador.");
+      this.restoreState(); // Carga el estado guardado
+      // Después de restaurar, limpia el estado para que no se vuelva a cargar
+      // si el usuario navega aquí desde otro sitio (ej. el menú principal).
+      this.stateService.clearState();
+    } else {
+      console.log("Inicializando explorador con estado por defecto.");
+      // Si no hay estado guardado, carga todo de forma normal
+      this.cargarAlergenos();
+      this.cargarIngredientesCompletos();
+      this.cargarRecetas();
+      this.cargarUsuarios();
+      this.cargarRecetasInteracciones();
+    }
   }
 
   ngOnDestroy(): void {
+    this.saveState();
     this.alergenosSub?.unsubscribe();
     this.ingredienteSub?.unsubscribe();
     // this.recetasSub?.unsubscribe();
     // this.usuariosSub?.unsubscribe();
+  }
+  private saveState(): void {
+    const currentState: ExploradorState = {
+      searchTerm: this.searchTerm,
+      selectedAlergenos: this.selectedAlergenos,
+      selectedIngredients: this.selectedIngredients,
+      selectedRelevante: this.selectedRelevante,
+      selectedSeguidos: this.selectedSeguidos,
+      recetaExploradorFiltroDTO: this.recetaExploradorFiltroDTO,
+      usuarioExploradorFiltroDTO: this.usuarioExploradorFiltroDTO,
+      paginaActual: this.paginaActual,
+      paginaActualUsuarios: this.paginaActualUsuarios,
+      showFilters: this.showFilters
+    };
+    this.stateService.saveState(currentState);
+  }
+
+  private restoreState(): void {
+    const savedState = this.stateService.loadState();
+    if (savedState) {
+      // Restaura todas las propiedades del componente con los valores guardados
+      this.searchTerm = savedState.searchTerm;
+      this.selectedAlergenos = savedState.selectedAlergenos;
+      this.selectedIngredients = savedState.selectedIngredients;
+      this.selectedRelevante = savedState.selectedRelevante;
+      this.selectedSeguidos = savedState.selectedSeguidos;
+      this.recetaExploradorFiltroDTO = savedState.recetaExploradorFiltroDTO;
+      this.usuarioExploradorFiltroDTO = savedState.usuarioExploradorFiltroDTO;
+      this.paginaActual = savedState.paginaActual;
+      this.paginaActualUsuarios = savedState.paginaActualUsuarios;
+      this.showFilters = savedState.showFilters;
+
+      // Carga los datos necesarios para la vista (no necesitas recargar los filtros estáticos como alergenos)
+      this.cargarAlergenos(); // Necesario para pintar los seleccionados
+      this.cargarIngredientesCompletos(); // Necesario para el input
+      this.cargarRecetas(); // Recarga las recetas con los filtros restaurados
+      this.cargarUsuarios(); // Recarga los usuarios con los filtros restaurados
+      this.cargarRecetasInteracciones();
+    }
   }
   setActiveSort(sortType: 'relevantes' | 'seguidos'): void {
     if (sortType === 'relevantes') {
@@ -112,6 +165,7 @@ export class ExploradorComponent implements OnInit, OnDestroy {
       this.selectedSeguidos = !this.selectedSeguidos;
       this.recetaExploradorFiltroDTO.seguidos = this.selectedSeguidos ? 1 : -1;
     }
+    this.usuarioExploradorFiltroDTO.pagina = 1;
     this.cargarRecetas();
   }
 
@@ -216,8 +270,12 @@ export class ExploradorComponent implements OnInit, OnDestroy {
   onSearchTermChange(): void {
     this.recetaExploradorFiltroDTO.buscador = this.searchTerm;
     this.usuarioExploradorFiltroDTO.buscador = this.searchTerm;
+    this.recetaExploradorFiltroDTO.pagina = 1;
+    this.usuarioExploradorFiltroDTO.pagina = 1;
     this.cargarRecetas()
     this.cargarUsuarios();
+    this.paginaActualUsuarios = 1;
+    this.paginaActual = 1;
   }
 
   toggleAlergeno(alergenoId: number): void {
@@ -334,8 +392,10 @@ export class ExploradorComponent implements OnInit, OnDestroy {
     } else {
       this.recetaExploradorFiltroDTO.ingredientes = '';
     }
+    this.recetaExploradorFiltroDTO.pagina = 1;
     this.cargarRecetas();
     this.toggleFilters();
+    this.paginaActual = 1;
   }
 
   guardada(idReceta: number): boolean {

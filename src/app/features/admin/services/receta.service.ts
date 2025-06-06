@@ -32,10 +32,10 @@ export class RecetaService {
         })
       );
   }
-  // actualizarReceta(id: number, ingredienteData: any): Observable<any> {
-  //   ingredienteData.id = id;
-  //   return this.http.put<any>(`${this.apiUrl}/admin/actualizar`, ingredienteData);
-  // }
+  actualizarReceta(id: number, ingredienteData: any): Observable<any> {
+    ingredienteData.id = id;
+    return this.http.put<any>(`${this.apiUrl}/admin/actualizar`, ingredienteData);
+  }
 
   ocultarReceta(id: number): Observable<any> {
     return this.http.put<void>(`${this.apiUrl}/admin/desactivar`, id);

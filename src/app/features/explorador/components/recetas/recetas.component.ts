@@ -64,7 +64,6 @@ export class RecetasComponent  implements OnInit {
     this.zone.run(() => {
       const idEncrypt = this.encryptService.encriptar(id);
       this.router.navigate(['/perfil', idEncrypt]).then(() => {
-        window.location.reload();
       });
     });
   }
@@ -73,7 +72,6 @@ export class RecetasComponent  implements OnInit {
     this.zone.run(() => {
       const idEncrypt = this.encryptService.encriptar(id);
       this.router.navigate(['/receta', idEncrypt]).then(() => {
-        window.location.reload();
       });
     });
   }

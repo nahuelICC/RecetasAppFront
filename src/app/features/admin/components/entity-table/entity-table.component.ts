@@ -13,6 +13,7 @@ import {EncryptService} from '../../../../core/services/encrypt.service';
 export interface EntityConfiguration {
   entityName: string;
   entityNamePlural: string;
+  create: boolean;
   tableColumns: TableColumn[];
   tableActions?: TableActionsConfig; // Hacerlo opcional si tienes defaults
   formConfig: FormConfig;

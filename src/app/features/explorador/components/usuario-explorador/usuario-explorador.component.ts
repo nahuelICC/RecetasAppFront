@@ -39,7 +39,6 @@ export class UsuarioExploradorComponent  implements OnInit {
     this.zone.run(() => {
       const idEncrypt = this.encryptService.encriptar(id);
       this.router.navigate(['/perfil', idEncrypt]).then(() => {
-        window.location.reload();
       });
     });
   }

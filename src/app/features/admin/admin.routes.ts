@@ -60,6 +60,7 @@ export const ingredientesConfigResolver: ResolveFn<EntityConfiguration> = (route
       return {
         entityName: 'Ingrediente',
         entityNamePlural: 'Ingredientes',
+        create: true,
         tableColumns: [
           { key: 'id', label: 'ID' },
           { key: 'nombre', label: 'Nombre Ingrediente' },
@@ -120,6 +121,7 @@ export const usuariosConfigResolver: ResolveFn<EntityConfiguration> = (route, st
     return {
       entityName: 'Usuario',
       entityNamePlural: 'Usuarios',
+      create: true,
       tableColumns: [
         { key: 'id', label: 'ID' },
         { key: 'usuario', label: 'Nombre usuaio' },
@@ -151,24 +153,21 @@ export const usuariosConfigResolver: ResolveFn<EntityConfiguration> = (route, st
       },
       fetchData: (page: number, itemsPerPage: number, searchTerm: string, showingActivos: boolean) =>
         usuarioService.getUsuarios(page, itemsPerPage, searchTerm, showingActivos),
-      // createEntity: (data: any) =>
-      //   ingredienteService.crearIngrediente ? ingredienteService.crearIngrediente(data) : of({ error: 'createIngrediente no implementado'}),
+      createEntity: (data: any) =>
+        usuarioService.crearUsuario ? usuarioService.crearUsuario(data) : of({ error: 'createIngrediente no implementado'}),
       updateEntity: (id: any, data: any) =>
-         usuarioService.actualizarUsuario ? usuarioService.actualizarUsuario(id, data) : of({ error: 'updateUsuario no implementado'}),
-      deleteEntity: (id: any) => usuarioService.ocultarUsuario ? usuarioService.ocultarUsuario(id) : of({ error: 'deleteUsuairo no implementado'}),
+        usuarioService.actualizarUsuario ? usuarioService.actualizarUsuario(id, data) : of({ error: 'updateUsuario no implementado'}),
+      deleteEntity: (id: any) =>
+        usuarioService.ocultarUsuario ? usuarioService.ocultarUsuario(id) : of({ error: 'deleteUsuairo no implementado'}),
     };
 };
 
 export const recetasConfigResolver: ResolveFn<EntityConfiguration> = (route, state) => {
   const recetaService = inject(RecetaService);
-  // Aquí puedes definir las opciones de rol si es necesario
-  // Por ejemplo, si los roles son estáticos:
-  // const rolesOptions: FormOption[] = [
-  //   { value: 'ADMIN', label: 'Administrador' },
-  //   { value: 'COOKER', label: 'Cocinero' }
   return {
     entityName: 'Receta',
     entityNamePlural: 'Recetas',
+    create: false,
     tableColumns: [
       { key: 'id', label: 'ID' },
       { key: 'nombre', label: 'Nombre receta' },
@@ -192,10 +191,11 @@ export const recetasConfigResolver: ResolveFn<EntityConfiguration> = (route, sta
     fetchData: (page: number, itemsPerPage: number, searchTerm: string, showingActivos: boolean) =>
       recetaService.getRecetas(page, itemsPerPage, searchTerm, showingActivos),
     // createEntity: (data: any) =>
-    //   ingredienteService.crearIngrediente ? ingredienteService.crearIngrediente(data) : of({ error: 'createIngrediente no implementado'}),
-    // updateEntity: (id: any, data: any) =>
-    //   recetaService.actualizarUsuario ? recetaService.actualizarUsuario(id, data) : of({ error: 'updateUsuario no implementado'}),
-    // deleteEntity: (id: any) => recetaService.ocultarUsuario ? recetaService.ocultarUsuario(id) : of({ error: 'deleteUsuairo no implementado'}),
+    //   recetaService.actualizarReceta ? recetaService.actualizarReceta(data) : of({ error: 'createUsuario no implementado'}),
+    updateEntity: (id: any, data: any) =>
+      recetaService.actualizarReceta ? recetaService.actualizarReceta(id, data) : of({ error: 'updateUsuario no implementado'}),
+    deleteEntity: (id: any) =>
+      recetaService.ocultarReceta ? recetaService.ocultarReceta(id) : of({ error: 'deleteUsuario no implementado'}),
   };
 };
 

@@ -1,5 +1,5 @@
 <div class="space-y-6" *ngIf="config">
-  <header class="flex flex-col sm:flex-row justify-between items-center gap-4 p-1 rounded-lg">
+  <div class="flex flex-col sm:flex-row justify-between items-center gap-4 p-1 rounded-lg">
     <h1 class="text-2xl sm:text-3xl font-bold color-texto-blanco">{{ config.entityNamePlural }} {{ showingActivos ? '' : '(Eliminados)' }}</h1>
     <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
       <div class="relative w-full sm:w-64">
@@ -28,14 +28,14 @@
           Ver Activos
         </ng-template>
       </button>
-      <button (click)="openAddModal()" type="button" class="w-full sm:w-auto px-4 py-2 rounded-full font-semibold color-boton-amarillo color-texto transition-colors duration-200 shadow-sm flex items-center justify-center text-sm">
+      <button *ngIf="config.create" (click)="openAddModal()" type="button" class="w-full sm:w-auto px-4 py-2 rounded-full font-semibold color-boton-amarillo color-texto transition-colors duration-200 shadow-sm flex items-center justify-center text-sm">
         <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
         </svg>
         Añadir {{ config.entityName }}
       </button>
     </div>
-  </header>
+  </div>
 
   <app-generic-table
     [columns]="config.tableColumns"

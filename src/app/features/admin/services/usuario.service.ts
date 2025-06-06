@@ -34,9 +34,14 @@ export class UsuarioService {
         })
       );
   }
-  actualizarUsuario(id: number, ingredienteData: any): Observable<any> {
-    ingredienteData.id = id;
-    return this.http.put<any>(`${this.apiUrl}/admin/actualizar`, ingredienteData);
+
+  crearUsuario(usuarioData: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/admin/crear`, usuarioData);
+  }
+
+  actualizarUsuario(id: number, usuarioData: any): Observable<any> {
+    usuarioData.id = id;
+    return this.http.put<any>(`${this.apiUrl}/admin/actualizar`, usuarioData);
   }
 
   ocultarUsuario(id: number): Observable<any> {
