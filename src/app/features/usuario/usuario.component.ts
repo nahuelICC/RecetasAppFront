@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, ElementRef, NgZone, OnInit, ViewChild} from '@angular/core';
-import {NgClass, NgForOf, NgIf} from '@angular/common';
+import {NgForOf, NgIf} from '@angular/common';
 import {IonChip, IonIcon, IonInfiniteScroll, IonInfiniteScrollContent, IonLabel} from '@ionic/angular/standalone';
 import {UsuarioService} from './services/usuario.service';
 import {HeaderService} from '../../shared/services/header.service';
@@ -7,7 +7,7 @@ import {BotonComponent} from '../../shared/components/boton/boton.component';
 import {BotonAddRecetaComponent} from '../../shared/components/boton-add-receta/boton-add-receta.component';
 import {CuadroRecetaComponent} from './components/cuadro-receta/cuadro-receta.component';
 import {CuadroRecetaGuardadaComponent} from './components/cuadro-receta-guardada/cuadro-receta-guardada.component';
-import {ActivatedRoute, Router, RouterLink} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {ColeccionRecetasComponent} from './components/coleccion-recetas/coleccion-recetas.component';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {AlertInfoComponent, AlertType} from '../../shared/components/alert-info/alert-info.component';
@@ -166,7 +166,6 @@ export class UsuarioComponent  implements OnInit {
     }, { validators: this.passwordsIguales });
 
     // Cargar seguidos y seguidores si hay ID
-    if (id) {
       this.usuarioService.listaSeguidos(this.esPerfilPropio, idDecrypt).subscribe({
         next: (response) => {
           this.seguidos = response;
@@ -184,7 +183,6 @@ export class UsuarioComponent  implements OnInit {
           console.error('Error al cargar seguidores:', error);
         }
       });
-    }
   }
 
   private cargarPerfilUsuario(id: string) {
