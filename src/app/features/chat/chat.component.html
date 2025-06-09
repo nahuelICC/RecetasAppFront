@@ -1,143 +1,228 @@
-<!-- Contenedor principal con colores originales y estructura fija -->
-<div class="fixed inset-0 flex flex-col bg-[var(--color-verde-fondo)] text-[var(--color-texto-blanco)]">
+<!-- Contenedor principal con nuevo diseño profesional -->
+<div class="fixed inset-0 flex flex-col bg-[var(--chat-main-bg)]">
 
   <!-- Espacio para el header en móvil -->
   <div *ngIf="isMobile" class="h-16 flex-shrink-0"></div>
 
   <!-- Contenedor principal del chat -->
-  <div class="flex flex-1 min-h-0" [ngStyle]="{ 'margin-top': isMobile ? '0' : '5rem', 'padding-bottom': isMobile ? '4rem' : '0' }">
+  <div class="flex flex-1 min-h-0 overflow-hidden" [ngStyle]="{ 'margin-top': isMobile ? '0' : '5rem', 'padding-bottom': isMobile ? '4rem' : '0' }">
 
     <!-- Panel izquierdo - Lista de conversaciones -->
-    <aside class="w-32 sm:w-40 md:w-1/3 border-r border-[var(--color-verde-cuadros)] flex flex-col">
+    <aside class="w-24 sm:w-32 md:w-80 lg:w-96 border-r border-[var(--chat-border)] flex flex-col bg-[var(--chat-sidebar-bg)] shadow-md">
       <!-- Cabecera de conversaciones -->
-      <div class="p-3 bg-[var(--color-verde-fondo)] border-b border-[var(--color-verde-cuadros)] sticky top-0 z-10">
-        <h2 class="text-lg md:text-xl font-bold hidden md:block">Mensajes</h2>
-        <div class="md:hidden flex items-center">
-          <ion-icon name="chatbubble-outline" class="text-xl mr-2 text-[var(--color-rojo-resaltar)]"></ion-icon>
-          <span class="text-sm font-semibold">Chats</span>
+      <div class="py-4 px-3 sm:px-4 bg-[var(--chat-sidebar-bg)] sticky top-0 z-10 border-b border-[var(--chat-border)]">
+        <div class="flex items-center">
+          <ion-icon name="chatbubble-ellipses" class="text-xl mr-2 text-[var(--chat-highlight)]"></ion-icon>
+          <h2 class="text-lg md:text-xl font-bold hidden md:block text-[var(--chat-text-dark)]">Chats</h2>
+          <span class="md:hidden text-sm font-semibold text-[var(--chat-text-dark)]">Chats</span>
         </div>
       </div>
 
       <!-- Loading state -->
-      <div *ngIf="loading" class="flex-1 flex items-center justify-center p-2">
-        <ion-icon name="refresh-outline" class="animate-spin text-lg"></ion-icon>
+      <div *ngIf="loading" class="flex-1 flex items-center justify-center p-4">
+        <div class="flex flex-col items-center">
+          <ion-icon name="refresh-outline" class="animate-spin text-2xl text-[var(--chat-highlight)] mb-2"></ion-icon>
+          <span class="text-sm text-[var(--chat-text-dark)]">Cargando...</span>
+        </div>
       </div>
 
       <!-- Lista de conversaciones -->
       <div *ngIf="!loading && !error" class="flex-1 overflow-y-auto">
         <div *ngFor="let conversacion of conversaciones"
-             class="flex items-center gap-2 p-3 border-b border-[var(--color-verde-cuadros)] hover:bg-[var(--color-verde-translucido)] cursor-pointer"
+             class="flex items-center gap-2 px-2 sm:px-3 py-3 border-b border-[var(--chat-border)] hover:bg-[var(--chat-hover)] cursor-pointer transition-all duration-200"
              [class.bg-[var(--color-verde-translucido)]]="usuarioDestinoId === conversacion.otroUsuarioId"
+             [class.border-l-4]="usuarioDestinoId === conversacion.otroUsuarioId"
+             [class.border-l-[var(--chat-highlight)]]="usuarioDestinoId === conversacion.otroUsuarioId"
              (click)="seleccionarConversacion(conversacion.otroUsuarioId)">
 
-          <img *ngIf="getFotoUsuario(conversacion.otroUsuarioId)"
-               [src]="getFotoUsuario(conversacion.otroUsuarioId)"
-               class="w-10 h-10 rounded-full object-cover flex-shrink-0"/>
+          <div class="relative flex-shrink-0">
+            <img *ngIf="getFotoUsuario(conversacion.otroUsuarioId)"
+                 [src]="getFotoUsuario(conversacion.otroUsuarioId)"
+                 class="w-10 h-10 rounded-full object-cover border-2 border-[var(--chat-border)]"/>
 
-          <div class="flex-1 min-w-0">
-            <div class="flex flex-col">
-              <span class="text-sm font-medium truncate">
-                {{ getNombreUsuario(conversacion.otroUsuarioId).split(' ')[0] }}
-              </span>
-              <div class="flex justify-between items-center">
-                <p class="text-xs truncate" [ngClass]="{ 'font-bold': conversacion.noLeidos }">
-                  {{ conversacion.ultimoMensaje }}
-                </p>
-                <span class="text-xs opacity-80">
-                  {{ conversacion.fechaUltimoMensaje | date:'shortTime' }}
-                </span>
-              </div>
+            <!-- Indicador de mensajes no leídos -->
+            <div *ngIf="conversacion.noLeidos"
+                 class="absolute -top-1 -right-1 w-4 h-4 bg-[var(--color-rojo-resaltar)] rounded-full flex items-center justify-center text-xs text-white font-bold">
             </div>
           </div>
 
-          <!-- Botón para mensajes no leídos -->
-          <ion-icon *ngIf="conversacion.noLeidos" name="radio-button-on"
-                    class="text-[var(--color-rojo-resaltar)] text-lg"></ion-icon>
+          <div class="flex-1 min-w-0 hidden sm:block">
+            <div class="flex flex-col">
+              <span class="text-sm font-medium truncate text-[var(--chat-text-dark)]">
+                {{ getNombreUsuario(conversacion.otroUsuarioId).split(' ')[0] }}
+              </span>
+              <div class="flex justify-between items-center">
+                <p class="text-xs truncate text-[var(--chat-text-dark)] opacity-80"
+                   [ngClass]="{ 'font-bold': conversacion.noLeidos, 'opacity-100': conversacion.noLeidos }">
+                  {{ conversacion.ultimoMensaje }}
+                </p>
+              </div>
+              <span class="text-xs text-[var(--chat-timestamp)] mt-1">
+                {{ conversacion.fechaUltimoMensaje | date:'shortTime' }}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </aside>
 
     <!-- Panel derecho - Área de chat -->
-    <main class="flex-1 flex flex-col min-h-0">
-      <!-- Cabecera del chat -->
+    <main class="flex-1 flex flex-col min-h-0 bg-[var(--chat-main-bg)]">
+      <!-- Cabecera del chat - MISMA ALTURA QUE EL SIDEBAR -->
       <div *ngIf="usuarioDestinoId"
-           class="p-3 bg-[var(--color-verde-fondo)] border-b border-[var(--color-verde-cuadros)] sticky top-0 z-10 flex items-center gap-2">
-        <img *ngIf="getFotoUsuario(usuarioDestinoId)"
-             [src]="getFotoUsuario(usuarioDestinoId)"
-             class="w-8 h-8 rounded-full object-cover"/>
-        <h3 class="text-sm font-semibold truncate cursor-pointer"
-            (click)="irAlPerfil(usuarioDestinoId)">
-          {{ getNombreUsuario(usuarioDestinoId) }}
-        </h3>
+           class="py-4 px-3 sm:px-4 bg-[var(--chat-main-bg)] border-b border-[var(--chat-border)] sticky top-0 z-10 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="relative">
+            <img *ngIf="getFotoUsuario(usuarioDestinoId)"
+                 [src]="getFotoUsuario(usuarioDestinoId)"
+                 class="w-10 h-10 rounded-full object-cover border-2 border-[var(--chat-border)]"/>
+          </div>
+          <div>
+            <h3 class="font-semibold truncate cursor-pointer hover:text-[var(--chat-highlight)] transition-colors text-[var(--chat-text-dark)]"
+                (click)="irAlPerfil(usuarioDestinoId)">
+              {{ getNombreUsuario(usuarioDestinoId) }}
+            </h3>
+
+          </div>
+        </div>
+
       </div>
 
       <!-- Mensaje de perfil bloqueado -->
       <div *ngIf="perfilBloqueado" class="flex-1 flex items-center justify-center p-4">
-        <div class="text-center">
-          <ion-icon name="alert-circle-outline" class="text-4xl text-[var(--color-rojo-resaltar)] mb-2"></ion-icon>
-          <p class="text-lg font-medium">No puedes chatear con este usuario</p>
-          <p class="text-sm opacity-80 mt-1">El perfil está bloqueado</p>
+        <div class="text-center bg-[var(--color-verde-translucido)] p-6 rounded-lg shadow-lg max-w-md">
+          <ion-icon name="alert-circle" class="text-5xl text-[var(--color-rojo-resaltar)] mb-3"></ion-icon>
+          <p class="text-lg font-medium mb-2 text-[var(--chat-text-dark)]">No puedes chatear con este usuario</p>
+          <p class="text-sm opacity-80 text-[var(--chat-text-dark)]">El perfil está bloqueado o no disponible</p>
         </div>
       </div>
 
       <!-- Área de mensajes (solo visible si no está bloqueado) -->
-      <div *ngIf="!perfilBloqueado" class="flex-1 overflow-y-auto p-4 space-y-4" #scrollContainer
+      <div *ngIf="!perfilBloqueado"
+           class="flex-1 overflow-y-auto py-4 px-3 sm:px-4 bg-[var(--chat-main-bg)]"
+           #scrollContainer
            (scroll)="onScroll($event)">
 
         <!-- Indicador de carga cuando se cargan más mensajes -->
-        <div *ngIf="loadingMore" class="flex justify-center py-2">
-          <ion-icon name="refresh-outline" class="animate-spin"></ion-icon>
+        <div *ngIf="loadingMore" class="flex justify-center py-2 mb-4">
+          <div class="flex items-center space-x-2">
+            <ion-icon name="refresh-outline" class="animate-spin text-[var(--chat-highlight)]"></ion-icon>
+            <span class="text-xs text-[var(--chat-text-dark)]">Cargando mensajes anteriores...</span>
+          </div>
         </div>
 
-        <div *ngFor="let mensaje of mensajes"
-             class="flex"
-             [ngClass]="{
-               'sm:justify-end justify-start': mensaje.remitenteId === usuarioActualId,
-               'justify-start': mensaje.remitenteId !== usuarioActualId
-             }">
-          <div [ngClass]="{
-                 'bg-[var(--color-verde-boton)]': mensaje.remitenteId === usuarioActualId && !mensaje.borrado,
-                 'bg-[var(--color-verde-cuadros)]': mensaje.remitenteId !== usuarioActualId && !mensaje.borrado,
-                 'italic text-gray-400': mensaje.borrado
-               }"
-               class="max-w-[75%] px-4 py-2 rounded-2xl shadow text-sm relative">
-            <p [ngClass]="{'italic': mensaje.borrado}">{{ getMensajeTexto(mensaje) }}</p>
+        <!-- Separador de fecha -->
 
-            <ng-container *ngIf="esLinkDeReceta(mensaje.texto)">
-              <app-preview-receta
-                *ngIf="esLinkDeReceta(mensaje.texto)"
-                [idRecetaEncriptado]="getIdRecetaEncriptado(mensaje.texto) ?? ''">
-              </app-preview-receta>
-            </ng-container>
-
-            <div class="text-[10px] mt-1 flex justify-end items-center gap-1 opacity-70">
-              <span [ngClass]="{'italic': mensaje.borrado}">{{ mensaje.fecha | date:'shortTime' }}</span>
-              <span *ngIf="mensaje.remitenteId === usuarioActualId && !mensaje.borrado">
-                <ion-icon [name]="mensaje.leido ? 'checkmark-done' : 'checkmark-sharp'"></ion-icon>
-              </span>
+        <!-- Mensajes -->
+        <div *ngFor="let mensaje of mensajes; let i = index">
+          <!-- Separador de fecha -->
+          <div *ngIf="shouldShowDateSeparator(i)" class="flex justify-center my-4">
+            <div class="px-3 py-1 rounded-full bg-[var(--color-verde-translucido)] text-xs text-[var(--chat-text-dark)] font-medium">
+              {{ getDateSeparatorText(mensaje.fecha) }}
             </div>
+          </div>
 
-            <!-- Botón para borrar mensaje (solo para mensajes propios no borrados) -->
-            <ion-icon *ngIf="mensaje.remitenteId === usuarioActualId && !mensaje.borrado"
-                      name="trash-outline"
-                      (click)="borrarMensaje(mensaje)"
-                      class="absolute -right-2 -top-2 text-red-500 hover:text-red-700 cursor-pointer bg-white rounded-full p-1 text-xs">
-            </ion-icon>
+          <div [ngClass]="{'mb-1': shouldGroupMessage(i), 'mb-3': !shouldGroupMessage(i)}">
+            <div class="flex"
+                 [ngClass]="{
+           'justify-end': mensaje.remitenteId === usuarioActualId,
+           'justify-start': mensaje.remitenteId !== usuarioActualId
+         }">
+
+              <!-- Avatar para mensajes recibidos -->
+              <div *ngIf="mensaje.remitenteId !== usuarioActualId" class="flex-shrink-0 mr-2 self-end">
+                <img *ngIf="!shouldHideAvatar(i)"
+                     [src]="mensaje.remitenteFoto || 'assets/frutero.png'"
+                     class="w-8 h-8 rounded-full object-cover"/>
+                <div *ngIf="shouldHideAvatar(i)" class="w-8 h-8"></div>
+              </div>
+
+              <!-- Burbuja de mensaje -->
+              <div [ngClass]="{
+             'bg-[var(--chat-sent-bubble)] rounded-tl-2xl rounded-bl-2xl': mensaje.remitenteId === usuarioActualId && !mensaje.borrado,
+             'bg-[var(--chat-received-bubble)] rounded-tr-2xl rounded-br-2xl': mensaje.remitenteId !== usuarioActualId && !mensaje.borrado,
+             'bg-[var(--color-verde-translucido)] italic': mensaje.borrado,
+             'text-[var(--chat-text-dark)]': true,
+             'max-w-[75%]': true,
+             'rounded-tr-2xl': mensaje.remitenteId === usuarioActualId && (!shouldGroupMessage(i) || i === mensajes.length - 1),
+             'rounded-tr-md': mensaje.remitenteId === usuarioActualId && shouldGroupMessage(i) && i !== mensajes.length - 1,
+             'rounded-tl-2xl': mensaje.remitenteId !== usuarioActualId && (!shouldGroupMessage(i) || i === mensajes.length - 1),
+             'rounded-tl-md': mensaje.remitenteId !== usuarioActualId && shouldGroupMessage(i) && i !== mensajes.length - 1
+           }"
+                   class="px-4 py-2 shadow-sm text-sm relative">
+
+                <!-- Texto del mensaje -->
+                <p [ngClass]="{'italic opacity-70': mensaje.borrado}">
+                  {{ getMensajeTexto(mensaje) }}
+                </p>
+
+                <!-- Vista previa de receta si aplica -->
+                <ng-container *ngIf="esLinkDeReceta(mensaje.texto)">
+                  <app-preview-receta
+                    *ngIf="esLinkDeReceta(mensaje.texto)"
+                    [idRecetaEncriptado]="getIdRecetaEncriptado(mensaje.texto) ?? ''">
+                  </app-preview-receta>
+                </ng-container>
+
+                <!-- Metadatos del mensaje -->
+                <div class="text-[10px] mt-1 flex justify-end items-center gap-1 text-[var(--chat-timestamp)]">
+                  <span [ngClass]="{'italic': mensaje.borrado}">{{ mensaje.fecha | date:'shortTime' }}</span>
+                  <span *ngIf="mensaje.remitenteId === usuarioActualId && !mensaje.borrado" class="flex items-center">
+            <ion-icon [name]="mensaje.leido ? 'checkmark-done' : 'checkmark'" class="text-xs"></ion-icon>
+          </span>
+                </div>
+
+                <!-- Botón para borrar mensaje -->
+                <button *ngIf="mensaje.remitenteId === usuarioActualId && !mensaje.borrado"
+                        (click)="borrarMensaje(mensaje)"
+                        class="absolute -right-2 -top-2 opacity-0 hover:opacity-100 bg-[var(--chat-main-bg)] rounded-full p-1.5 shadow-md transition-opacity">
+                  <ion-icon name="trash-outline" class="text-xs text-[var(--color-rojo-resaltar)]"></ion-icon>
+                </button>
+              </div>
+
+              <!-- Avatar para mensajes enviados -->
+              <div *ngIf="mensaje.remitenteId === usuarioActualId" class="flex-shrink-0 ml-2 self-end">
+                <img *ngIf="!shouldHideAvatar(i)"
+                     [src]="mensaje.remitenteFoto || 'assets/frutero.png'"
+                     class="w-8 h-8 rounded-full object-cover"/>
+                <div *ngIf="shouldHideAvatar(i)" class="w-8 h-8"></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Input de mensaje (solo visible si no está bloqueado) -->
-      <div *ngIf="!perfilBloqueado && usuarioDestinoId" class="p-4 border-t border-[var(--color-verde-cuadros)] bg-[var(--color-verde-fondo)] sticky bottom-0">
+      <div *ngIf="!perfilBloqueado && usuarioDestinoId"
+           class="py-3 px-3 sm:px-4 border-t border-[var(--chat-border)] bg-[var(--chat-main-bg)] sticky bottom-0 shadow-lg">
         <div class="flex gap-2 items-center">
-          <input [(ngModel)]="nuevoMensaje"
-                 (keyup.enter)="enviarMensaje()"
-                 placeholder="Escribe un mensaje..."
-                 class="flex-1 bg-[var(--color-verde-cuadros)] text-[var(--color-texto-blanco)] rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-amarillo-boton)]"/>
+          <button (click)="toggleEmojiPicker()"
+                  class="p-2 rounded-full hover:bg-[var(--color-verde-translucido)] transition-all flex-shrink-0 focus:outline-none">
+            <ion-icon name="happy-outline" class="text-xl emoji-button-icon"></ion-icon>
+          </button>
+
+          <div class="flex-1 relative">
+            <input [(ngModel)]="nuevoMensaje"
+                   (keyup.enter)="enviarMensaje()"
+                   placeholder="Escribe un mensaje..."
+                   class="chat-input w-full bg-[var(--chat-input-bg)] text-[var(--chat-text-dark)] rounded-full px-4 py-2 placeholder-[var(--chat-text-dark)] placeholder-opacity-50"/>
+
+            <!-- Emoji picker -->
+            <div *ngIf="showEmojiPicker" class="absolute bottom-full mb-2 left-0 bg-[var(--chat-sidebar-bg)] p-2 rounded-lg shadow-lg border border-[var(--chat-border)] z-20 w-64 h-48 overflow-y-auto">
+              <div class="grid grid-cols-8 gap-1">
+                <button *ngFor="let emoji of emojis"
+                        (click)="addEmoji(emoji)"
+                        class="p-1 hover:bg-[var(--color-verde-translucido)] rounded text-lg focus:outline-none">
+                  {{ emoji }}
+                </button>
+              </div>
+            </div>
+          </div>
+
           <button (click)="enviarMensaje()"
-                  class="p-2 rounded-full hover:bg-[var(--color-verde-translucido)] transition-shadow"
-                  [style.color]="'var(--color-amarillo-boton)'">
-            <ion-icon name="send-outline" class="text-xl"></ion-icon>
+                  [disabled]="!nuevoMensaje.trim()"
+                  class="p-2 rounded-full bg-[var(--color-amarillo-boton)] hover:bg-opacity-90 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0 focus:outline-none">
+            <ion-icon name="send" class="text-lg text-[var(--chat-text-dark)]"></ion-icon>
           </button>
         </div>
       </div>
