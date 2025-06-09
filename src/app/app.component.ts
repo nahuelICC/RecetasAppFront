@@ -7,7 +7,7 @@ import {BotonModoOscuroComponent} from './shared/components/boton-modo-oscuro/bo
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, IonicModule, HeaderComponent, FooterComponent, BotonModoOscuroComponent],
+  imports: [RouterOutlet, IonicModule, HeaderComponent, FooterComponent],
   templateUrl: './app.component.html',
   standalone: true,
   styleUrl: './app.component.css'

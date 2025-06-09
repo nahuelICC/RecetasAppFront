@@ -8,6 +8,9 @@ import {NgIf} from '@angular/common';
 import {PantallaCargaComponent} from '../../shared/components/pantalla-carga/pantalla-carga.component';
 import {AlertInfoComponent, AlertType} from '../../shared/components/alert-info/alert-info.component';
 
+/**
+ * Componente para el login de la aplicación
+ */
 @Component({
   selector: 'app-login',
   imports: [

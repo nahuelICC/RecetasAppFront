@@ -1,6 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import {IonFab, IonFabButton, IonIcon} from '@ionic/angular/standalone';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {IonContent, IonFab, IonFabButton, IonIcon, IonPopover} from '@ionic/angular/standalone';
+import {InicioService} from '../../../features/inicio/services/inicio.service';
 
+/**
+ * Componente para el botón de añadir ingredientes a la lista de compra.
+ */
 @Component({
   selector: 'app-boton-modo-oscuro',
   templateUrl: './boton-modo-oscuro.component.html',
@@ -9,37 +13,35 @@ import {IonFab, IonFabButton, IonIcon} from '@ionic/angular/standalone';
   imports: [
     IonFab,
     IonFabButton,
-    IonIcon
+    IonIcon,
   ]
 })
 export class BotonModoOscuroComponent  implements OnInit {
 
-  isLightMode = false;
 
-  constructor() { }
+  @Input() idReceta: number = 0;
+
+  @Output() agregarIngredientesEvent: EventEmitter<string> = new EventEmitter<string>();
+
+  constructor(private inicioService:InicioService) { }
 
   ngOnInit() {
-    const savedTheme = localStorage.getItem('theme');
-    this.isLightMode = savedTheme === 'light';
-    this.applyTheme();
   }
 
-  toggleTheme() {
-    this.isLightMode = !this.isLightMode;
-    localStorage.setItem('theme', this.isLightMode ? 'light' : 'dark');
-    this.applyTheme();
-  }
+  /**
+   * Método para agregar los ingredientes de la receta a la lista de compra.
+   * Emite un evento con el resultado de la operación.
+   */
+  agregarIngredientes() {
+    this.inicioService.agregarIngredientesALaListaCompra(this.idReceta).subscribe({
+      next: (res) => {
+        this.agregarIngredientesEvent.emit("Ingredientes añadidos a la lista de compra");
+      },
+      error: (err) => {
+        this.agregarIngredientesEvent.emit("Error al añadir ingredientes a la lista de compra");
 
-
-  applyTheme() {
-    const classList = document.documentElement.classList;
-    if (this.isLightMode) {
-      classList.add('light-theme');
-      classList.remove('dark-theme');
-    } else {
-      classList.remove('light-theme');
-      classList.add('dark-theme');
-    }
+      }
+    });
   }
 
 

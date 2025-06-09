@@ -1,9 +1,9 @@
 
-<div class="rounded-lg overflow-hidden relative aspect-square group bg-[var(--color-verde-cuadros)] shadow-md" (click)="redireccionarReceta(receta.id.toString())">
+<div class="rounded-lg overflow-hidden relative aspect-square group bg-[var(--color-verde-cuadros)] shadow-md" (click)="$event.stopPropagation();redireccionarReceta(receta.id.toString())">
 
   <!-- Badge del usuario creador -->
   <div class="absolute top-2 left-2 color-verde-claro text-black text-xs px-2 py-1 rounded-full flex items-center space-x-1 z-20 cursor-pointer" (click)="$event.stopPropagation(); redireccionarPerfil(receta.cookerId.toString())">
-    <ion-icon name="person" class="text-black text-base"></ion-icon>
+    <ion-icon name="person" class="text-black text-base cursor-pointer"></ion-icon>
     <span>{{ receta.nombreCooker }}</span>
   </div>
 
@@ -29,9 +29,10 @@
         class="text-3xl cursor-pointer hover:scale-110 transition-transform">
       </ion-icon>
     </button>
-    <button (click)="$event.stopPropagation(); agregarIngredientes()" class="flex flex-col items-center">
+
+    <button (click)="$event.stopPropagation(); abrirShareModal()" class="flex flex-col items-center">
       <ion-icon
-        name="ellipsis-horizontal-outline"
+        name="paper-plane-outline"
         class="text-3xl text-white cursor-pointer hover:scale-110 transition-transform">
       </ion-icon>
     </button>
@@ -41,6 +42,12 @@
   <div class="absolute bottom-0 w-full color-verde-claro-tranlucido p-2 backdrop-blur-sm">
     <p class="font-semibold color-texto truncate text-center text-sm">{{ receta.titulo }}</p>
   </div>
+  @if (mostrarShareModal) {
+    <app-share-modal
+      [recetaId]="receta.id.toString()"
+      (closeModal)="mostrarShareModal = false"
+    ></app-share-modal>
+  }
 
 </div>
 

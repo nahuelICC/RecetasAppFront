@@ -4,6 +4,9 @@ import {RegistroService} from '../../services/registro.service';
 import {NgClass} from '@angular/common';
 import {BotonComponent} from '../../../../shared/components/boton/boton.component';
 
+/**
+ * Componente para la activación de cuenta de usuario
+ */
 @Component({
   selector: 'app-activacion',
   templateUrl: './activacion.component.html',

@@ -14,7 +14,6 @@ import {EncryptService} from '../../../../core/services/encrypt.service';
     DuracionSinSegundosPipe,
     RouterLink,
     NgIf,
-    DecimalPipe
   ],
   standalone: true
 })
@@ -31,6 +30,11 @@ export class RecetasComponent  implements OnInit {
   constructor(private recetaService: RecetaService, private router:Router,private zone: NgZone,private encryptService:EncryptService) { }
 
   ngOnInit() {}
+
+  /**
+   * Maneja el evento de clic en el botón de "Me gusta" de la receta.
+   * @param event
+   */
   toggleLike(event: MouseEvent): void {
     event.stopPropagation();
     console.log('Like clicked for recipe:', this.recipeData?.id);
@@ -46,6 +50,10 @@ export class RecetasComponent  implements OnInit {
     }
   }
 
+  /**
+   * Maneja el evento de clic en el botón de "Guardar" de la receta.
+   * @param event
+   */
   toggleSave(event: MouseEvent): void {
     event.stopPropagation();
     console.log('Save clicked for recipe:', this.recipeData?.id);
@@ -59,21 +67,25 @@ export class RecetasComponent  implements OnInit {
       this.recetaService.eliminarRecetaGuardada(this.recipeData.id).subscribe();
     }
   }
-
+  /**
+   * Redirige al perfil del usuario que creó la receta.
+   * @param id
+   */
   redireccionarPerfil(id: string): void {
     this.zone.run(() => {
       const idEncrypt = this.encryptService.encriptar(id);
       this.router.navigate(['/perfil', idEncrypt]).then(() => {
-        window.location.reload();
       });
     });
   }
-
+  /**
+   * Redirige a la página de detalles de la receta.
+   * @param id
+   */
   redireccionarReceta(id: string): void {
     this.zone.run(() => {
       const idEncrypt = this.encryptService.encriptar(id);
       this.router.navigate(['/receta', idEncrypt]).then(() => {
-        window.location.reload();
       });
     });
   }

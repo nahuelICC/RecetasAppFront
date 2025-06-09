@@ -6,10 +6,14 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { AlertConfirmarComponent } from '../../../../shared/components/alert-confirmar/alert-confirmar.component';
 import { Respuesta } from '../../models/Respuesta';
 
+/**
+ * Componente para mostrar una respuesta a un comentario en la vista de receta.
+ */
 @Component({
   selector: 'app-respuesta',
   templateUrl: './respuesta.component.html',
   styleUrls: ['./respuesta.component.css'],
+  standalone: true,
   imports: [
     TimeAgoPipe,
     NgIf,
@@ -19,11 +23,11 @@ import { Respuesta } from '../../models/Respuesta';
 export class RespuestaComponent implements OnInit {
 
 
-  @Input() respuesta!:any 
+  @Input() respuesta!:any
   @Output() respuestaEliminado = new EventEmitter<Respuesta>();
-  
 
   borrarRespuesta: boolean = false;
+  imagenPerfilUsuario: string = 'https://ionicframework.com/docs/img/demos/avatar.svg';
 
   constructor(
         private respuestaService: RespuestaService,
@@ -33,7 +37,10 @@ export class RespuestaComponent implements OnInit {
   ngOnInit() {
   }
 
-eliminarRespuesta() {
+  /**
+   * Elimina una respuesta al comentario si el usuario lo confirma.
+   */
+  eliminarRespuesta() {
   this.respuestaService.eliminarRespuesta(this.respuesta.id).subscribe({
     next: () => {
       this.borrarRespuesta = false;
@@ -45,6 +52,9 @@ eliminarRespuesta() {
   });
 }
 
+  /**
+   * Obtiene el nombre de usuario del usuario autenticado.
+   */
     obtenerNombreUsuario() {
     return this.authService.getUsername();
   }

@@ -1,0 +1,54 @@
+<div class="p-4 w-full max-w-md md:max-w-lg mx-auto rounded-lg shadow-lg bg-white text-[var(--color-texto)]">
+  <div class="flex justify-between items-center border-b pb-2">
+    <h2 class="text-xl font-bold">Notificaciones</h2>
+    <button (click)="cerrar()" class="text-gray-500 hover:text-gray-700">✕</button>
+  </div>
+
+  <div *ngIf="cargando" class="text-gray-500 text-center my-4">Cargando notificaciones...</div>
+  <div *ngIf="error" class="text-[var(--color-rojo-resaltar)] text-center my-4">{{ error }}</div>
+
+  <ng-container *ngIf="!cargando && !error">
+    <div class="overflow-y-auto max-h-[200px] md:max-h-[300px] lg:max-h-[400px]">
+
+      <!-- No leídas -->
+      <div *ngIf="noLeidas.length > 0">
+        <h3 class="text-lg font-semibold pt-3 text-[var(--color-rojo-resaltar)] mb-2">No leídas</h3>
+        <ul>
+          <li *ngFor="let notif of noLeidas" class="pt-2 border-b border-gray-300">
+            <div class="flex flex-col">
+              <a *ngIf="notif.idReceta" [routerLink]="['/receta', notif.encryptedId ]" class="hover:underline text-inherit no-underline">
+                {{ notif.texto }}
+              </a>
+              <a *ngIf="notif.idUsuarioSeguido" [routerLink]="['/perfil', notif.encryptedId]" class="hover:underline text-inherit no-underline">
+                {{ notif.texto }}
+              </a>
+              <span class="text-sm text-gray-500 text-right">{{ notif.fecha | date:'dd/MM/yyyy, HH:mm' }}</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Leídas -->
+      <div *ngIf="leidas.length > 0" class="mt-4">
+        <h3 class="text-lg font-semibold text-gray-500 mb-2">Leídas</h3>
+        <ul>
+          <li *ngFor="let notif of leidas.slice(-2)" class="pt-2 border-b border-gray-300">
+            <div class="flex flex-col">
+              <a *ngIf="notif.idReceta" [routerLink]="['/receta', notif.encryptedId]" class="hover:underline text-inherit no-underline">
+                {{ notif.texto }}
+              </a>
+              <a *ngIf="notif.idUsuarioSeguido" [routerLink]="['/perfil', notif.encryptedId]" class="hover:underline text-inherit no-underline">
+                {{ notif.texto }}
+              </a>
+              <span class="text-sm text-gray-500 text-right">{{ notif.fecha | date:'dd/MM/yyyy, HH:mm' }}</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <p *ngIf="noLeidas.length === 0 && leidas.length === 0" class="text-gray-500 text-center mt-4">
+      No tienes notificaciones.
+    </p>
+  </ng-container>
+</div>

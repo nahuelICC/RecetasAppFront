@@ -1,0 +1,171 @@
+/* Estilos específicos para el componente de chat */
+
+/* Scrollbar personalizado */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background-color: var(--chat-border);
+  border-radius: 20px;
+}
+
+/* Animación para nuevos mensajes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.flex-1 > div:last-child {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Efecto hover para el botón de borrar */
+button:hover ion-icon[name="trash-outline"] {
+  color: var(--color-rojo-resaltar);
+}
+
+/* Animación para el emoji picker */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+div.show-emoji-picker {
+  animation: scaleIn 0.2s ease-out;
+  transform-origin: bottom left;
+}
+/*!* Hover mejorado para las conversaciones *!*/
+/*.flex.items-center.gap-2:hover {*/
+/*  background-color: var(--chat-hover);*/
+/*  transform: translateX(2px);*/
+/*}*/
+
+/* Transiciones suaves para mensajes agrupados */
+.mb-1 {
+  margin-bottom: 0.25rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+/* Mejoras para responsividad en pantallas pequeñas */
+@media (max-width: 500px) {
+  .w-24 {
+    width: 4rem;
+  }
+
+  .max-w-\[75\%\] {
+    max-width: 85%;
+  }
+
+  .py-4 {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .py-3 {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .px-3 {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  .text-lg {
+    font-size: 1rem;
+  }
+
+  .text-xl {
+    font-size: 1.1rem;
+  }
+}
+
+/* Estilos para agrupación de mensajes */
+.rounded-tr-md {
+  border-top-right-radius: 0.375rem;
+}
+
+.rounded-tl-md {
+  border-top-left-radius: 0.375rem;
+}
+
+/* Efecto hover para conversaciones */
+.transition-all {
+  transition: all 0.2s ease;
+}
+
+/* ESTILOS ESPECÍFICOS PARA EL INPUT Y BOTONES */
+
+/* Input de chat con focus aislado */
+.chat-input {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  transition: box-shadow 0.2s ease;
+}
+
+.chat-input:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 2px var(--color-amarillo-boton) !important;
+  border: none !important;
+}
+
+/* Botones sin efectos de focus */
+button:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+button:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Icono de emoji con colores específicos para cada modo */
+.emoji-button-icon {
+  color: #d4a574; /* Color amarillo más oscuro y apagado por defecto */
+}
+
+/* En modo claro, usar un amarillo aún más oscuro */
+.light-theme .emoji-button-icon {
+  color: #b8941f !important; /* Amarillo más oscuro para modo claro */
+}
+
+/* En modo oscuro, usar el amarillo original pero más visible */
+:root .emoji-button-icon {
+  color: #f9bc60; /* Amarillo original para modo oscuro */
+}
+
+/* Prevenir cualquier propagación de estilos */
+.flex-shrink-0 {
+  isolation: isolate;
+}
+
+/* Asegurar que no hay efectos de focus en contenedores */
+.flex.gap-2.items-center {
+  isolation: isolate;
+}
+
+.flex.gap-2.items-center > * {
+  isolation: isolate;
+}

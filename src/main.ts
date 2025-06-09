@@ -1,9 +1,8 @@
+import { bootstrapApplication } from "@angular/platform-browser"
+import { appConfig } from "./app/app.config"
+import { AppComponent } from "./app/app.component"
 
-import { bootstrapApplication } from '@angular/platform-browser';
-import { appConfig } from './app/app.config';
-import { AppComponent } from './app/app.component';
-
-import { addIcons } from "ionicons";
+import { addIcons } from "ionicons"
 import {
   heart,
   add,
@@ -34,6 +33,7 @@ import {
   albumsOutline,
   pencilOutline,
   chevronDownOutline,
+  notificationsOutline,
   grid,
   albums,
   bookmarks,
@@ -44,12 +44,21 @@ import {
   bookmark,
   cameraOutline,
   sendOutline,
+  checkmark,
   checkmarkSharp,
   checkmarkDone,
   sunny,
   moon,
-  radioButtonOn
-} from "ionicons/icons";
+  radioButtonOn,
+  cart,
+  // Nuevos iconos para el chat
+  chatbubbleEllipses,
+  send,
+  happyOutline,
+  refreshOutline,
+  alertCircle,
+  ellipsisHorizontal,
+} from "ionicons/icons"
 
 addIcons({
   heart,
@@ -91,15 +100,21 @@ addIcons({
   bookmark,
   cameraOutline,
   sendOutline,
+  checkmark,
   checkmarkSharp,
   checkmarkDone,
   sunny,
   moon,
-  radioButtonOn
+  radioButtonOn,
+  notificationsOutline,
+  cart,
+  // Nuevos iconos para el chat
+  chatbubbleEllipses,
+  send,
+  happyOutline,
+  refreshOutline,
+  alertCircle,
+  ellipsisHorizontal,
+})
 
-});
-
-
-
-bootstrapApplication(AppComponent, appConfig)
-  .catch((err) => console.error(err));
+bootstrapApplication(AppComponent, appConfig).catch((err) => console.error(err))

@@ -1,10 +1,13 @@
-import {Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, HostListener, Input, OnChanges,Output} from '@angular/core';
 import {UsuarioService} from '../../services/usuario.service';
 import {NgForOf, NgIf} from '@angular/common';
 import {IonicModule} from '@ionic/angular';
 import {ListaCompraDTO, ListaIngredienteDTO} from '../../models/ListaCompraDTO';
 import {FormsModule} from '@angular/forms';
 
+/**
+ * Componente para mostrar la lista de compra del usuario.
+ */
 @Component({
   selector: 'app-lista-compra',
   templateUrl: './lista-compra.component.html',
@@ -21,6 +24,8 @@ export class ListaCompraComponent  implements OnChanges {
   @Input() isOpen = false;
   @Input() cookerId!: number;
   @Output() close = new EventEmitter<void>();
+  @Output() solicitarConfirmacionEliminar = new EventEmitter<number>();
+  @Output() recetaEliminada = new EventEmitter<void>();
 
 
   recetas: ListaCompraDTO[] = [];
@@ -29,6 +34,9 @@ export class ListaCompraComponent  implements OnChanges {
 
   constructor(private usuarioService: UsuarioService) { }
 
+  /**
+   * Método que se ejecuta al detectar cambios en las entradas del componente.
+   */
   ngOnChanges() {
     if (this.isOpen && this.cookerId) {
       this.cargarListaCompra();
@@ -36,9 +44,14 @@ export class ListaCompraComponent  implements OnChanges {
       this.guardarEstado(); // Guardar estado al cerrar
     }
   }
+
+  /**
+   * Carga la lista de compra del usuario desde el servicio.
+   * Mapea los datos para incluir el estado de los ingredientes (checked).
+   */
   private cargarListaCompra() {
     this.loading = true;
-    this.usuarioService.ListaCompraByCooker(this.cookerId).subscribe({
+    this.usuarioService.ListaCompraByCooker().subscribe({
       next: (data: ListaCompraDTO[]) => {
         const saved = localStorage.getItem(this.getStorageKey());
         const savedState = saved ? JSON.parse(saved) : [];
@@ -49,6 +62,7 @@ export class ListaCompraComponent  implements OnChanges {
           );
 
           return {
+            idReceta: receta.idReceta,
             tituloReceta: receta.tituloReceta,
             ingredientes: receta.ingredientes.map(ingrediente => {
               const ingGuardado = recetaGuardada?.ingredientes.find(
@@ -75,16 +89,18 @@ export class ListaCompraComponent  implements OnChanges {
     });
   }
 
-  // toggleIngrediente(recetaIndex: number, ingredienteIndex: number) {
-  //   this.recetas[recetaIndex].ingredientes[ingredienteIndex].checked =
-  //     !this.recetas[recetaIndex].ingredientes[ingredienteIndex].checked;
-  // }
 
+  /**
+   * Manjeja el evento de escape para cerrar la lista de compra.
+   */
   @HostListener('document:keydown.escape', ['$event'])
   handleEscape() {
     this.isOpen = false;
   }
 
+  /**
+   * Metodo que se ejecuta al cerrar el componente.
+   */
   onClose() {
     this.guardarEstado(); // Añadir guardado antes de cerrar
     this.close.emit();
@@ -94,6 +110,10 @@ export class ListaCompraComponent  implements OnChanges {
   private getStorageKey(): string {
     return `lista-compra-checked-${this.cookerId}`;
   }
+
+  /**
+   * Guarda el estado de la lista de compra en localStorage.
+   */
   guardarEstado() {
     const estado = this.recetas.map(receta => ({
       tituloReceta: receta.tituloReceta,
@@ -106,6 +126,33 @@ export class ListaCompraComponent  implements OnChanges {
 
     localStorage.setItem(this.getStorageKey(), JSON.stringify(estado));
   }
+
+  /**
+   * Marca o desmarca un ingrediente como comprado.
+   * @param idReceta
+   */
+  onSolicitarEliminar(idReceta: number) {
+    this.solicitarConfirmacionEliminar.emit(idReceta);
+    this.onClose();
+  }
+
+  /**
+   * Metoodo que se ejecuta al confirmar la eliminación de una receta de la lista de compra.
+   */
+  eliminarRecetaConfirmada(idReceta: number) {
+    this.usuarioService.eliminarRecetaListaCompra(idReceta).subscribe({
+      next: () => {
+        this.recetas = this.recetas.filter(r => r.idReceta !== idReceta);
+        this.guardarEstado();
+        this.recetaEliminada.emit();
+      },
+      error: (err) => {
+        console.error(err);
+        // Podrías emitir error si quisieras mostrarlo también
+      }
+    });
+  }
+
 
 
 }

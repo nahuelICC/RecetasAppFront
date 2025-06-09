@@ -3,9 +3,12 @@
   <!-- Info plato -->
   <app-info-plato [receta]="receta"></app-info-plato>
 
+
+  <h2 class="text-2xl font-bold color-texto-blanco tracking-wider cursor-pointer" (click)="redireccionarPerfilUsuario(receta.idCooker.toString())">Autor: &#64;{{receta.cooker}}</h2>
+
   <!-- Alérgenos -->
   <section class="space-y-4" *ngIf="receta.alergenos.length > 0">
-    <h2 class="text-2xl font-bold text-white tracking-wider">Alérgenos</h2>
+    <h2 class="text-2xl font-bold color-texto-blanco tracking-wider">Alérgenos</h2>
     <div class="flex flex-wrap gap-3">
       <div *ngFor="let alergeno of listaAlergenos">
         <app-alergeno [alergeno]="alergeno"></app-alergeno>
@@ -14,7 +17,7 @@
   </section>
 
   <!-- Ingredientes -->
-  <h2 class="text-2xl font-bold text-white  tracking-wider">Ingredientes</h2>
+  <h2 class="text-2xl font-bold color-texto-blanco tracking-wider">Ingredientes</h2>
   <div class="flex flex-wrap">
     <div *ngFor="let columna of columnasIngredientes" class="w-full md:w-1/2 lg:w-1/3 px-4">
       <ul>
@@ -95,7 +98,7 @@
       </div>
       <ion-list>
         @for (comentario of displayedComentarios; track comentario; let index = $index) {
-        <app-comentario [comentario]="comentario" (comentarioEliminado)="recargarComentariosReceta()">
+        <app-comentario [comentario]="comentario" [idReceta]="idReceta" (comentarioEliminado)="recargarComentariosReceta()"  (comentarioDenunciado)="mostrarAlertaDenuncia()">
         </app-comentario>
         }
       </ion-list>
@@ -110,5 +113,7 @@
   </section>
 </main>
 <app-boton-add-receta></app-boton-add-receta>
-<app-alert-info [message]="alertMessage" [isVisible]="isAlertVisible" [type]="alertType">
+<app-alert-info [message]="alertMessage" [isVisible]="AlertVisible" [type]="alertType">
 </app-alert-info>
+
+<app-boton-modo-oscuro [idReceta]="receta.id" (agregarIngredientesEvent)="mostrarAlertaIngredientes($event)" class="relative group"></app-boton-modo-oscuro>

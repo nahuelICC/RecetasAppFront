@@ -5,7 +5,7 @@ import { TimeAgoPipe } from '../../pipes/time-ago.pipe';
 import { RespuestaComponent } from '../respuesta/respuesta.component';
 import { ComentarioResponse } from '../../../../core/models/ComentarioResponse';
 import { RespuestaService } from '../../services/respuesta.service';
-import { FormsModule } from '@angular/forms';
+import { FormsModule} from '@angular/forms';
 import { CrearRespuesta } from '../../../../core/models/CrearRespuesta';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ComentarioService } from '../../../../core/services/comentario.service';
@@ -14,6 +14,7 @@ import { AlertConfirmarComponent } from '../../../../shared/components/alert-con
 
 @Component({
   selector: 'app-comentario',
+  standalone: true,
   templateUrl: './comentario.component.html',
   styleUrls: ['./comentario.component.css'],
   imports: [
@@ -28,7 +29,9 @@ import { AlertConfirmarComponent } from '../../../../shared/components/alert-con
 export class ComentarioComponent implements OnInit {
 
   @Input() comentario!: ComentarioResponse;
+  @Input() idReceta!: string;
   @Output() comentarioEliminado = new EventEmitter<ComentarioResponse>();
+  @Output() comentarioDenunciado = new EventEmitter<ComentarioResponse>();
 
   respuestas: any[] = [];
   respuestasVisibles: any[] = [];
@@ -45,6 +48,10 @@ export class ComentarioComponent implements OnInit {
   isAlertVisible: boolean = false;
   alertType: AlertType = 'error';
   alertMessage: string = '';
+  imagenPerfilUsuario: string = 'https://ionicframework.com/docs/img/demos/avatar.svg';
+  mostrarAlertaConfirmacion: boolean = false;
+  mensajeAlertaConfirmacion: string = '';
+  accionConfirmada!: () => void;
 
 
 
@@ -96,20 +103,18 @@ export class ComentarioComponent implements OnInit {
     this.cuadroRespuestaOn = !this.cuadroRespuestaOn;
   }
 responderComentario() {
-  if (!this.textoRespuesta.trim()) return;
+  if (!this.textoRespuesta.trim()) return;  this.respNueva.texto = this.textoRespuesta;
+    this.respNueva.idComentario = this.comentario.id;
 
-  this.respNueva.texto = this.textoRespuesta;
-  this.respNueva.idComentario = this.comentario.id;
-
-  this.respuestaService.ResponderComentario(this.respNueva).subscribe(
-    (nuevaRespuesta) => {
+    this.respuestaService.ResponderComentario(parseInt(this.idReceta), this.respNueva).subscribe(
+      (nuevaRespuesta) => {
       this.respuestas = [nuevaRespuesta, ...this.respuestas];
-      
+
       if (this.mostrandoRespuestas) {
         this.paginaActual = 0;
         this.respuestasVisibles = this.respuestas.slice(0, this.elementosPorPagina);
       }
-      
+
       this.textoRespuesta = '';
       this.cuadroRespuestaOn = false;
     },
@@ -118,6 +123,7 @@ responderComentario() {
     }
   );
 }
+
 
 
 
@@ -132,16 +138,35 @@ responderComentario() {
       }
     })
   }
+  confirmarEliminacion() {
+    this.mensajeAlertaConfirmacion = '¿Estás seguro de que quieres eliminar el comentario?';
+    this.accionConfirmada = () => this.eliminarComentario(this.comentario.id);
+    this.mostrarAlertaConfirmacion = true;
+  }
+  confirmarDenuncia() {
+    this.mensajeAlertaConfirmacion = '¿Estás seguro de que quieres denunciar el comentario?';
+    this.accionConfirmada = () => this.denunciarComentario();
+    this.mostrarAlertaConfirmacion = true;
+  }
+  confirmarAccion() {
+    if (this.accionConfirmada) {
+      this.accionConfirmada();
+    }
+    this.mostrarAlertaConfirmacion = false;
+  }
+  cancelarAccion() {
+    this.mostrarAlertaConfirmacion = false;
+  }
 
 recargarRespuestasComentario(respuestaEliminada: any) {
   this.respuestas = this.respuestas.filter(r => r.id !== respuestaEliminada.id);
   this.respuestasVisibles = this.respuestasVisibles.filter(r => r.id !== respuestaEliminada.id);
-  
+
   if (this.respuestasVisibles.length < this.elementosPorPagina && this.respuestas.length > 0) {
     this.paginaActual = 0;
     this.respuestasVisibles = this.respuestas.slice(0, this.elementosPorPagina);
   }
-  
+
   this.isAlertVisible = true;
   this.alertType = 'success';
   this.alertMessage = 'Respuesta eliminada correctamente';
@@ -149,6 +174,19 @@ recargarRespuestasComentario(respuestaEliminada: any) {
     this.isAlertVisible = false;
   }, 3000);
 }
+
+  denunciarComentario() {
+    this.comentarioService.denunciarComentario(this.comentario.id).subscribe({
+      next: () => {
+        this.comentarioDenunciado.emit();
+      },
+      error: (err) => {
+        console.error('Error al denunciar comentario:', err);
+      }
+    });
+  }
+
+
 
 
 }

@@ -3,6 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { Receta, Ingrediente } from './models/receta';
 import { Observable } from 'rxjs';
 
+/**
+ * Servicio para crear y registrar recetas.
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -11,10 +14,19 @@ export class CrearRecetaService {
 
   private apiUrl = 'api/';
 
+  /**
+   * Endpoint que obtiene todos los ingredientes.
+   */
   getIngredientes(): Observable<Ingrediente[]> {
     return this.http.get<Ingrediente[]>(this.apiUrl + 'ingrediente/listar');
   }
 
+  /**
+   * Endpoint que registra una receta.
+   * @param receta
+   * @param imagen
+   * @param video
+   */
   registrarReceta(receta: Receta, imagen: File | null, video: File | null) {
     const formData = new FormData();
 

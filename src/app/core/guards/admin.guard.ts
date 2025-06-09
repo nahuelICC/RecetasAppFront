@@ -9,6 +9,9 @@ import { Observable } from 'rxjs';
 export class AdminGuard implements CanActivate {
   constructor(private authService: AuthService, private router: Router) {}
 
+  /**
+   * Metodo para determinar si el usuario puede acceder a la ruta de administrador.
+   */
   canActivate(): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
     if (this.authService.isAdmin()) {
       return true;

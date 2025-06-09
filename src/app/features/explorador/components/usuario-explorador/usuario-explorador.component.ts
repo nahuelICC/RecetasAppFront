@@ -8,9 +8,9 @@ import {UsuarioService} from '../../../usuario/services/usuario.service';
   selector: 'app-usuario-explorador',
   templateUrl: './usuario-explorador.component.html',
   styleUrls: ['./usuario-explorador.component.css'],
-  imports: [
-    RouterLink
-  ],
+  // imports: [
+  //   RouterLink
+  // ],
   standalone: true
 })
 export class UsuarioExploradorComponent  implements OnInit {
@@ -20,6 +20,10 @@ export class UsuarioExploradorComponent  implements OnInit {
   constructor(private router:Router,private zone: NgZone,private encryptService:EncryptService,private usuarioService: UsuarioService) { }
 
   ngOnInit() {}
+  /**
+   * Maneja el evento de clic en el botón de seguir/dejar de seguir al usuario.
+   * @param event Evento del clic.
+   */
   toggleFollow(event: MouseEvent): void {
     event.stopPropagation();
     this.usuarioService.changeSeguir(this.userData.id.toString()).subscribe({
@@ -34,12 +38,14 @@ export class UsuarioExploradorComponent  implements OnInit {
 
   }
 
-
+  /**
+   * Redirecciona al perfil del usuario encriptando su ID.
+   * @param id ID del usuario a redireccionar.
+   */
   redireccionarPerfil(id: string): void {
     this.zone.run(() => {
       const idEncrypt = this.encryptService.encriptar(id);
       this.router.navigate(['/perfil', idEncrypt]).then(() => {
-        window.location.reload();
       });
     });
   }

@@ -5,6 +5,10 @@ import {Platform} from '@ionic/angular';
 import {AuthService} from '../../../core/services/auth.service';
 import {Router, RouterLink} from '@angular/router';
 
+/**
+ * Componente de pie de página
+ *
+ */
 @Component({
     selector: 'app-footer',
     templateUrl: './footer.component.html',
@@ -14,7 +18,6 @@ import {Router, RouterLink} from '@angular/router';
     IonIcon,
     IonTabBar,
     IonTabButton,
-    IonTabs,
     NgIf,
     IonFooter,
     IonToolbar,

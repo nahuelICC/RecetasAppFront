@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, ElementRef, NgZone, OnInit, ViewChild} from '@angular/core';
-import {NgClass, NgForOf, NgIf} from '@angular/common';
+import {NgForOf, NgIf} from '@angular/common';
 import {IonChip, IonIcon, IonInfiniteScroll, IonInfiniteScrollContent, IonLabel} from '@ionic/angular/standalone';
 import {UsuarioService} from './services/usuario.service';
 import {HeaderService} from '../../shared/services/header.service';
@@ -7,7 +7,7 @@ import {BotonComponent} from '../../shared/components/boton/boton.component';
 import {BotonAddRecetaComponent} from '../../shared/components/boton-add-receta/boton-add-receta.component';
 import {CuadroRecetaComponent} from './components/cuadro-receta/cuadro-receta.component';
 import {CuadroRecetaGuardadaComponent} from './components/cuadro-receta-guardada/cuadro-receta-guardada.component';
-import {ActivatedRoute, Router, RouterLink} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {ColeccionRecetasComponent} from './components/coleccion-recetas/coleccion-recetas.component';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {AlertInfoComponent, AlertType} from '../../shared/components/alert-info/alert-info.component';
@@ -17,6 +17,9 @@ import {EncryptService} from '../../core/services/encrypt.service';
 import {RegistroService} from '../registro/services/registro.service';
 import {ListaCompraComponent} from './components/lista-compra/lista-compra.component';
 
+/**
+ * Componente que representa el perfil de usuario.
+ */
 @Component({
   selector: 'app-usuario',
   templateUrl: './usuario.component.html',
@@ -30,13 +33,11 @@ import {ListaCompraComponent} from './components/lista-compra/lista-compra.compo
     BotonAddRecetaComponent,
     CuadroRecetaComponent,
     CuadroRecetaGuardadaComponent,
-    NgClass,
     ColeccionRecetasComponent,
     FormsModule,
     AlertInfoComponent,
     ReactiveFormsModule,
     AlertConfirmarComponent,
-    RouterLink,
     IonInfiniteScroll,
     IonInfiniteScrollContent,
     IonChip,
@@ -82,13 +83,20 @@ export class UsuarioComponent  implements OnInit {
   modoEdicionColeccion = false;
   coleccionEditando: any = {};
   editarPerfil = false;
-  ingredientes: any[] = []; // Asegúrate de cargar esta lista
+  ingredientes: any[] = [];
   ingredientesFiltrados: any[] = [];
   ingredientesSeleccionados: any[] = [];
   alergenosSeleccionados: any[] = [];
   alergenos: any[] = [];
   mostrarListaCompra = false;
-
+  showPassword = false;
+  showNewPassword = false;
+  showRepeatPassword = false;
+  recetaAEliminar: number | null = null;
+  mostrarAlertaConfirmar: boolean = false;
+  mensajeAlertaConfirmar: string = '';
+  yoHeBloqueado = false;
+  accionConfirmada: () => void = () => {};
 
 
   constructor(private usuarioService:UsuarioService,private registroService:RegistroService,private headerService: HeaderService,private route: ActivatedRoute,private authService: AuthService,private zone: NgZone,private fb: FormBuilder, private router:Router, private encryptService:EncryptService, private cdr: ChangeDetectorRef) { }
@@ -97,69 +105,50 @@ export class UsuarioComponent  implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     const idDecrypt = this.encryptService.desencriptar(id || '');
     this.idPropietario = this.authService.getUserId() || 0;
+
     if (id && idDecrypt !== this.idPropietario.toString()) {
-      this.usuarioService.getPerfilId(idDecrypt).subscribe((response) => {
-        this.perfil = response;
-        this.recetas = response.recetas;
-        this.colecciones = response.colecciones;
-        if (!this.perfil.ingredientesFavoritos) this.perfil.ingredientesFavoritos = [];
-        if (!this.perfil.alergenos) this.perfil.alergenos = [];
+      this.esPerfilPropio = false;
 
-        this.recetasMostradas = this.recetas.slice(0, this.recetasPerPage);
-        this.coleccionesMostradas = this.colecciones.slice(0, this.coleccionesPerPage);
-      });
-      this.usuarioService.perfilBloqueado(idDecrypt).subscribe((response) => {
-        this.perfilBloqueado = response as boolean;
-      });
+      // Verificar si el perfil está bloqueado (yo lo he bloqueado o él me ha bloqueado)
+      this.usuarioService.perfilBloqueado(idDecrypt).subscribe({
+        next: (response: any) => {
+          this.perfilBloqueado = response as boolean;
 
-      this.usuarioService.fotoPerfilVisita(idDecrypt).subscribe((response: any) => {
-        if (response !== 'sin foto') {
-          this.imagenPerfilUsuario = response;
-        }else {
-          this.imagenPerfilUsuario = 'https://ionicframework.com/docs/img/demos/avatar.svg';
+          // Verificar si yo tengo bloqueado a este usuario
+          this.usuarioService.isBlocked(idDecrypt).subscribe({
+            next: (isBlocked: boolean) => {
+              this.yoHeBloqueado = isBlocked;
+
+              // Solo cargar perfil si no hay bloqueo mutuo
+              if (!this.perfilBloqueado && !this.yoHeBloqueado) {
+                this.cargarPerfilUsuario(idDecrypt);
+              }
+            },
+            error: (error) => {
+              console.error('Error al verificar bloqueo:', error);
+            }
+          });
+        },
+        error: (error) => {
+          console.error('Error al verificar perfil bloqueado:', error);
         }
       });
-      this.esPerfilPropio = false;
+
+      this.usuarioService.fotoPerfilVisita(idDecrypt).subscribe({
+        next: (response: any) => {
+          if (response !== 'sin foto') {
+            this.imagenPerfilUsuario = response;
+          } else {
+            this.imagenPerfilUsuario = 'https://ionicframework.com/docs/img/demos/avatar.svg';
+          }
+        },
+        error: (error) => {
+          console.error('Error al cargar foto de perfil:', error);
+        }
+      });
     } else {
       this.esPerfilPropio = true;
-      this.usuarioService.getPerfil().subscribe((response) => {
-        this.perfil = response;
-        this.recetas = response.recetas;
-        this.colecciones = response.colecciones;
-        this.recetasGuardadas = response.recetasGuardadas;
-        this.alergenosSeleccionados = response.alergenos ? [...response.alergenos] : [];
-        this.ingredientesSeleccionados = response.ingredientesFavoritos ? [...response.ingredientesFavoritos] : [];
-
-        this.recetasMostradas = this.recetas.slice(0, this.recetasPerPage);
-        this.coleccionesMostradas = this.colecciones.slice(0, this.coleccionesPerPage);
-        this.recetasGuardadasMostradas = this.recetasGuardadas.slice(0, this.guardadasPerPage);
-      });
-
-      this.headerService.getFotoPerfil().subscribe((response: any) => {
-        if (response !== 'sin foto') {
-          this.imagenPerfilUsuario = response;
-        }else {
-          this.imagenPerfilUsuario = 'https://ionicframework.com/docs/img/demos/avatar.svg';
-        }
-      });
-      this.registroService.getAlergenosImagen().subscribe(
-        (response) => {
-          this.alergenos = response;
-          console.log(this.alergenos);
-        },
-        (error) => {
-          console.error('Error al obtener los alergenos', error);
-        }
-      );
-      this.registroService.getIngredientesBuscador().subscribe(
-        (response) => {
-          this.ingredientes = response;
-          console.log(this.ingredientes);
-        },
-        (error) => {
-          console.error('Error al obtener los ingredientes', error);
-        }
-      );
+      this.cargarPerfilPropio();
     }
 
     this.cambioContrasenaForm = this.fb.group({
@@ -175,56 +164,150 @@ export class UsuarioComponent  implements OnInit {
       repetir: ['', Validators.required]
     }, { validators: this.passwordsIguales });
 
-    const paramId = this.route.snapshot.paramMap.get('id') || '';
+    // Cargar seguidos y seguidores si hay ID
+      this.usuarioService.listaSeguidos(this.esPerfilPropio, idDecrypt).subscribe({
+        next: (response) => {
+          this.seguidos = response;
+        },
+        error: (error) => {
+          console.error('Error al cargar seguidos:', error);
+        }
+      });
 
-    this.usuarioService.listaSeguidos(this.esPerfilPropio, idDecrypt).subscribe((response) => {
-      this.seguidos = response;
-    });
-
-    this.usuarioService.listaSeguidores(this.esPerfilPropio, idDecrypt).subscribe((response) => {
-      this.seguidores = response;
-    });
-
-
+      this.usuarioService.listaSeguidores(this.esPerfilPropio, idDecrypt).subscribe({
+        next: (response) => {
+          this.seguidores = response;
+        },
+        error: (error) => {
+          console.error('Error al cargar seguidores:', error);
+        }
+      });
   }
 
+  private cargarPerfilUsuario(id: string) {
+    this.usuarioService.getPerfilId(id).subscribe({
+      next: (response) => {
+        this.perfil = response;
+        this.recetas = response.recetas;
+        this.recetasVisibles = response.recetas.filter((receta: any) => receta.esVisible);
+        this.colecciones = response.colecciones;
+        if (!this.perfil.ingredientesFavoritos) this.perfil.ingredientesFavoritos = [];
+        if (!this.perfil.alergenos) this.perfil.alergenos = [];
+        this.recetasMostradas = this.recetas.slice(0, this.recetasPerPage);
+        this.coleccionesMostradas = this.colecciones.slice(0, this.coleccionesPerPage);
+      },
+      error: (error) => {
+        console.error('Error al cargar perfil:', error);
+      }
+    });
+  }
+
+  private cargarPerfilPropio() {
+    this.usuarioService.getPerfil().subscribe({
+      next: (response) => {
+        this.perfil = response;
+        this.recetas = response.recetas;
+        this.colecciones = response.colecciones;
+        this.recetasVisibles = response.recetas.filter((receta: any) => receta.esVisible);
+        this.recetasGuardadas = response.recetasGuardadas;
+        this.alergenosSeleccionados = response.alergenos ? [...response.alergenos] : [];
+        this.ingredientesSeleccionados = response.ingredientesFavoritos ? [...response.ingredientesFavoritos] : [];
+        this.recetasMostradas = this.recetas.slice(0, this.recetasPerPage);
+        this.coleccionesMostradas = this.colecciones.slice(0, this.coleccionesPerPage);
+        this.recetasGuardadasMostradas = this.recetasGuardadas.slice(0, this.guardadasPerPage);
+      },
+      error: (error) => {
+        console.error('Error al cargar perfil propio:', error);
+      }
+    });
+
+    this.headerService.getFotoPerfil().subscribe({
+      next: (response: any) => {
+        if (response !== 'sin foto') {
+          this.imagenPerfilUsuario = response;
+        } else {
+          this.imagenPerfilUsuario = 'https://ionicframework.com/docs/img/demos/avatar.svg';
+        }
+      },
+      error: (error: any) => {
+        console.error('Error al cargar foto de perfil:', error);
+      }
+    });
+
+    this.registroService.getAlergenosImagen().subscribe({
+      next: (response) => {
+        this.alergenos = response;
+      },
+      error: (error) => {
+        console.error('Error al obtener los alergenos', error);
+      }
+    });
+
+    this.registroService.getIngredientesBuscador().subscribe({
+      next: (response) => {
+        this.ingredientes = response;
+      },
+      error: (error) => {
+        console.error('Error al obtener los ingredientes', error);
+      }
+    });
+  }
+  /**
+   * Valida que las contraseñas nueva y repetir sean iguales.
+   * @param form
+   */
   passwordsIguales(form: FormGroup) {
     const nueva = form.get('nueva')?.value;
     const repetir = form.get('repetir')?.value;
     return nueva === repetir ? null : { noCoinciden: true };
   }
 
+  /**
+   * Getter para acceder al campo de contraseña actual del formulario.
+   */
   get nuevaContrasena() {
     return this.cambioContrasenaForm.get('nueva');
   }
 
+  /**
+   * Función para cambiar la contraseña del usuario.
+   */
   onGuardarContrasena() {
     if (this.cambioContrasenaForm.valid) {
-      this.showConfirmPassword = false;
-      console.log('Formulario válido:', this.cambioContrasenaForm.value);
-      this.usuarioService.cambiarContrasena(this.cambioContrasenaForm.value).subscribe(
-        (response) => {
-          console.log(response);
-          this.alertMessage = response;
-          this.alertType = 'success';
-          this.isAlertVisible = true;
-        },
-        (error) => {
-          console.error('Error al cambiar la contraseña:', error);
-          this.alertMessage = error.error;
-          this.isAlertVisible = true;
-          this.alertType = 'error';
-        }
-      );
-      this.mostrandoCambioContrasena = false;
-      this.cambioContrasenaForm.reset();
+      this.mensajeAlertaConfirmar = '¿Estás seguro de que quieres cambiar tu contraseña?';
+      this.accionConfirmada = () => {
+        this.usuarioService.cambiarContrasena(this.cambioContrasenaForm.value).subscribe(
+          (response) => {
+            console.log(response);
+            this.alertMessage = response;
+            this.alertType = 'success';
+            this.isAlertVisible = true;
 
-      setTimeout(() => {
-        this.isAlertVisible = false;
-      }, 2000);
+            this.cambioContrasenaForm.reset();
+
+            setTimeout(() => {
+              this.isAlertVisible = false;
+            }, 3000);
+          },
+          (error) => {
+            console.error('Error al cambiar la contraseña:', error);
+            this.alertMessage = error.error;
+            this.alertType = 'error';
+            this.isAlertVisible = true;
+          }
+        );
+
+        this.mostrarAlertaConfirmar = false;
+        this.mostrandoCambioContrasena = false;
+
+      };
+      this.mostrarAlertaConfirmar = true;
     }
   }
 
+  /**
+   * Funcion para guardar los cambios realizados en el perfil del usuario.
+   */
   guardarCambios() {
     this.datosEdicion = {
       nombre: this.perfil.nombre,
@@ -234,7 +317,7 @@ export class UsuarioComponent  implements OnInit {
       alergenosSeleccionados: this.alergenosSeleccionados.map(a => a.id)
     };
 
-    if (!this.datosEdicion.nombre || !this.datosEdicion.apellidos || !this.datosEdicion.descripcion) {
+    if (!this.datosEdicion.nombre || !this.datosEdicion.apellidos) {
       this.alertMessage = 'Por favor, completa todos los campos.';
       this.isAlertVisible = true;
       this.alertType = 'error';
@@ -269,10 +352,17 @@ export class UsuarioComponent  implements OnInit {
 
 }
 
+  /**
+   * Función para manejar el cambio de imagen de perfil del usuario.
+   */
   triggerFileInput() {
     this.fileInput.nativeElement.click();
   }
 
+  /**
+   * Función que se ejecuta cuando se selecciona un archivo para subir como foto de perfil.
+   * @param event Evento de cambio del input de archivo.
+   */
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
@@ -302,14 +392,23 @@ export class UsuarioComponent  implements OnInit {
     }
   }
 
+  /**
+   * Muestra u oculta la sección de seguidos
+   */
   toggleSeguidos(): void {
     this.mostrarSeguidos = !this.mostrarSeguidos;
   }
 
+  /**
+   * Muestra u oculta la sección de seguidores
+   */
   toggleSeguidores(): void {
     this.mostrarSeguidores = !this.mostrarSeguidores;
   }
 
+  /**
+   * Redirecciona al perfil del usuario con el ID proporcionado.
+   */
   redireccionarPerfil(id: string): void {
     this.zone.run(() => {
       const idEncrypt = this.encryptService.encriptar(id);
@@ -319,6 +418,9 @@ export class UsuarioComponent  implements OnInit {
     });
   }
 
+  /**
+   * Carga más recetas
+   */
   loadMoreRecetas(event: any) {
     const startIndex = this.recetasMostradas.length;
     const endIndex = startIndex + this.recetasPerPage;
@@ -327,12 +429,14 @@ export class UsuarioComponent  implements OnInit {
     this.recetasMostradas = [...this.recetasMostradas, ...next];
     event.target.complete();
 
-    // Deshabilitar si no hay más datos
     if (this.recetasMostradas.length >= this.recetas.length) {
       event.target.disabled = true;
     }
   }
 
+  /**
+   * Carga más recetas guardadas
+   */
   loadMoreGuardadas(event: any) {
     const startIndex = this.recetasGuardadasMostradas.length;
     const endIndex = startIndex + this.guardadasPerPage;
@@ -346,6 +450,9 @@ export class UsuarioComponent  implements OnInit {
     }
   }
 
+  /**
+   * Carga más colecciones
+   */
   loadMoreColecciones(event: any) {
     const startIndex = this.coleccionesMostradas.length;
     const endIndex = startIndex + this.coleccionesPerPage;
@@ -359,36 +466,46 @@ export class UsuarioComponent  implements OnInit {
     }
   }
 
+  /**
+   * Cambia el estado de bloqueo del perfil del usuario.
+   */
   toggleBloquearPerfil() {
     const id = this.route.snapshot.paramMap.get('id') || '';
     const idDecrypt = this.encryptService.desencriptar(id);
 
-      this.usuarioService.changeBloqueo(idDecrypt).subscribe((response) => {
-        this.alertMessage = "Estado de bloqueo cambiado";
-        console.log(response);
+    this.usuarioService.changeBloqueo(idDecrypt).subscribe({
+      next: (response) => {
+        // Invertir el estado
+        this.yoHeBloqueado = !this.yoHeBloqueado;
+        this.perfilBloqueado = this.yoHeBloqueado;
+
+        this.alertMessage = this.yoHeBloqueado ? "Usuario bloqueado" : "Usuario desbloqueado";
         this.alertType = 'success';
         this.isAlertVisible = true;
-        this.usuarioService.listaSeguidores(this.esPerfilPropio, this.route.snapshot.paramMap.get('id') || '').subscribe((response) => {
-          this.seguidores = response;
-        });
-        this.usuarioService.getPerfilId(idDecrypt).subscribe((response) => {
-          this.perfil = response;
-        });
-      }, (error) => {
+
+        // Recargar los datos del perfil
+        if (!this.yoHeBloqueado) {
+          this.usuarioService.getPerfilId(idDecrypt).subscribe(
+            (response) => this.perfil = response
+          );
+        }
+      },
+      error: (error) => {
         console.error('Error al cambiar el estado de bloqueo:', error);
         this.alertMessage = error.error;
         this.alertType = 'error';
         this.isAlertVisible = true;
-      });
+      }
+    });
 
-    this.perfilBloqueado = !this.perfilBloqueado;
-    this.perfil.bloqueado  = !this.perfil.bloqueado;
     setTimeout(() => {
       this.isAlertVisible = false;
     }, 2000);
-
   }
 
+  /**
+   * Cambia el estado de seguimiento del perfil del usuario.
+   */
   toggleSeguirPerfil() {
     const id = this.route.snapshot.paramMap.get('id') || '';
     const idDecrypt = this.encryptService.desencriptar(id);
@@ -415,6 +532,9 @@ export class UsuarioComponent  implements OnInit {
     }, 2000);
   }
 
+  /**
+   * Muestra u oculta la sección de creación de colecciones.
+   */
   toggleCrearColeccion() {
     this.mostrarCrearColeccion = !this.mostrarCrearColeccion;
     this.modoEdicionColeccion = false;
@@ -424,6 +544,9 @@ export class UsuarioComponent  implements OnInit {
     }
   }
 
+  /**
+   * cambia el estado de selección de una receta en la colección.
+   */
   toggleReceta(idReceta: number) {
     if (this.recetasSeleccionadas.has(idReceta)) {
       this.recetasSeleccionadas.delete(idReceta);
@@ -432,6 +555,9 @@ export class UsuarioComponent  implements OnInit {
     }
   }
 
+  /**
+   * Función para guardar una nueva colección de recetas.
+   */
   onGuardarColeccion() {
     const titulo = this.coleccionEditando.titulo.trim();
 
@@ -488,6 +614,10 @@ export class UsuarioComponent  implements OnInit {
     );
   }
 
+  /**
+   * Elimina una colección de recetas.
+   * @param coleccion
+   */
   onEliminarColeccion(coleccion: any) {
     this.usuarioService.eliminarColeccion(coleccion.id).subscribe(
       (response) => {
@@ -499,7 +629,6 @@ export class UsuarioComponent  implements OnInit {
       },
       (error) => {
         this.alertMessage = error.error;
-        this.alertType = 'error';
         this.isAlertVisible = true
       }
     );
@@ -508,6 +637,10 @@ export class UsuarioComponent  implements OnInit {
     }, 2000);
   }
 
+  /**
+   * Inicia la edición de una colección de recetas.
+   * @param coleccion
+   */
   iniciarEdicionColeccion(coleccion: any) {
     this.mostrarEditarColeccion = true;
     this.modoEdicionColeccion = true;
@@ -515,6 +648,9 @@ export class UsuarioComponent  implements OnInit {
     this.recetasSeleccionadas = new Set(coleccion.recetas.map((r: any) => r.idReceta));
   }
 
+  /**
+   * Funcion para editar una colección de recetas.
+   */
   onEditarColeccion() {
     const titulo = this.coleccionEditando.titulo.trim();
     const recetasIds = Array.from(this.recetasSeleccionadas);
@@ -556,6 +692,9 @@ export class UsuarioComponent  implements OnInit {
     this.coleccionEditando = {};
   }
 
+  /**
+   * Muestra u oculta la sección de edición de colecciones.
+   */
   toggleEditarColeccion() {
     this.mostrarEditarColeccion = !this.mostrarEditarColeccion;
     this.modoEdicionColeccion = false;
@@ -563,6 +702,9 @@ export class UsuarioComponent  implements OnInit {
   }
 
 
+  /**
+   * Actualiza la lista de recetas guardadas del usuario.
+   */
   actualizaGuardados($event: any) {
     this.usuarioService.getPerfil().subscribe((response) => {
       this.recetasGuardadas = response.recetasGuardadas;
@@ -570,9 +712,15 @@ export class UsuarioComponent  implements OnInit {
     });
   }
 
+  /**
+   * Funcion para mostrar u ocultar la sección de edición del perfil.
+   */
   toggleEditarPerfil() {
     this.editarPerfil = !this.editarPerfil;
   }
+  /**
+   * Filtra los ingredientes según el término de búsqueda ingresado.
+   */
   filtrarIngredientes(event: Event): void {
     const input = event.target as HTMLInputElement;
     const term = input.value.trim().toLowerCase();
@@ -583,24 +731,47 @@ export class UsuarioComponent  implements OnInit {
         i.nombre.toLowerCase().includes(term)
       ).slice(0, 5);
   }
+
+  /**
+   * Selecciona un ingrediente y lo agrega a la lista de ingredientes seleccionados.
+   * Si ya hay 3 ingredientes seleccionados o el ingrediente ya está seleccionado, no hace nada.
+   */
   seleccionarIngrediente(ingrediente: any): void {
     if (this.ingredientesSeleccionados.length >= 3 ||
       this.ingredientesSeleccionados.some(i => i.id === ingrediente.id)) return;
 
     this.ingredientesSeleccionados.push(ingrediente);
   }
+
+  /**
+   * Elimina un ingrediente de la lista de ingredientes seleccionados.
+   * @param index Índice del ingrediente a eliminar.
+   */
   eliminarIngrediente(index: number): void {
     this.ingredientesSeleccionados.splice(index, 1);
   }
+
+  /**
+   * Filtra los alérgenos según el término de búsqueda ingresado.
+   */
   esAlergenoSeleccionado(alergeno: any): boolean {
     return this.alergenosSeleccionados.some(a => a.id === alergeno.id);
   }
+
+  /**
+   * Selecciona o deselecciona un alérgeno.
+   * @param alergeno
+   */
   toggleAlergeno(alergeno: any): void {
     const index = this.alergenosSeleccionados.findIndex(a => a.id === alergeno.id);
     index === -1
       ? this.alergenosSeleccionados.push(alergeno)
       : this.alergenosSeleccionados.splice(index, 1);
   }
+
+  /**
+   * Valida si hay algún conflicto entre los ingredientes seleccionados y los alérgenos seleccionados.
+   */
   validadorConflictoAlergenos(): boolean {
     return this.ingredientesSeleccionados.some(ingrediente =>
       this.alergenosSeleccionados.some(alergeno =>
@@ -613,6 +784,9 @@ export class UsuarioComponent  implements OnInit {
     return this.ingredientesSeleccionados.some(i => i.id === ingrediente.id);
   }
 
+  /**
+   * Inicia un chat con el usuario actual.
+   */
   iniciarChat() {
     const id = this.route.snapshot.paramMap.get('id') || '';
     const idDecrypt = this.encryptService.desencriptar(id); // Desencripta el ID actual
@@ -620,10 +794,79 @@ export class UsuarioComponent  implements OnInit {
     this.router.navigate(['/chat', idEncrypt]); // Redirige con el ID encriptado
   }
 
-  // Modificar la función toggleListaCompra
+  /**
+   * Muestra u oculta la lista de compra.
+   */
   toggleListaCompra() {
     this.mostrarListaCompra = !this.mostrarListaCompra;
   }
 
-  
+
+  /**
+   * Cambia la visibilidad de una receta en el perfil del usuario.
+   * @param $event Evento que contiene la información de la receta y su nueva visibilidad.
+   */
+  onEditarVisibilidad($event: any) {
+    if ($event.esVisible == false) {
+    this.recetasVisibles = this.recetasVisibles.filter(receta => receta.idReceta !== $event.idReceta);
+      this.perfil.numeroRecetas--;
+  } else{
+    const receta = this.recetas.find(r => r.idReceta === $event.idReceta);
+    if (receta) {
+      this.recetasVisibles.push(receta);}
+      this.perfil.numeroRecetas++;
+    }
+  }
+
+  /**
+   * Muestra una alerta de confirmación para eliminar una receta de la lista de compra.
+   * @param idReceta
+   */
+  mostrarAlertaConfirmarEliminar(idReceta: number) {
+    this.mensajeAlertaConfirmar = '¿Estás seguro de que quieres eliminar esta receta de tu lista de la compra?';
+    this.accionConfirmada = () => this.eliminarRecetaConfirmada(idReceta);
+    this.mostrarAlertaConfirmar = true;
+  }
+
+  /**
+   * Elimina una receta de la lista de compra del usuario.
+   * @param idReceta
+   */
+  eliminarRecetaConfirmada(idReceta: number) {
+    // Limpiar cualquier alerta anterior
+    this.alertMessage = '';
+    this.alertType = 'success';
+    this.isAlertVisible = false;
+
+    this.usuarioService.eliminarRecetaListaCompra(idReceta).subscribe({
+      next: () => {
+        this.usuarioService.ListaCompraByCooker().subscribe(data => {
+          this.recetasGuardadas = data;
+          this.recetasGuardadasMostradas = data.slice(0, this.guardadasPerPage);
+
+
+          this.alertMessage = 'Receta eliminada correctamente.';
+          this.alertType = 'success';
+          this.isAlertVisible = true;
+
+          setTimeout(() => {
+            this.isAlertVisible = false;
+          }, 3000);
+        });
+      },
+      error: (err) => {
+        console.error('Error al eliminar receta de la lista de compra', err);
+        this.alertMessage = 'Error al eliminar la receta.';
+        this.alertType = 'error';
+        this.isAlertVisible = true;
+
+        setTimeout(() => {
+          this.isAlertVisible = false;
+        }, 3000);
+      }
+    });
+
+    this.mostrarAlertaConfirmar = false;
+  }
+
 }

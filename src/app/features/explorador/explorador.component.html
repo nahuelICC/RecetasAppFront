@@ -1,4 +1,4 @@
-<div class="mx-2 md:mx-12 lg:mx-24 text-[#001e1d]">
+<div class="mx-2 mt-16 md:mt-2 md:mx-12 lg:mx-24 text-[#001e1d]">
 
   <div class="w-full px-4 pt-4 pb-2">
     <div class="relative w-full">
@@ -84,7 +84,7 @@
     </div>
 
     <div class="flex items-center gap-2">
-      <span class="text-sm font-medium text-gray-500 select-none">
+      <span class="text-sm font-medium text-gray-500 select-none hidden md:block">
             {{ toltalRecetas }} recetas.
     </span>
       <button
@@ -116,7 +116,7 @@
         <div *ngIf="errorCarga && !isLoadingAlergenos && !isLoadingIngredientes" class="text-center text-red-600 bg-red-100 p-3 rounded-md mb-4">
           {{ errorCarga }} </div>
 
-        <div *ngIf="!isLoadingAlergenos && !errorCarga && listaAlergenos.length > 0" class="flex flex-wrap gap-4">
+        <div *ngIf="!isLoadingAlergenos && !errorCarga && listaAlergenos.length > 0" class="flex flex-wrap gap-4 justify-center">
           <button
             *ngFor="let alergeno of listaAlergenos"
             type="button"
@@ -126,7 +126,7 @@
             (click)="toggleAlergeno(alergeno.id)"
           >
             <img
-              class="w-18 h-18 md:w-20 md:h-20 rounded-3xl object-contain group-hover:bg-[#ffffff] transition-all duration-200"
+              class="w-16 h-16 md:w-20 md:h-20 rounded-3xl object-contain group-hover:bg-[#ffffff] transition-all duration-200"
               [src]="alergeno.imagen || 'https://via.placeholder.com/64/cccccc/999999?text=N/A'"
               [alt]="alergeno.nombre"
               [ngClass]="{

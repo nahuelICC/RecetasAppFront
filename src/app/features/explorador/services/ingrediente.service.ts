@@ -8,7 +8,10 @@ import {HttpClient} from '@angular/common/http';
 export class IngredienteService {
   private apiUrl = '/api/ingrediente';
   constructor(private http: HttpClient) { }
-
+  /**
+   * Obtiene la lista de ingredientes desde el backend.
+   * @returns Observable que emite un array de ingredientes.
+   */
   getIngredientes(): Observable<any[]> {
     return this.http.get<any>(`${this.apiUrl}/listarBuscador`);
   }

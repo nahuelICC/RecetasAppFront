@@ -1,16 +1,17 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {IonicModule} from '@ionic/angular';
 import {RouterLink} from '@angular/router';
 import {NgIf} from '@angular/common';
 
 
-
+/**
+ * Componente que muestra un botón para añadir una receta.
+ */
 @Component({
   selector: 'app-boton-add-receta',
   imports: [
     IonicModule,
     RouterLink,
-    NgIf
   ],
   templateUrl: './boton-add-receta.component.html',
   standalone: true,

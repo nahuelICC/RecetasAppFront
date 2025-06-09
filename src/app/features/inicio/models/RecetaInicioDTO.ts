@@ -1,3 +1,6 @@
+/**
+ * DTO for RecetaInicio
+ */
 export interface RecetaInicioDTO {
   id: number;
   imagen: string;

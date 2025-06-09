@@ -1,202 +1,355 @@
-<!-- perfil-usuario.component.html -->
-<div class="p-6 color-verde-oscuro text-white min-h-screen mt-12">
-  <!-- Perfil del usuario -->
-  <div class="flex items-center gap-4 mb-12">
-    <div class="relative w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full overflow-hidden shrink-0 group">
-      <!-- Imagen de perfil -->
-      <img
-        alt="Avatar"
-        [src]="perfilBloqueado ? 'https://ionicframework.com/docs/img/demos/avatar.svg' : imagenPerfilUsuario"
-        [class]="'w-full h-full object-cover' + (esPerfilPropio ? ' transition-opacity duration-300 group-hover:opacity-70' : '')"
-      />
 
-      <div
-        class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer"
-        (click)="triggerFileInput()"
-        *ngIf="esPerfilPropio"
-      >
-        <ion-icon name="camera" class="text-white text-xl sm:text-2xl md:text-3xl"></ion-icon>
+<div class="container mx-auto  px-0 py-0 sm:px-8 sm:py-8">
+
+<div class="p-6 color-verde-oscuro text-white min-h-screen mt-12 mx-auto px-8 py-8">
+  <ng-container *ngIf="esPerfilPropio">
+    <!-- Perfil del usuario -->
+    <div class="flex flex-col sm:flex-row items-center gap-4 mb-12">
+      <div class="relative w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden shrink-0 group">
+        <img
+          alt="Avatar"
+          [src]="imagenPerfilUsuario"
+          class="w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-70"
+        />
+        <div
+          class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer"
+          (click)="triggerFileInput()"
+        >
+          <ion-icon name="camera" class="text-white text-xl sm:text-2xl md:text-3xl"></ion-icon>
+        </div>
+        <input
+          type="file"
+          #fileInput
+          accept="image/*"
+          class="hidden"
+          (change)="onFileSelected($event)"
+        />
       </div>
 
-      <input
-        type="file"
-        #fileInput
-        accept="image/*"
-        class="hidden"
-        (change)="onFileSelected($event)"
-      />
-    </div>
-
-    <div class="flex-1">
-      <div class="flex flex-col sm:flex-row gap-3.5">
-        <div *ngIf="!editandoPerfil">
-          <h2 class="font-semibold color-texto-blanco text-xl mb-1">{{ perfil.nombre }} {{ perfil.apellidos }}</h2>
+      <div class="flex-1">
+        <div class="flex flex-col lg:flex-row gap-3.5">
+          <div>
+            <h2 class="font-semibold color-texto-blanco text-xl mb-1">{{ perfil?.nombre }} {{ perfil?.apellidos }}</h2>
+          </div>
+          <div class="flex flex-wrap gap-3 mt-0 lg:mt-4 mb-4 lg:mb-0" *ngIf="!esPerfilPropio && !perfilBloqueado">
+            <app-boton
+              [color]="'var(--color-verde-boton)'"
+              size="small"
+              [label]="perfil?.siguiendo ? 'Dejar de seguir' : 'Seguir'"
+              (click)="toggleSeguirPerfil()"></app-boton>
+            <app-boton
+              [color]="'var(--color-verde-boton)'"
+              size="small"
+              [label]="'Mensaje'"
+              (click)="iniciarChat()"></app-boton>
+            <app-boton
+              [color]="'var(--color-amarillo-boton)'"
+              size="small"
+              [label]="perfil?.bloqueado ? 'Desbloquear' : 'Bloquear'"
+              (click)="toggleBloquearPerfil()"
+              *ngIf="!esPerfilPropio"></app-boton>
+          </div>
         </div>
-        <div *ngIf="editandoPerfil" class="flex flex-col sm:flex-row gap-3.5 mb-2 mt-8">
-          <input
-            type="text"
-            [(ngModel)]="perfil.nombre"
-            placeholder="Nombre"
-            class="w-full sm:w-1/2 px-3 py-1.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-black text-sm transition-all"
-          />
-          <input
-            type="text"
-            [(ngModel)]="perfil.apellidos"
-            placeholder="Apellidos"
-            class="w-full sm:w-1/2 px-3 py-1.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-black text-sm transition-all"
-          />
-        </div>
-        <div class="flex gap-3 mt-0 lg:mt-4 mb-4 lg:mb-0">
-          <app-boton
-            [color]="'var(--color-verde-boton)'"
-            size="small"
-            [label]="perfil.siguiendo ? 'Dejar de seguir' : 'Seguir'"
-            *ngIf="!esPerfilPropio && !perfilBloqueado"
-          (click)="toggleSeguirPerfil()"></app-boton>
-          <app-boton
-            [color]="'var(--color-verde-boton)'"
-            size="small"
-            [label]="'Mensaje'"
-            *ngIf="!esPerfilPropio && !perfilBloqueado"
-            (click)="iniciarChat()"></app-boton>
-          <app-boton
-            [color]="'var(--color-amarillo-boton)'"
-            size="small"
-            [label]="perfil.bloqueado ? 'Desbloquear' : 'Bloquear'"
-            (click)="toggleBloquearPerfil()"
-            *ngIf="!esPerfilPropio"></app-boton>
-        </div>
-      </div>
-      <div class="flex gap-3.5 items-start mb-4">
-        <ng-container *ngIf="!editandoPerfil">
-          <p class="text-sm text-gray-500">{{ perfil.descripcion }}</p>
+        <div class="flex gap-3.5 items-start mb-4">
+          <p class="text-sm text-gray-500">{{ perfil?.descripcion }}</p>
           <button *ngIf="esPerfilPropio" (click)="toggleEditarPerfil()">
             <ion-icon name="pencil-outline" class="text-xl color-texto-blanco"></ion-icon>
           </button>
-        </ng-container>
-        <ng-container *ngIf="editandoPerfil">
-        <textarea
-          [(ngModel)]="perfil.descripcion"
-          rows="1"
-          placeholder="Descripción"
-          class="w-full sm:w-2/3 px-3 py-1.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-black text-sm transition-all"
-        ></textarea>
-          <app-boton
-            [color]="'var(--color-verde-boton)'"
-            size="small"
-            [label]="'Guardar'"
-            (click)="toggleEditarPerfil()"
-          ></app-boton>
-        </ng-container>
-      </div>
-      <div class="flex gap-4 text-sm">
-        <div class="flex items-center gap-1">
-          <span class="font-medium color-texto-blanco">{{ perfil.numeroRecetas }}</span>
-          <span class="text-gray-500">Recetas</span>
         </div>
-        <div class="flex items-center gap-1">
-          <span class="font-medium color-texto-blanco">{{ perfil.seguidores }}</span>
-          <span class="text-gray-500 cursor-pointer hover:underline" (click)="!perfilBloqueado && toggleSeguidores()">Seguidores</span>
-        </div>
-        <div class="flex items-center gap-1">
-          <span class="font-medium color-texto-blanco">{{ perfil.seguidos }}</span>
-          <span class="text-gray-500 cursor-pointer hover:underline" (click)="!perfilBloqueado && toggleSeguidos()">Seguidos</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="flex gap-4 mb-16 w-full lg:w-1/6" *ngIf="esPerfilPropio">
-    <app-boton
-      [color]="'var(--color-verde-boton)'"
-      size="small"
-      [label]="'Lista de la compra'"
-      class="w-full max-w-xs"
-      (click)="toggleListaCompra()">
-    </app-boton>
-    <app-boton
-      [color]="'var(--color-amarillo-boton)'"
-      size="small"
-      [label]="'Cambiar Contraseña'"
-      class="w-full max-w-xs"
-      (click)="mostrandoCambioContrasena = !mostrandoCambioContrasena">
-    </app-boton>
-  </div>
-
-  <div *ngIf="mostrandoCambioContrasena" class="max-w-screen-sm mb-10 rounded-lg color-verde-claro p-6 shadow-lg">
-    <form [formGroup]="cambioContrasenaForm" (ngSubmit)="onGuardarContrasena()">
-      <div>
-        <label class="block text-sm font-medium mb-1 color-texto-blanco">Contraseña Actual</label>
-        <input type="password" formControlName="actual"
-               class="w-full p-2 border border-gray-500 rounded-lg text-black"
-               [class.border-red-500]="cambioContrasenaForm.get('actual')?.invalid && cambioContrasenaForm.get('actual')?.touched">
-        <div *ngIf="cambioContrasenaForm.get('actual')?.invalid && cambioContrasenaForm.get('actual')?.touched"
-             class="text-red-500 text-sm mt-1">
-          Este campo es requerido
-        </div>
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium mb-1 color-texto-blanco">Nueva Contraseña</label>
-        <input type="password" formControlName="nueva"
-               class="w-full p-2 border border-gray-500 rounded-lg text-black"
-               [class.border-red-500]="nuevaContrasena?.invalid && nuevaContrasena?.touched">
-        <div *ngIf="nuevaContrasena?.invalid && nuevaContrasena?.touched" class="text-red-500 text-sm mt-1">
-          <div *ngIf="nuevaContrasena?.errors?.['required']">Este campo es requerido</div>
-          <div *ngIf="nuevaContrasena?.errors?.['minlength']">Mínimo 8 caracteres</div>
-          <div *ngIf="nuevaContrasena?.errors?.['pattern']">
-            Debe contener al menos una mayúscula, un número y un carácter especial
+        <div class="flex gap-4 text-sm">
+          <div class="flex items-center gap-1">
+            <span class="font-medium color-texto-blanco">{{ perfil?.numeroRecetas }}</span>
+            <span class="text-gray-500">Recetas</span>
+          </div>
+          <div class="flex items-center gap-1">
+            <span class="font-medium color-texto-blanco">{{ perfil?.seguidores }}</span>
+            <span class="text-gray-500 cursor-pointer hover:underline" (click)="toggleSeguidores()">Seguidores</span>
+          </div>
+          <div class="flex items-center gap-1">
+            <span class="font-medium color-texto-blanco">{{ perfil?.seguidos }}</span>
+            <span class="text-gray-500 cursor-pointer hover:underline" (click)="toggleSeguidos()">Seguidos</span>
           </div>
         </div>
       </div>
+    </div>
 
-      <div>
-        <label class="block text-sm font-medium mb-1 color-texto-blanco">Repetir Contraseña</label>
-        <input type="password" formControlName="repetir"
-               class="w-full p-2 border border-gray-500 rounded-lg text-black"
-               [class.border-red-500]="cambioContrasenaForm.hasError('noCoinciden') && cambioContrasenaForm.get('repetir')?.touched">
-        <div *ngIf="cambioContrasenaForm.hasError('noCoinciden') && cambioContrasenaForm.get('repetir')?.touched"
-             class="text-red-500 text-sm mt-1">
-          Las contraseñas no coinciden
+    <div class="flex gap-4 sm:gap-10 xxl:gap-4 mb-16 w-full lg:w-1/6" *ngIf="esPerfilPropio">
+      <app-boton
+        [color]="'var(--color-verde-boton)'"
+        size="small"
+        [label]="'Lista de la compra'"
+        class="max-w-xs"
+        (click)="toggleListaCompra()">
+      </app-boton>
+      <app-boton
+        [color]="'var(--color-amarillo-boton)'"
+        size="small"
+        [label]="'Cambiar Contraseña'"
+        class="max-w-xs"
+        (click)="mostrandoCambioContrasena = !mostrandoCambioContrasena">
+      </app-boton>
+    </div>
+
+    <div *ngIf="mostrandoCambioContrasena" class="max-w-screen-sm mb-10 rounded-lg color-verde-claro p-6 shadow-lg">
+      <form [formGroup]="cambioContrasenaForm" (ngSubmit)="onGuardarContrasena()">
+        <div>
+          <label class="block text-sm font-medium mb-1 color-texto-blanco">Contraseña Actual</label>
+          <div class="relative">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="actual"
+              class="w-full p-2 border border-gray-500 rounded-lg text-black"
+              [class.border-red-500]="cambioContrasenaForm.get('actual')?.invalid && cambioContrasenaForm.get('actual')?.touched"
+            />
+            <button
+              type="button"
+              (mousedown)="showPassword = true"
+              (mouseup)="showPassword = false"
+              (mouseleave)="showPassword = false"
+              class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-600 hover:text-gray-800 focus:outline-none"
+            >
+              <ion-icon name="eye" class="h-5 w-5"></ion-icon>
+            </button>
+          </div>
+          <div *ngIf="cambioContrasenaForm.get('actual')?.invalid && cambioContrasenaForm.get('actual')?.touched"
+               class="text-red-500 text-sm mt-1">
+            Este campo es requerido
+          </div>
         </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1 color-texto-blanco">Nueva Contraseña</label>
+          <div class="relative">
+            <input
+              [type]="showNewPassword ? 'text' : 'password'"
+              formControlName="nueva"
+              class="w-full p-2 border border-gray-500 rounded-lg text-black"
+              [class.border-red-500]="nuevaContrasena?.invalid && nuevaContrasena?.touched"
+            />
+            <button
+              type="button"
+              (mousedown)="showNewPassword = true"
+              (mouseup)="showNewPassword = false"
+              (mouseleave)="showNewPassword = false"
+              class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-600 hover:text-gray-800 focus:outline-none"
+            >
+              <ion-icon name="eye" class="h-5 w-5"></ion-icon>
+            </button>
+          </div>
+          <div *ngIf="nuevaContrasena?.invalid && nuevaContrasena?.touched" class="text-red-500 text-sm mt-1">
+            <div *ngIf="nuevaContrasena?.errors?.['required']">Este campo es requerido</div>
+            <div *ngIf="nuevaContrasena?.errors?.['minlength']">Mínimo 8 caracteres</div>
+            <div *ngIf="nuevaContrasena?.errors?.['pattern']">
+              Debe contener al menos una mayúscula, un número y un carácter especial
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1 color-texto-blanco">Repetir Contraseña</label>
+          <div class="relative">
+            <input
+              [type]="showRepeatPassword ? 'text' : 'password'"
+              formControlName="repetir"
+              class="w-full p-2 border border-gray-500 rounded-lg text-black"
+              [class.border-red-500]="cambioContrasenaForm.hasError('noCoinciden') && cambioContrasenaForm.get('repetir')?.touched"
+            />
+            <button
+              type="button"
+              (mousedown)="showRepeatPassword = true"
+              (mouseup)="showRepeatPassword = false"
+              (mouseleave)="showRepeatPassword = false"
+              class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-600 hover:text-gray-800 focus:outline-none"
+            >
+              <ion-icon name="eye" class="h-5 w-5"></ion-icon>
+            </button>
+          </div>
+          <div *ngIf="cambioContrasenaForm.hasError('noCoinciden') && cambioContrasenaForm.get('repetir')?.touched"
+               class="text-red-500 text-sm mt-1">
+            Las contraseñas no coinciden
+          </div>
+        </div>
+      </form>
+
+      <div class="mt-4 flex justify-start">
+        <app-boton label="Guardar" [size]="'small'" (click)="onGuardarContrasena()" [disabled]="cambioContrasenaForm.invalid"></app-boton>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- CASO 2: Perfil ajeno no bloqueado -->
+  <ng-container *ngIf="!esPerfilPropio && !perfilBloqueado && !yoHeBloqueado">
+    <!-- Perfil del usuario -->
+    <div class="flex flex-col sm:flex-row items-center gap-4 mb-12">
+      <div class="relative w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden shrink-0">
+        <img
+          alt="Avatar"
+          [src]="imagenPerfilUsuario"
+          class="w-full h-full object-cover"
+        />
       </div>
 
+      <div class="flex-1">
+        <div class="flex flex-col lg:flex-row gap-3.5">
+          <div>
+            <h2 class="font-semibold color-texto-blanco text-xl mb-1">{{ perfil?.nombre }} {{ perfil?.apellidos }}</h2>
+          </div>
+          <div class="flex flex-wrap gap-3 mt-0 lg:mt-4 mb-4 lg:mb-0">
+            <app-boton
+              [color]="'var(--color-verde-boton)'"
+              size="small"
+              [label]="perfil?.siguiendo ? 'Dejar de seguir' : 'Seguir'"
+              (click)="toggleSeguirPerfil()"></app-boton>
+            <app-boton
+              [color]="'var(--color-verde-boton)'"
+              size="small"
+              [label]="'Mensaje'"
+              (click)="iniciarChat()"></app-boton>
+            <app-boton
+              [color]="'var(--color-amarillo-boton)'"
+              size="small"
+              [label]="perfil?.bloqueado ? 'Desbloquear' : 'Bloquear'"
+              (click)="toggleBloquearPerfil()"></app-boton>
+          </div>
+        </div>
+        <div class="flex gap-3.5 items-start mb-4">
+          <p class="text-sm text-gray-500">{{ perfil?.descripcion }}</p>
+        </div>
+        <div class="flex gap-4 text-sm">
+          <div class="flex items-center gap-1">
+            <span class="font-medium color-texto-blanco">{{ perfil?.numeroRecetas }}</span>
+            <span class="text-gray-500">Recetas</span>
+          </div>
+          <div class="flex items-center gap-1">
+            <span class="font-medium color-texto-blanco">{{ perfil?.seguidores }}</span>
+            <span class="text-gray-500 cursor-pointer hover:underline" (click)="toggleSeguidores()">Seguidores</span>
+          </div>
+          <div class="flex items-center gap-1">
+            <span class="font-medium color-texto-blanco">{{ perfil?.seguidos }}</span>
+            <span class="text-gray-500 cursor-pointer hover:underline" (click)="toggleSeguidos()">Seguidos</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
 
-    </form>
+  <!-- CASO 3: Yo he bloqueado a este usuario -->
+  <div *ngIf="yoHeBloqueado && !esPerfilPropio" class="flex flex-col items-center justify-center h-64">
+    <p class="text-white text-lg mb-4">Has bloqueado a este usuario</p>
+    <app-boton
+      [color]="'var(--color-amarillo-boton)'"
+      size="medium"
+      [label]="'Desbloquear usuario'"
+      (click)="toggleBloquearPerfil()">
+    </app-boton>
+  </div>
 
-    <div class="mt-4 flex justify-start">
-      <app-boton label="Guardar" [size]="'small'" (click)="showConfirmPassword = true" [disabled]="cambioContrasenaForm.invalid"></app-boton>
+  <!-- CASO 4: Este usuario me ha bloqueado a mí -->
+  <div *ngIf="perfilBloqueado && !esPerfilPropio && !yoHeBloqueado" class="flex flex-col items-center justify-center h-64">
+    <p class="text-white text-lg">Este usuario te ha bloqueado</p>
+    <p class="text-gray-400 text-sm">No puedes ver su perfil</p>
+  </div>
+
+  <!-- Contenido de recetas/colecciones (solo visible si no hay bloqueo) -->
+  <div *ngIf="(!perfilBloqueado && !yoHeBloqueado) || esPerfilPropio">
+    <div class="flex justify-between gap-10 text-2xl mb-6 pb-4 w-3/4 sm:w-1/2 justify-self-center" *ngIf="!perfilBloqueado">
+      <ion-icon [name]="activeTab === 'recetas' ? 'grid' : 'grid-outline'"
+                class="cursor-pointer color-hover transition-colors color-texto-blanco" (click)="activeTab = 'recetas'"></ion-icon>
+      <ion-icon [name]="activeTab === 'colecciones' ? 'albums' : 'albums-outline'"
+                class="cursor-pointer color-hover transition-colors color-texto-blanco" (click)="activeTab = 'colecciones'"></ion-icon>
+      <ion-icon [name]="activeTab === 'guardadas' ? 'bookmarks' : 'bookmarks-outline'"
+                class="cursor-pointer color-hover transition-colors color-texto-blanco" (click)="activeTab = 'guardadas'"
+                *ngIf="esPerfilPropio"></ion-icon>
+    </div>
+
+    <div *ngIf="activeTab === 'recetas' && !perfilBloqueado" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <ng-container *ngFor="let receta of recetasMostradas">
+        <div *ngIf="receta.esVisible || esPerfilPropio">
+          <app-cuadro-receta [receta]="receta" [esPerfilPropio]="esPerfilPropio" (editaGuardar)="actualizaGuardados($event)" (editaVisibilidad)="onEditarVisibilidad($event)"></app-cuadro-receta>
+        </div>
+      </ng-container>
+
+      <div *ngIf="recetasMostradas.length === 0" class="col-span-full flex flex-col items-center justify-center gap-4 py-12">
+        <img src="assets/frutero.png" alt="Sin recetas"
+             class="w-1/2 md:w-1/4 opacity-75">
+        <p class="text-gray-300 text-center text-lg">No hay recetas para mostrar aún</p>
+      </div>
+    </div>
+
+    <ion-infinite-scroll
+      (ionInfinite)="loadMoreRecetas($event)"
+      threshold="100px"
+      *ngIf="recetasMostradas.length < recetas.length && activeTab === 'recetas' && !perfilBloqueado"
+    >
+      <ion-infinite-scroll-content loadingSpinner="bubbles"></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+
+    <!-- Colecciones -->
+    <div *ngIf="activeTab === 'colecciones' && !perfilBloqueado" class="space-y-4">
+      <div class="flex gap-3.5 mb-4 justify-start ion-align-items-center" *ngIf="esPerfilPropio">
+        <p class="color-texto-blanco text-lg font-semibold">Crear Colección</p>
+        <ion-icon
+          name="add-circle-outline"
+          class="text-2xl color-texto-blanco cursor-pointer"
+          (click)="toggleCrearColeccion()"
+        ></ion-icon>
+      </div>
+
+      <app-coleccion-recetas
+        [colecciones]="coleccionesMostradas"
+        [esPerfilPropio]="esPerfilPropio"
+        (coleccionEliminada)="onEliminarColeccion($event)"
+        (coleccionEditada)="iniciarEdicionColeccion($event)">
+      </app-coleccion-recetas>
+
+      <div *ngIf="coleccionesMostradas.length === 0" class="flex flex-col items-center justify-center gap-4 py-12">
+        <img src="assets/frutero.png" alt="Sin colecciones"
+             class="w-1/2 md:w-1/4 opacity-75">
+        <p class="text-gray-300 text-center text-lg">No hay colecciones para mostrar aún</p>
+      </div>
+
+      <ion-infinite-scroll
+        (ionInfinite)="loadMoreColecciones($event)"
+        threshold="100px"
+        *ngIf="coleccionesMostradas.length < colecciones.length && activeTab === 'colecciones'">
+        <ion-infinite-scroll-content loadingSpinner="bubbles"></ion-infinite-scroll-content>
+      </ion-infinite-scroll>
+    </div>
+
+    <!-- Recetas Guardadas -->
+    <div *ngIf="activeTab === 'guardadas' && esPerfilPropio && !perfilBloqueado" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div *ngFor="let receta of recetasGuardadasMostradas">
+        <app-cuadro-receta-guardada [receta]="receta"></app-cuadro-receta-guardada>
+      </div>
+
+      <div *ngIf="recetasGuardadasMostradas.length === 0" class="col-span-full flex flex-col items-center justify-center gap-4 py-12">
+        <img src="assets/frutero.png" alt="Sin guardados"
+             class="w-1/2 md:w-1/4 opacity-75">
+        <p class="text-gray-300 text-center text-lg">No hay recetas guardadas para mostrar aún</p>
+      </div>
+
+      <ion-infinite-scroll
+        (ionInfinite)="loadMoreGuardadas($event)"
+        threshold="100px"
+        *ngIf="recetasGuardadasMostradas.length < recetasGuardadas.length && activeTab === 'guardadas'">
+        <ion-infinite-scroll-content loadingSpinner="bubbles"></ion-infinite-scroll-content>
+      </ion-infinite-scroll>
     </div>
   </div>
-
-  <div class="flex justify-between gap-10 text-2xl mb-6 pb-4 w-3/4 sm:w-1/2 justify-self-center" *ngIf="!perfilBloqueado">
-    <ion-icon [name]="activeTab === 'recetas' ? 'grid' : 'grid-outline'"
-              class="cursor-pointer color-hover transition-colors color-texto-blanco" (click)="activeTab = 'recetas'"></ion-icon>
-    <ion-icon [name]="activeTab === 'colecciones' ? 'albums' : 'albums-outline'"
-              class="cursor-pointer color-hover transition-colors color-texto-blanco" (click)="activeTab = 'colecciones'"></ion-icon>
-    <ion-icon [name]="activeTab === 'guardadas' ? 'bookmarks' : 'bookmarks-outline'"
-              class="cursor-pointer color-hover transition-colors color-texto-blanco" (click)="activeTab = 'guardadas'"
-              *ngIf="esPerfilPropio"></ion-icon>
-  </div>
-
-
 
   <!-- Panel de seguidos -->
   <div *ngIf="mostrarSeguidos"
        class="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center p-4">
-
     <div class="color-verde-claro w-full sm:w-3/4 lg:w-1/2 max-h-[80vh] rounded-lg p-4 shadow-xl overflow-y-auto relative">
-
       <div class="flex justify-between items-center mb-4">
         <h3 class="text-lg font-semibold color-texto">Seguidos</h3>
         <ion-icon name="close-circle-outline" class="text-2xl text-green-900 cursor-pointer"
                   (click)="toggleSeguidos()"></ion-icon>
       </div>
-
       <div class="grid grid-cols-1 gap-4">
         <div *ngFor="let seguido of seguidos"
              class="flex items-start p-3 gap-3 border border-gray-500 shadow transition hover:shadow-lg cursor-pointer"
-        (click)="redireccionarPerfil(seguido.idUsuario)">
+             (click)="redireccionarPerfil(seguido.idUsuario)">
           <img [src]="seguido.fotoPerfil || 'https://ionicframework.com/docs/img/demos/avatar.svg'"
                alt="avatar"
                class="w-14 h-14 rounded-full object-cover "/>
@@ -205,24 +358,19 @@
             <span class="text-sm font-medium text-gray-800">{{ seguido.nombre }} {{ seguido.apellidos }}</span>
           </div>
         </div>
-
       </div>
-
     </div>
   </div>
 
   <!-- Panel de seguidores -->
   <div *ngIf="mostrarSeguidores"
        class="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center p-4">
-
     <div class="color-verde-claro w-full sm:w-3/4 lg:w-1/2 max-h-[80vh] rounded-lg p-4 shadow-xl overflow-y-auto relative">
-
       <div class="flex justify-between items-center mb-4">
         <h3 class="text-lg font-semibold color-texto">Seguidores</h3>
         <ion-icon name="close-circle-outline" class="text-2xl text-green-900 cursor-pointer"
                   (click)="toggleSeguidores()"></ion-icon>
       </div>
-
       <div class="grid grid-cols-1 gap-4">
         <div *ngFor="let seguidor of seguidores"
              class="flex items-start p-3 gap-3 border border-gray-500 shadow transition hover:shadow-lg cursor-pointer"
@@ -235,9 +383,7 @@
             <span class="text-sm font-medium text-gray-800">{{ seguidor.nombre }} {{ seguidor.apellidos }}</span>
           </div>
         </div>
-
       </div>
-
     </div>
   </div>
 
@@ -355,66 +501,7 @@
     </div>
   </div>
 
-
-  <div *ngIf="activeTab === 'recetas' && !perfilBloqueado" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-    <ng-container *ngFor="let receta of recetasMostradas">
-      <div *ngIf="receta.esVisible || esPerfilPropio">
-        <app-cuadro-receta [receta]="receta" [esPerfilPropio]="esPerfilPropio" (editaGuardar)="actualizaGuardados($event)"></app-cuadro-receta>
-      </div>
-    </ng-container>
-
-    <div *ngIf="recetasMostradas.length === 0" class="col-span-full flex flex-col items-center justify-center gap-4 py-12">
-      <img src="assets/frutero.png" alt="Sin recetas"
-           class="w-1/2 md:w-1/4 opacity-75">
-      <p class="text-gray-300 text-center text-lg">No hay recetas para mostrar aún</p>
-    </div>
-  </div>
-
-  <ion-infinite-scroll
-    (ionInfinite)="loadMoreRecetas($event)"
-    threshold="100px"
-    *ngIf="recetasMostradas.length < recetas.length"
-  >
-    <ion-infinite-scroll-content loadingSpinner="bubbles"></ion-infinite-scroll-content>
-  </ion-infinite-scroll>
-
-
-  <!-- Colecciones -->
-  <div *ngIf="activeTab === 'colecciones' && !perfilBloqueado" class="space-y-4">
-    <div class="flex gap-3.5 mb-4 justify-start ion-align-items-center" *ngIf="esPerfilPropio">
-      <p class="color-texto-blanco text-lg font-semibold ">Crear Colección</p>
-      <ion-icon
-        name="add-circle-outline"
-        class="text-2xl color-texto-blanco cursor-pointer"
-        (click)="toggleCrearColeccion()"
-       ></ion-icon>
-    </div>
-
-    <app-coleccion-recetas
-      [colecciones]="coleccionesMostradas"
-      [esPerfilPropio]="esPerfilPropio"
-      (coleccionEliminada)="onEliminarColeccion($event)"
-      (coleccionEditada)="iniciarEdicionColeccion($event)">
-    </app-coleccion-recetas>
-
-    <div *ngIf="coleccionesMostradas.length === 0" class="flex flex-col items-center justify-center gap-4 py-12">
-      <img src="assets/frutero.png" alt="Sin colecciones"
-           class="w-1/2 md:w-1/4 opacity-75">
-      <p class="text-gray-300 text-center text-lg">No hay colecciones para mostrar aún</p>
-    </div>
-
-    <ion-infinite-scroll
-      (ionInfinite)="loadMoreColecciones($event)"
-      threshold="100px"
-      *ngIf="coleccionesMostradas.length < colecciones.length">
-      <ion-infinite-scroll-content loadingSpinner="bubbles"></ion-infinite-scroll-content>
-    </ion-infinite-scroll>
-
-
-  </div>
-
   <!-- Crear colección -->
-
   <div *ngIf="mostrarCrearColeccion || mostrarEditarColeccion" class="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center p-4">
     <div class="bg-green-100 w-full sm:w-3/4 lg:w-1/2 max-h-[80vh] rounded-lg p-4 shadow-xl overflow-y-auto relative">
       <div class="flex justify-between items-center mb-4">
@@ -462,28 +549,7 @@
       </div>
     </div>
   </div>
-
-
-  <!-- Recetas Guardadas -->
-  <div *ngIf="activeTab === 'guardadas' && esPerfilPropio && !perfilBloqueado" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-    <div *ngFor="let receta of recetasGuardadasMostradas">
-      <app-cuadro-receta-guardada [receta]="receta"></app-cuadro-receta-guardada>
-    </div>
-
-    <div *ngIf="recetasGuardadasMostradas.length === 0" class="col-span-full flex flex-col items-center justify-center gap-4 py-12">
-      <img src="assets/frutero.png" alt="Sin guardados"
-           class="w-1/2 md:w-1/4 opacity-75">
-      <p class="text-gray-300 text-center text-lg">No hay recetas guardadas para mostrar aún</p>
-    </div>
-
-    <ion-infinite-scroll
-      (ionInfinite)="loadMoreGuardadas($event)"
-      threshold="100px"
-      *ngIf="recetasGuardadasMostradas.length < recetasGuardadas.length">
-      <ion-infinite-scroll-content loadingSpinner="bubbles"></ion-infinite-scroll-content>
-    </ion-infinite-scroll>
-  </div>
-
+</div>
 
 </div>
 
@@ -497,13 +563,15 @@
   *ngIf="mostrarListaCompra"
   [isOpen]="mostrarListaCompra"
   [cookerId]="idPropietario"
-  (close)="toggleListaCompra()"> <!-- Asegurar que tenemos este output -->
+  (close)="toggleListaCompra()"
+  (solicitarConfirmacionEliminar)="mostrarAlertaConfirmarEliminar($event)">
 </app-lista-compra>
 
 <app-alert-confirmar
-  *ngIf="showConfirmPassword" [message]="'¿Estás seguro de que quieres cambiar tu contraseña?'"
-  (confirm)="onGuardarContrasena()" (cancel)="showConfirmPassword = false">
+  *ngIf="mostrarAlertaConfirmar"
+  [message]="mensajeAlertaConfirmar"
+  (confirm)="accionConfirmada()"
+  (cancel)="mostrarAlertaConfirmar = false">
 </app-alert-confirmar>
-
 
 <app-boton-add-receta></app-boton-add-receta>

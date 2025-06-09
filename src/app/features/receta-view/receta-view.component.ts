@@ -17,14 +17,16 @@ import { AuthService } from '../../core/services/auth.service';
 import { FormsModule } from '@angular/forms';
 import { Alergeno } from './models/Alergeno';
 import { AlertInfoComponent, AlertType } from '../../shared/components/alert-info/alert-info.component';
-import { InfiniteScrollCustomEvent, IonInfiniteScroll, IonInfiniteScrollContent,IonList } from '@ionic/angular/standalone';
+import { InfiniteScrollCustomEvent, IonAvatar, IonContent, IonInfiniteScroll, IonInfiniteScrollContent, IonItem, IonLabel, IonList } from '@ionic/angular/standalone';
+import {BotonModoOscuroComponent} from '../../shared/components/boton-modo-oscuro/boton-modo-oscuro.component';
 
+/**
+ * Componente para visualizar una receta.
+ */
 @Component({
   selector: 'app-receta-view',
   standalone: true,
   imports: [
-    InfoPlatoComponent,
-    AlergenoComponent,
     ComentarioComponent,
     NgFor,
     NgIf,
@@ -33,7 +35,10 @@ import { InfiniteScrollCustomEvent, IonInfiniteScroll, IonInfiniteScrollContent,
     AlertInfoComponent,
     IonInfiniteScroll,
     IonInfiniteScrollContent,
-    IonList
+    IonList,
+    InfoPlatoComponent,
+    AlergenoComponent,
+    BotonModoOscuroComponent
   ],
   templateUrl: './receta-view.component.html',
   styleUrls: ['./receta-view.component.css'],
@@ -60,7 +65,7 @@ export class RecetaViewComponent implements OnInit {
   cuadroComentarioOn: boolean = false;
   textoComentario: string = '';
   listaAlergenos: Alergeno[] = [];
-  isAlertVisible: boolean = false;
+  AlertVisible: boolean = false;
   alertType: AlertType = 'error';
   alertMessage: string = '';
   borrarComentario: boolean = false;
@@ -70,6 +75,7 @@ export class RecetaViewComponent implements OnInit {
   currentItemsToShow: number = 5;
   allComentarios: ComentarioResponse[] = [];
   displayedComentarios: ComentarioResponse[] = [];
+
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
@@ -83,6 +89,9 @@ export class RecetaViewComponent implements OnInit {
     });
   }
 
+  /**
+   * Obtiene la información de la receta desde el servicio.
+   */
   obtenerInfoReceta() {
     this.recetaService.getInfoReceta(this.idReceta).subscribe(
       (response) => {
@@ -95,6 +104,9 @@ export class RecetaViewComponent implements OnInit {
     );
   }
 
+  /**
+   * Obtiene los alérgenos de la receta y los filtra para eliminar duplicados.
+   */
   obtenerAlergenos() {
     if (!this.receta?.alergenos) return;
     const copia = new Set();
@@ -118,6 +130,9 @@ export class RecetaViewComponent implements OnInit {
     return columnas;
   }
 
+  /**
+   * Obtiene los pasos de la receta desde el servicio.
+   */
   obtenerPasosReceta() {
     this.recetaService.getPasosReceta(this.idReceta).subscribe(
       (response) => {
@@ -130,11 +145,16 @@ export class RecetaViewComponent implements OnInit {
     );
   }
 
+  /**
+   * Obtiene los comentarios de la receta desde el servicio.
+   */
   obtenerComentariosReceta() {
     this.comentarioService.getComentariosReceta(this.idReceta).subscribe(
       (response) => {
         this.allComentarios = [...response];
-        this.displayedComentarios = this.allComentarios.slice(0, this.currentItemsToShow);
+        this.displayedComentarios = this.allComentarios
+          .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())
+          .slice(0, this.currentItemsToShow);
         this.cdr.markForCheck();
       },
       (error) => {
@@ -142,7 +162,11 @@ export class RecetaViewComponent implements OnInit {
       }
     );
   }
-  
+
+  /**
+   * Redirecciona al perfil del usuario que ha publicado la receta.
+   * @param id ID del usuario.
+   */
   redireccionarPerfil(id: string): void {
     this.zone.run(() => {
       const idEncrypt = this.encryptService.encriptar(id);
@@ -152,10 +176,17 @@ export class RecetaViewComponent implements OnInit {
     });
   }
 
+  /**
+   * Compara si el usuario está logueado.
+   * @returns true si el usuario está logueado, false en caso contrario.
+   */
   compararLogin(): boolean {
     return this.authService.isLogged();
   }
 
+  /**
+   * Responde a un comentario en la receta.
+   */
   responderReceta() {
     this.comentarioService.comentarReceta({ texto: this.textoComentario }, this.idReceta).subscribe({
       next: (nuevoComentario) => {
@@ -171,21 +202,30 @@ export class RecetaViewComponent implements OnInit {
     });
   }
 
+  /**
+   * Recarga los comentarios de la receta después de eliminar uno.
+   */
   recargarComentariosReceta() {
     this.currentItemsToShow = 5;
     this.obtenerComentariosReceta();
-    this.isAlertVisible = true;
+    this.AlertVisible = true;
     this.alertType = 'success';
     this.alertMessage = 'Comentario eliminado correctamente';
     setTimeout(() => {
-      this.isAlertVisible = false;
+      this.AlertVisible = false;
     }, 3000);
   }
-  
+
+  /**
+   * Cambia el estado del cuadro de comentario.
+   */
   mostrarCuadro() {
     this.cuadroComentarioOn = !this.cuadroComentarioOn;
   }
 
+  /**
+   * Carga más comentarios al hacer scroll infinito.
+   */
   onIonInfinite(event: InfiniteScrollCustomEvent) {
     setTimeout(() => {
       this.currentItemsToShow += 5;
@@ -198,17 +238,54 @@ export class RecetaViewComponent implements OnInit {
     }, 500);
   }
 
-  generateItems() {
-    const newItems = this.comentariosReceta.slice(this.comentariosReceta.length, this.comentariosReceta.length + 5);
-    this.comentariosReceta.push(...newItems);
-    if (newItems.length === 0) {
-      this.isAlertVisible = true;
-      this.alertMessage = 'No hay más comentarios para mostrar';
-      setTimeout(() => {
-        this.isAlertVisible = false;
-      }, 3000);
-    }
+  /**
+   * Muestra una alerta de éxito al denunciar un comentario.
+   */
+  mostrarAlertaDenuncia() {
+    this.AlertVisible = true;          // Mostrar la alerta
+    this.alertType = 'success';        // Tipo de alerta
+    this.alertMessage = 'Comentario denunciado correctamente'; // Mensaje
+
+    setTimeout(() => {
+      this.AlertVisible = false;      // Ocultar después de 3 segundos
+    }, 3000);
   }
 
 
+  /**
+   * Muestra una alerta de éxito o error al añadir ingredientes a la lista de compra.
+   * @param $event Evento que contiene el mensaje de la alerta.
+   */
+  mostrarAlertaIngredientes($event: string) {
+    if ($event === 'Ingredientes añadidos a la lista de compra') {
+      this.AlertVisible = true;
+      this.alertType = 'success';
+      this.alertMessage = $event;
+
+      setTimeout(() => {
+        this.AlertVisible = false;
+      }, 3000);
+    }else {
+      this.AlertVisible = true;
+      this.alertType = 'error';
+      this.alertMessage = $event;
+
+      setTimeout(() => {
+        this.AlertVisible = false;
+      }, 3000);
+    }
+
+  }
+
+  /**
+   * Redirecciona al perfil del usuario que creó la receta.
+   */
+  redireccionarPerfilUsuario(id: string): void {
+    this.zone.run(() => {
+      const idEncrypt = this.encryptService.encriptar(id);
+      this.router.navigate(['/perfil', idEncrypt]).then(() => {
+        window.location.reload();
+      });
+    });
+  }
 }

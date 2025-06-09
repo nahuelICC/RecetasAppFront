@@ -4,7 +4,8 @@ import { RecetaViewResponse } from '../../models/RecetaViewResponse';
 
 @Component({
   selector: 'app-info-plato',
-  imports: [IonIcon],
+  standalone: true,
+  // imports: [IonIcon],
   templateUrl: './info-plato.component.html',
   styleUrl: './info-plato.component.css'
 })

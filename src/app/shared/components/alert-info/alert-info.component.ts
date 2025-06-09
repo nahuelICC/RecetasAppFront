@@ -3,6 +3,9 @@ import { NgClass, NgIf } from '@angular/common';
 
 export type AlertType = 'success' | 'error' | 'warning';
 
+/**
+ * Componente de alerta para mostrar mensajes informativos
+ */
 @Component({
   selector: 'app-alert-info',
   templateUrl: './alert-info.component.html',
