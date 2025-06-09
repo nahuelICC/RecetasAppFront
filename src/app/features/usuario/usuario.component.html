@@ -1,6 +1,7 @@
-<!-- perfil-usuario.component.html -->
+
+<div class="container mx-auto  px-0 py-0 sm:px-8 sm:py-8">
+
 <div class="p-6 color-verde-oscuro text-white min-h-screen mt-12 mx-auto px-8 py-8">
-  <!-- CASO 1: Perfil propio (siempre visible) -->
   <ng-container *ngIf="esPerfilPropio">
     <!-- Perfil del usuario -->
     <div class="flex flex-col sm:flex-row items-center gap-4 mb-12">
@@ -548,6 +549,8 @@
       </div>
     </div>
   </div>
+</div>
+
 </div>
 
 <app-alert-info
