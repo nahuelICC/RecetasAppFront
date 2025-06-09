@@ -14,6 +14,10 @@ export class CategoriaService {
   constructor(private http: HttpClient) {
 
   }
+  /**
+   * Obtiene la lista de categorías desde el backend.
+   * @returns Observable que emite un array de categorías.
+   */
   getCategorias(): Observable<CategoriaNoMedidaDTO[]> {
     return this.http.get<any>(`${this.apiUrl}/admin/listar`);
   }

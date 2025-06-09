@@ -22,29 +22,35 @@ export class ExploradorEstadoService {
   private state: ExploradorState | null = null;
   constructor() { }
 
-  // Guarda el estado actual del componente
+  /**
+   * Guarda el estado del explorador.
+   * @param state
+   */
   saveState(state: ExploradorState): void {
     console.log("Guardando estado del explorador:", state);
     this.state = state;
   }
-
-  // Carga el estado guardado
+  /**
+   * Carga el estado del explorador guardado.
+   * @returns ExploradorState | null
+   */
   loadState(): ExploradorState | null {
     console.log("Cargando estado del explorador guardado.");
     const loadedState = this.state;
-    // Opcional: Limpiar el estado después de cargarlo para que no se
-    // reutilice si el usuario vuelve a la página desde otro lugar que no sea "atrás".
-    // this.clearState();
     return loadedState;
   }
-
-  // Limpia el estado guardado
+  /**
+   * Actualiza el estado del explorador con un nuevo estado.
+   * @param newState
+   */
   clearState(): void {
     console.log("Limpiando estado del explorador.");
     this.state = null;
   }
-
-  // Comprueba si hay un estado guardado
+  /**
+   * Verifica si hay un estado guardado.
+   * @returns boolean
+   */
   hasState(): boolean {
     return this.state !== null;
   }

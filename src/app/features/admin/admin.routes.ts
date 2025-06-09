@@ -1,10 +1,10 @@
 import {Component, inject} from '@angular/core';
 import {ResolveFn, Routes} from '@angular/router';
 import { Observable, of, forkJoin } from 'rxjs'; // Importa forkJoin y of
-import { map as rxjsMap } from 'rxjs/operators';// Importa 'of' para placeholders de CRUD y 'map' para transformar
+import { map as rxjsMap } from 'rxjs/operators';
 
-import { AdminComponent } from './admin.component'; // Tu AdminLayoutComponent
-import { EntityTableComponent, EntityConfiguration } from './components/entity-table/entity-table.component'; // Tu EntityManagementComponent
+import { AdminComponent } from './admin.component';
+import { EntityTableComponent, EntityConfiguration } from './components/entity-table/entity-table.component';
 import { IngredienteService } from './services/ingrediente.service';
 import { IngredienteAdminDTO } from './models/IngredienteAdminDTO';
 import {FormOption} from './components/modal-form/modal-form.component';
@@ -13,7 +13,7 @@ import {CategoriaNoMedidaDTO} from './models/CategoriaNoMedidaDTO';
 import {AlergenoService} from './services/alergeno.service';
 import {CategoriaService} from './services/categoria.service';
 import {UsuarioService} from './services/usuario.service';
-import {RecetaService} from './services/receta.service'; // Asumo que tienes este DTO o similar
+import {RecetaService} from './services/receta.service';
 
 
 @Component({
@@ -28,35 +28,29 @@ export class AdminPlaceholderComponent {
   }
 }
 
-// --- Resolver para la Configuración de Ingredientes ---
 export const ingredientesConfigResolver: ResolveFn<EntityConfiguration> = (route, state) => {
   const ingredienteService = inject(IngredienteService);
-  const alergenoService = inject(AlergenoService);     // Inyecta AlergenoService
-  const categoriaService = inject(CategoriaService); // Inyecta CategoriaService
+  const alergenoService = inject(AlergenoService);
+  const categoriaService = inject(CategoriaService);
 
-  // 1. Obtener las opciones para los selects
-  const alergenosOptions$: Observable<FormOption[]> = alergenoService.getAlergenos() // Asume que este método existe
+  const alergenosOptions$: Observable<FormOption[]> = alergenoService.getAlergenos()
     .pipe(
       rxjsMap((alergenos: AlergenoNoImgDTO[]) =>
         alergenos.map(a => ({ value: a.id, label: a.nombre }))
       )
     );
 
-  const categoriasOptions$: Observable<FormOption[]> = categoriaService.getCategorias() // Asume que este método existe
+  const categoriasOptions$: Observable<FormOption[]> = categoriaService.getCategorias()
     .pipe(
       rxjsMap((categorias: CategoriaNoMedidaDTO[]) =>
         categorias.map(c => ({ value: c.id, label: c.nombre }))
       )
     );
-
-  // 2. Usar forkJoin para esperar a que todas las opciones estén cargadas antes de construir la config
   return forkJoin({
     alergenosOpts: alergenosOptions$,
     categoriasOpts: categoriasOptions$
-    // Añade más observables aquí si necesitas cargar más datos para el formulario
   }).pipe(
     rxjsMap(({ alergenosOpts, categoriasOpts }) => {
-      // 3. Construye y devuelve el objeto EntityConfiguration CON las opciones
       return {
         entityName: 'Ingrediente',
         entityNamePlural: 'Ingredientes',
@@ -77,7 +71,7 @@ export const ingredientesConfigResolver: ResolveFn<EntityConfiguration> = (route
               name: 'alergenoId',
               label: 'Alérgeno',
               type: 'select',
-              options: alergenosOpts, // Opciones cargadas
+              options: alergenosOpts,
               placeholder: 'Seleccionar Alérgeno',
               required: false
             },
@@ -113,11 +107,6 @@ export const ingredientesConfigResolver: ResolveFn<EntityConfiguration> = (route
 
 export const usuariosConfigResolver: ResolveFn<EntityConfiguration> = (route, state) => {
   const usuarioService = inject(UsuarioService);
-  // Aquí puedes definir las opciones de rol si es necesario
-  // Por ejemplo, si los roles son estáticos:
-  // const rolesOptions: FormOption[] = [
-  //   { value: 'ADMIN', label: 'Administrador' },
-  //   { value: 'COOKER', label: 'Cocinero' }
     return {
       entityName: 'Usuario',
       entityNamePlural: 'Usuarios',
@@ -190,8 +179,6 @@ export const recetasConfigResolver: ResolveFn<EntityConfiguration> = (route, sta
     },
     fetchData: (page: number, itemsPerPage: number, searchTerm: string, showingActivos: boolean) =>
       recetaService.getRecetas(page, itemsPerPage, searchTerm, showingActivos),
-    // createEntity: (data: any) =>
-    //   recetaService.actualizarReceta ? recetaService.actualizarReceta(data) : of({ error: 'createUsuario no implementado'}),
     updateEntity: (id: any, data: any) =>
       recetaService.actualizarReceta ? recetaService.actualizarReceta(id, data) : of({ error: 'updateUsuario no implementado'}),
     deleteEntity: (id: any) =>
@@ -199,19 +186,18 @@ export const recetasConfigResolver: ResolveFn<EntityConfiguration> = (route, sta
   };
 };
 
-// --- RUTAS PRINCIPALES DEL MÓDULO ADMIN ---
+
 export const ADMIN_ROUTES: Routes = [
   {
-    path: '', // Ruta base para /admin (ej. /admin)
-    component: AdminComponent, // Tu componente Layout con Sidebar y <router-outlet>
+    path: '',
+    component: AdminComponent,
     children: [
-      // Redirección por defecto al entrar a /admin
       { path: '', redirectTo: 'ingredientes', pathMatch: 'full' },
       {
-        path: 'ingredientes', // <<<< AÑADIDA LA RUTA PARA INGREDIENTES
-        component: EntityTableComponent, // Tu componente de gestión
-        resolve: { // <<<< CORREGIDO: Usar la propiedad 'resolve'
-          entityConfig: ingredientesConfigResolver // Usa el resolver para ingredientes
+        path: 'ingredientes',
+        component: EntityTableComponent,
+        resolve: {
+          entityConfig: ingredientesConfigResolver
         },
         title: 'Admin - Gestión de Ingredientes'
       },
@@ -223,13 +209,13 @@ export const ADMIN_ROUTES: Routes = [
       },
       {
         path: 'recetas',
-        component: EntityTableComponent, // Reemplaza con EntityTableComponent y su resolver
-        resolve: { entityConfig: recetasConfigResolver }, // Cuando lo tengas
+        component: EntityTableComponent,
+        resolve: { entityConfig: recetasConfigResolver },
         title: 'Admin - Gestión de Productos'
       },
       {
         path: 'pedidos',
-        component: AdminPlaceholderComponent, // Reemplaza con EntityTableComponent y su resolver
+        component: AdminPlaceholderComponent,
         // resolve: { entityConfig: pedidosConfigResolver },
         title: 'Admin - Gestión de Pedidos'
       },

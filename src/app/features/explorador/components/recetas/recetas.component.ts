@@ -68,7 +68,10 @@ export class RecetasComponent  implements OnInit {
       this.recetaService.eliminarRecetaGuardada(this.recipeData.id).subscribe();
     }
   }
-
+  /**
+   * Redirige al perfil del usuario que creó la receta.
+   * @param id
+   */
   redireccionarPerfil(id: string): void {
     this.zone.run(() => {
       const idEncrypt = this.encryptService.encriptar(id);
@@ -76,7 +79,10 @@ export class RecetasComponent  implements OnInit {
       });
     });
   }
-
+  /**
+   * Redirige a la página de detalles de la receta.
+   * @param id
+   */
   redireccionarReceta(id: string): void {
     this.zone.run(() => {
       const idEncrypt = this.encryptService.encriptar(id);

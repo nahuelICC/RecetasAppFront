@@ -39,15 +39,14 @@ export interface FormConfig {
     AlertInfoComponent
   ]
 })
-export class ModalFormComponent implements OnInit, OnChanges { // Implementa OnChanges
+export class ModalFormComponent implements OnInit, OnChanges {
 
   @Input() isVisible: boolean = true;
   @Input() title: string = 'Formulario';
   @Input() initialData: any | null = null;
-  // El setter ya llama a buildForm(), lo cual es bueno si formConfig puede cambiar.
   @Input('formConfig') set setFormConfig(config: FormConfig) {
     this.currentFormConfig = config;
-    if (this.fb) { // Asegurarse que fb (FormBuilder) está disponible
+    if (this.fb) {
       this.buildForm();
     }
   }
@@ -59,13 +58,11 @@ export class ModalFormComponent implements OnInit, OnChanges { // Implementa OnC
   entityForm!: FormGroup;
 
   constructor(private fb: FormBuilder) {
-    // Es mejor inicializar el form group aquí para que exista desde el principio
+
     this.entityForm = this.fb.group({});
   }
 
   ngOnInit(): void {
-    // Si currentFormConfig ya está seteado por el input setter, buildForm ya se llamó.
-    // Si no, y necesitas construirlo con el valor inicial de currentFormConfig:
     if (this.currentFormConfig && !this.entityForm.controls[this.currentFormConfig.fields[0]?.name]) { // Comprueba si el form no está construido
       this.buildForm();
     }
@@ -75,23 +72,17 @@ export class ModalFormComponent implements OnInit, OnChanges { // Implementa OnC
    * Maneja cambios en initialData después de que el form ya está construido
    * @param changes
    */
-  // ngOnChanges para manejar cambios en initialData después de que el form ya está construido
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['initialData'] && this.entityForm && this.currentFormConfig) {
-      // Si initialData cambia y el formulario ya existe,
-      // vuelve a construir o parchea los valores.
-      // La reconstrucción es más simple si la estructura de initialData
-      // puede influir en qué controles tener (aunque no es el caso aquí).
-      // Un patchValue es más eficiente si solo los valores cambian.
+
       if (this.initialData) {
         this.entityForm.patchValue(this.initialData);
       } else {
-        this.entityForm.reset(); // Resetea a los valores por defecto o vacíos
-        // Podrías querer resetear a los valores por defecto definidos en buildForm
-        // this.buildForm(); // Si quieres reconstruir con defaults
+        this.entityForm.reset();
+
       }
     }
-    // Si formConfig cambia y el componente ya está inicializado, el setter se encarga.
   }
 
   /**
@@ -103,7 +94,6 @@ export class ModalFormComponent implements OnInit, OnChanges { // Implementa OnC
     }
 
     const group: any = {};
-    // Determinar si estamos en modo edición (asumiendo que `initialData` con un `id` significa edición)
     const isEditMode = !!(this.initialData && this.initialData.id !== undefined && this.initialData.id !== null);
 
     console.log('[ModalForm] buildForm - Modo Edición:', isEditMode, 'Initial Data:', this.initialData);
@@ -119,14 +109,11 @@ export class ModalFormComponent implements OnInit, OnChanges { // Implementa OnC
           valueForControl = null;
         }
       }
-
-      // ****** LÓGICA PARA DESHABILITAR EL CAMPO ******
       const isDisabled = isEditMode && field.disabledOnEdit === true;
-      // ************************************************
 
       group[field.name] = [{
         value: valueForControl,
-        disabled: isDisabled // Aplicar el estado 'disabled' al crear el control
+        disabled: isDisabled
       }, validators];
 
       console.log(`[ModalForm] buildForm - Campo '${field.name}': Valor inicial:`, valueForControl, `Deshabilitado: ${isDisabled}`);

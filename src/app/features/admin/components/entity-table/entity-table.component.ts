@@ -15,17 +15,14 @@ export interface EntityConfiguration {
   entityNamePlural: string;
   create: boolean;
   tableColumns: TableColumn[];
-  tableActions?: TableActionsConfig; // Hacerlo opcional si tienes defaults
+  tableActions?: TableActionsConfig;
   formConfig: FormConfig;
-  // Función para obtener los datos de la entidad
-  // Debería devolver un Observable que emita un objeto con { data: any[], totalItems: number }
-  // El 'any' debería ser reemplazado por tu servicio específico
+
   fetchData: (
     page: number,
     itemsPerPage: number,
     searchTerm: string,
     mostrarActivos: boolean,
-    // otrosFiltros?: any // Si tienes más filtros específicos de entidad
   ) => Observable<{ data: any[], totalItems: number , totalPages: number}>;
   createEntity?: (data: any) => Observable<any>;
   updateEntity?: (id: any, data: any) => Observable<any>;
@@ -50,12 +47,10 @@ export interface EntityConfiguration {
 })
 export class EntityTableComponent  implements OnInit, OnDestroy{
 
-  // --- Configuración específica de la entidad (esto se podría pasar por @Input o Route Data) ---
   config!: EntityConfiguration;
 
   displayedData: any[] = [];
 
-  // --- Estado de Búsqueda y Paginación ---
   searchTerm: string = '';
   currentPage: number = 1;
   itemsPerPage: number = 8;
@@ -64,7 +59,6 @@ export class EntityTableComponent  implements OnInit, OnDestroy{
 
   showingActivos: boolean = true;
 
-  // --- Estado de UI ---
   isLoading: boolean = false;
   isModalOpen: boolean = false;
   modalData: any | null = null;
@@ -213,6 +207,10 @@ export class EntityTableComponent  implements OnInit, OnDestroy{
     this.showAlertConfirmar = true
     this.item = item;
   }
+  /**
+   * Maneja la restauración de una entidad eliminada.
+   * @param item
+   */
   handleRestore(item: any): void {
     if (!this.config.deleteEntity) {
       console.warn("deleteEntity no configurado.");
@@ -222,6 +220,10 @@ export class EntityTableComponent  implements OnInit, OnDestroy{
     this.showAlertConfirmar = true
     this.item = item;
   }
+
+  /**
+   * Confirma la eliminación de una entidad.
+   */
   onConfirm() {
     this.isLoading = true;
     // @ts-ignore
@@ -230,24 +232,31 @@ export class EntityTableComponent  implements OnInit, OnDestroy{
         this.alertVisible = true;
         this.tipoAlert = "success";
         this.mensajeAlert = `${this.config.entityName} eliminado.`;
-        // alert(`${this.config.entityName} eliminado.`);
-        this.resetAndLoadData(); // Recargar datos, idealmente a la página actual o la anterior si esta queda vacía
+        this.resetAndLoadData();
       },
       error: (err) => {
         this.alertVisible = true;
         this.tipoAlert = "error";
         this.mensajeAlert = `Error al eliminar ${this.config.entityName}.`;
         console.error("Error al eliminar:", err);
-        // alert(`Error al eliminar ${this.config.entityName}.`);
         this.isLoading = false;
       }
     });
     this.showAlertConfirmar = false
   }
+  /**
+   * Cancela la acción de eliminación o restauración.
+   */
   onCalcel() {
     this.showAlertConfirmar = false
     this.item = null;
   }
+
+  /**
+   * Redirige a una ruta específica con el ID encriptado.
+   * @param id
+   * @param ruta
+   */
   redireccionar(id: string, ruta: string): void {
     this.zone.run(() => {
       const idEncrypt = this.encryptService.encriptar(id);
@@ -286,7 +295,7 @@ export class EntityTableComponent  implements OnInit, OnDestroy{
     this.isLoading = true;
     let operation: Observable<any>;
 
-    if (this.modalData && this.modalData.id) { // Editando
+    if (this.modalData && this.modalData.id) {
       if (!this.config.updateEntity) {
         console.warn("updateEntity no configurado.");
         this.isLoading = false;
@@ -309,21 +318,16 @@ export class EntityTableComponent  implements OnInit, OnDestroy{
         this.alertVisible = true;
         this.tipoAlert = "success";
         this.mensajeAlert = `${this.config.entityName} ${this.modalData?.id ? 'actualizado' : 'creado'}.`;
-        // alert(`${this.config.entityName} ${this.modalData?.id ? 'actualizado' : 'creado'}.`);
         this.isModalOpen = false;
-        this.resetAndLoadData(); // Recarga los datos
+        this.resetAndLoadData();
       },
       error: (err) => {
         this.alertVisible = true;
         this.tipoAlert = "error";
         this.mensajeAlert = `Error al guardar ${this.config.entityName}.`;
         console.error("Error al guardar:", err);
-        // alert(`Error al guardar ${this.config.entityName}.`);
-        this.isLoading = false; // Mantener el modal abierto para corrección o reintento
+        this.isLoading = false;
       }
     });
   }
-
-
-
 }

@@ -87,7 +87,6 @@ export class GenericTableComponent  implements OnInit {
   /**
    * Determina si la columna de acciones debe mostrarse.
    */
-  // Determina si la columna de acciones debe mostrarse
 
   showActionsColumn(): boolean {
     return !!(this.actionsConfig.edit || this.actionsConfig.delete || this.actionsConfig.view || this.actionsConfig.restore);

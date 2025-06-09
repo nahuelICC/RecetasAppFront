@@ -13,6 +13,10 @@ export class AlergenoService {
   private apiUrl = '/api/alergeno';
   constructor(private http: HttpClient) {
   }
+
+  /**
+   * Obtiene la lista de alérgenos desde el backend.
+   */
   getAlergenos(): Observable<AlergenoNoImgDTO[]> {
   return this.http.get<any>(`${this.apiUrl}/admin/listar`);
 

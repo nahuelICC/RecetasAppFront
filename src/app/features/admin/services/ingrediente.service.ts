@@ -14,7 +14,10 @@ import {IngredienteAdminDTO} from '../models/IngredienteAdminDTO';
 export class IngredienteService {
   private apiUrl = '/api/ingrediente';
   constructor(private http: HttpClient) { }
-
+  /**
+   * Obtiene la lista de ingredientes desde el backend.
+   * @returns Observable que emite un array de ingredientes.
+   */
   getIngredientes(page: number, size: number, searchTerm: string, showingActivos: boolean): Observable<{ data: IngredienteAdminDTO[], totalItems: number , totalPages: number}> {
     let params = new HttpParams()
       .set('page', (page - 1).toString())
@@ -36,15 +39,29 @@ export class IngredienteService {
         })
       );
   }
-  crearIngrediente(ingredienteData: any): Observable<IngredienteAdminDTO> {
-    return this.http.post<IngredienteAdminDTO>(`${this.apiUrl}/admin/crear`, ingredienteData);
+  /**
+   * crea un ingrediente.
+   * @param ingredienteData
+   * @returns Observable que emite el ingrediente creado.
+   */
+  crearIngrediente(ingredienteData: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/admin/crear`, ingredienteData);
   }
-
+  /**
+   * actualiza un ingrediente por su ID.
+   * @param id ID del ingrediente.
+   * @param ingredienteData Datos del ingrediente a actualizar.
+   * @returns Observable que emite el ingrediente actualizdo.
+   */
   actualizarIngrediente(id: number, ingredienteData: any): Observable<any> {
     ingredienteData.id = id;
     return this.http.put<any>(`${this.apiUrl}/admin/actualizar`, ingredienteData);
   }
-
+  /**
+   * oculta un ingrediente por su ID.
+   * @param id ID del ingrediente.
+   * @returns Observable que emite el ingrediente ocultado.
+   */
   ocultarIngrediente(id: number): Observable<any> {
     return this.http.put<void>(`${this.apiUrl}/admin/desactivar`, id);
   }
