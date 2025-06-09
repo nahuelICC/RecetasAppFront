@@ -17,4 +17,6 @@ export interface RecetaViewResponse {
     grasas:       number;
     alergenos:    Alergeno[];
     video:       string;
+    cooker:      string;
+    idCooker: number;
 }

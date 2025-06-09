@@ -277,4 +277,16 @@ export class RecetaViewComponent implements OnInit {
     }
 
   }
+
+  /**
+   * Redirecciona al perfil del usuario que creó la receta.
+   */
+  redireccionarPerfilUsuario(id: string): void {
+    this.zone.run(() => {
+      const idEncrypt = this.encryptService.encriptar(id);
+      this.router.navigate(['/perfil', idEncrypt]).then(() => {
+        window.location.reload();
+      });
+    });
+  }
 }

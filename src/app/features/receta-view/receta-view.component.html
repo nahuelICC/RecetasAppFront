@@ -3,6 +3,9 @@
   <!-- Info plato -->
   <app-info-plato [receta]="receta"></app-info-plato>
 
+
+  <h2 class="text-2xl font-bold color-texto-blanco tracking-wider cursor-pointer" (click)="redireccionarPerfilUsuario(receta.idCooker.toString())">Autor: &#64;{{receta.cooker}}</h2>
+
   <!-- Alérgenos -->
   <section class="space-y-4" *ngIf="receta.alergenos.length > 0">
     <h2 class="text-2xl font-bold color-texto-blanco tracking-wider">Alérgenos</h2>
