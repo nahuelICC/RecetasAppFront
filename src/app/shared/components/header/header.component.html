@@ -44,14 +44,14 @@
       </ion-avatar>
 
       <div *ngIf="menuOpen" class="absolute right-0 mt-2 w-48 bg-white shadow-xl rounded-lg z-50 border border-gray-200">
-        <button class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2"[routerLink]="'perfil'">
+        <button class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2 text-black"[routerLink]="'perfil'" (click)="menuOpen = false">
           Perfil
         </button>
-        <button class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2" (click)="toggleTheme()">
+        <button class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2 text-black" (click)="toggleTheme(); menuOpen = false">
           <ion-icon [name]="isLightMode ? 'sunny' : 'moon'" class="text-lg"></ion-icon>
           Modo {{ isLightMode ? 'Claro' : 'Oscuro' }}
         </button>
-        <button class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2" (click)="logout()">
+        <button class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2 text-black" (click)="logout(); menuOpen = false">
           Cerrar Sesión
         </button>
 

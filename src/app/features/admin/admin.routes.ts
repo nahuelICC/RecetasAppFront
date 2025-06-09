@@ -113,9 +113,9 @@ export const usuariosConfigResolver: ResolveFn<EntityConfiguration> = (route, st
       create: true,
       tableColumns: [
         { key: 'id', label: 'ID' },
-        { key: 'usuario', label: 'Nombre usuaio' },
+        { key: 'usuario', label: 'Nombre usuario' },
         { key: 'email', label: 'Email'},
-        { key: 'fechaCreacion', label: 'Fehca creación', isDate:true},
+        { key: 'fechaCreacion', label: 'Fecha creación', isDate:true},
         { key: 'rol', label: 'Rol', isSelect: true },
       ],
       formConfig: {
