@@ -24,7 +24,6 @@ import { AlertConfirmarComponent } from '../../../../shared/components/alert-con
     NgIf,
     NgFor,
     FormsModule,
-    IonIcon,
     AlertConfirmarComponent
   ]
 })

@@ -10,7 +10,6 @@ import {AlertInfoComponent} from '../../shared/components/alert-info/alert-info.
   imports: [
     RouterOutlet,
     SidebarNavComponent,
-    AlertInfoComponent
   ],
   standalone: true
 })

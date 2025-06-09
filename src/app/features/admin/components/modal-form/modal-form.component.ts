@@ -36,7 +36,6 @@ export interface FormConfig {
     NgForOf,
     NgSwitch,
     NgSwitchCase,
-    AlertInfoComponent
   ]
 })
 export class ModalFormComponent implements OnInit, OnChanges {

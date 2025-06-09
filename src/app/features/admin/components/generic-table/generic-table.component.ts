@@ -28,7 +28,6 @@ export interface TableActionsConfig {
     CurrencyPipe,
     NgIf,
     NgForOf,
-    NgClass,
     TitleCasePipe
   ]
 })

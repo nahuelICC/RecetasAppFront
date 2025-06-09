@@ -1,32 +1,61 @@
-:root{
-  --color-verde-fondo:#004643;
-  --color-verde-boton:#81C784;
-  --color-texto:#001e1d;
-  --color-texto-blanco:#ffff;
-  --color-verde-cuadros:#abd1c6;
+:root {
+  /* Colores existentes */
+  --color-verde-fondo: #004643;
+  --color-verde-boton: #81c784;
+  --color-texto: #001e1d;
+  --color-texto-blanco: #ffff;
+  --color-verde-cuadros: #abd1c6;
   --color-amarillo-boton: #f9bc60;
-  --color-rojo-resaltar:#e16162;
+  --color-rojo-resaltar: #e16162;
   --color-verde-translucido: rgba(171, 209, 198, 0.5);
   --color-verde-detalles: #003836;
-  --color-gris: #CAC4D0;
+  --color-gris: #cac4d0;
   --color-fondo-comentarios: #f0f0f0;
   --color-texto-comentarios: #004643;
 
+  /* Nuevos colores para el chat - MODO OSCURO */
+  --chat-sidebar-bg: #004643;
+  --chat-main-bg: #004643;
+  --chat-sent-bubble: #0a9396;
+  --chat-received-bubble: #00635b;
+  --chat-input-bg: #abd1c6;
+  --chat-header-bg: #004643;
+  --chat-text: #ffffff;
+  --chat-text-dark: #ffffff;
+  --chat-border: #006466;
+  --chat-highlight: #f9bc60;
+  --chat-timestamp: rgba(255, 255, 255, 0.6);
+  --chat-shadow: rgba(0, 0, 0, 0.1);
+  --chat-hover: rgba(171, 209, 198, 0.3);
 }
 
-.light-theme{
-    --color-verde-fondo:#fdfaf6;
-    --color-verde-boton:#007f5f;
-    --color-texto:#001e1d;
-    --color-texto-blanco:#001e1d;
-    --color-verde-cuadros:#2dbfa8;
-    --color-amarillo-boton: #fde24f;
-    --color-rojo-resaltar:#ff5470;
-    --color-verde-translucido: rgba(45, 191, 168, 0.5);
-    --color-verde-detalles: #007A52;
-    --color-gris: #CAC4D0;
-    --color-fondo-comentarios: #004643;
-    --color-texto-comentarios: #fff;
+.light-theme {
+  /* Colores existentes */
+  --color-verde-fondo: #fdfaf6;
+  --color-verde-boton: #007f5f;
+  --color-texto: #001e1d;
+  --color-texto-blanco: #001e1d;
+  --color-verde-cuadros: #2dbfa8;
+  --color-amarillo-boton: #fde24f;
+  --color-rojo-resaltar: #ff5470;
+  --color-verde-translucido: rgba(45, 191, 168, 0.5);
+  --color-verde-detalles: #007a52;
+  --color-gris: #cac4d0;
+  --color-fondo-comentarios: #004643;
+  --color-texto-comentarios: #fff;
 
-
+  /* Nuevos colores para el chat - MODO CLARO */
+  --chat-sidebar-bg: #e9f5f2;
+  --chat-main-bg: #ffffff;
+  --chat-sent-bubble: #2dbfa8;
+  --chat-received-bubble: #f0f0f0;
+  --chat-input-bg: #f0f4f8;
+  --chat-header-bg: #e9f5f2;
+  --chat-text: #001e1d;
+  --chat-text-dark: #001e1d;
+  --chat-border: #d1e8e2;
+  --chat-highlight: #fde24f;
+  --chat-timestamp: rgba(0, 30, 29, 0.6);
+  --chat-shadow: rgba(0, 0, 0, 0.05);
+  --chat-hover: rgba(45, 191, 168, 0.2);
 }
