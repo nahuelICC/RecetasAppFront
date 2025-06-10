@@ -34,7 +34,7 @@ export class NutriscoreComponent {
   pageSize: number = 10;
   totalProducts: number = 0;
 
-  private backendUrl = '/api/alimento/buscar';
+  private backendUrl = 'https://cookersback.onrender.com/alimento/buscar';
 
   constructor(private http: HttpClient) {}
 

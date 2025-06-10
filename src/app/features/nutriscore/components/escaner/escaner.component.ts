@@ -52,7 +52,7 @@ export class EscanerComponent {
   async scanSuccessHandler(barcode: string) {
     try {
       this.loading = true;
-      const response = await this.http.post<any>('/api/alimento/find', { barcode }).toPromise();
+      const response = await this.http.post<any>('https://cookersback.onrender.com/alimento/find', { barcode }).toPromise();
       this.productData = response;
       this.loading = false;
     } catch (error) {

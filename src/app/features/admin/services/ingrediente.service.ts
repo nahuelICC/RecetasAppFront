@@ -12,7 +12,7 @@ import {IngredienteAdminDTO} from '../models/IngredienteAdminDTO';
   providedIn: 'root'
 })
 export class IngredienteService {
-  private apiUrl = '/api/ingrediente';
+  private apiUrl = 'https://cookersback.onrender.com/ingrediente';
   constructor(private http: HttpClient) { }
   /**
    * Obtiene la lista de ingredientes desde el backend.

@@ -8,7 +8,7 @@ import {Observable} from 'rxjs';
 })
 export class CambioPasswordService {
 
-  private apiUrl = '/api/usuario';
+  private apiUrl = 'https://cookersback.onrender.com/usuario';
 
   constructor(private http:HttpClient) { }
 

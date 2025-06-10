@@ -7,7 +7,7 @@ import {Observable} from 'rxjs';
 })
 export class LoginService {
 
-  private apiUrl = '/api/auth';
+  private apiUrl = 'https://cookersback.onrender.com/auth';
 
   constructor(private http:HttpClient) { }
 

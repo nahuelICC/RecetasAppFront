@@ -6,7 +6,7 @@ import {Observable} from 'rxjs';
   providedIn: 'root'
 })
 export class AlergenoService {
-  private apiUrl = '/api/alergeno';
+  private apiUrl = 'https://cookersback.onrender.com/alergeno';
   constructor(private http: HttpClient) {
   }
   /**

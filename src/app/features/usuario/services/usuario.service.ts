@@ -8,11 +8,11 @@ import {Observable} from 'rxjs';
 })
 export class UsuarioService {
 
-  private apiUrl = '/api/cooker';
-  private apiUrlUsuario = '/api/usuario';
-  private apiUrlReceta = '/api/receta';
-  private apiUrlColeccion = '/api/coleccion';
-  private apiUrlListaCompra = '/api/listaCompra';
+  private apiUrl = 'https://cookersback.onrender.com/cooker';
+  private apiUrlUsuario = 'https://cookersback.onrender.com/usuario';
+  private apiUrlReceta = 'https://cookersback.onrender.com/receta';
+  private apiUrlColeccion = 'https://cookersback.onrender.com/coleccion';
+  private apiUrlListaCompra = 'https://cookersback.onrender.com/listaCompra';
 
 
 

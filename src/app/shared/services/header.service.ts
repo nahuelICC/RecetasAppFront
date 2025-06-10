@@ -6,7 +6,7 @@ import {HttpClient} from '@angular/common/http';
 })
 export class HeaderService {
 
-  private apiUrl = '/api/cooker';
+  private apiUrl = 'https://cookersback.onrender.com/cooker';
 
   constructor(private http:HttpClient) { }
 

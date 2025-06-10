@@ -8,7 +8,7 @@ import {RecetasExploradorFiltroDTO} from '../models/RecetasExploradorFiltroDTO';
 })
 export class RecetaService {
 
-  private apiUrl = '/api/receta';
+  private apiUrl = 'https://cookersback.onrender.com/receta';
   constructor(private http: HttpClient) { }
   /**
    * Obtiene las recetas filtradas según los criterios proporcionados.

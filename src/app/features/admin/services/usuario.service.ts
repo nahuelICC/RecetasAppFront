@@ -9,7 +9,7 @@ import {UsuarioAdminDTO} from '../models/UsuarioAdminDTO';
   providedIn: 'root'
 })
 export class UsuarioService {
-  private apiUrl = '/api/usuario';
+  private apiUrl = 'https://cookersback.onrender.com/usuario';
   constructor( private http: HttpClient ) { }
   /**
    * Obtiene la lista de usuarios paginados desde el backend.

@@ -8,7 +8,7 @@ import {UsuarioExploradorFiltroDTO} from '../models/UsuarioExploradorFiltroDTO';
 })
 export class UsuarioService {
 
-  private apiUrl = '/api/usuario';
+  private apiUrl = 'https://cookersback.onrender.com/usuario';
   constructor(private http: HttpClient) { }
   /**
    * Obtiene los usuarios filtrados según los criterios proporcionados.

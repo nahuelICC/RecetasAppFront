@@ -8,7 +8,7 @@ import {Page} from '../models/Page';
   providedIn: 'root'
 })
 export class RecetaService {
-  private apiUrl = '/api/receta';
+  private apiUrl = 'https://cookersback.onrender.com/receta';
   constructor( private http: HttpClient ) { }
 
   /**

@@ -7,7 +7,7 @@ import {GetNotificacionDTO} from '../Models/GetNotificacionDTO';
   providedIn: 'root'
 })
 export class NotificacionesService {
-  private apiUrl = 'api/notificacion';
+  private apiUrl = 'https://cookersback.onrender.com/notificacion';
   private notificacionesNoLeidasCountSubject = new BehaviorSubject<number>(0);
   notificacionesNoLeidasCount$ = this.notificacionesNoLeidasCountSubject.asObservable();
   constructor(private http: HttpClient) { }

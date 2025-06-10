@@ -12,7 +12,7 @@ import { CrearComentario } from '../models/CrearComentario';
 })
 export class ComentarioService {
 
-  private apiUrl = '/api';
+  private apiUrl = 'https://cookersback.onrender.com';
 
 
 constructor(

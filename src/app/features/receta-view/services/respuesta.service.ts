@@ -8,7 +8,7 @@ import { CrearRespuesta } from '../../../core/models/CrearRespuesta';
   providedIn: 'root'
 })
 export class RespuestaService {
-  private apiUrl = '/api/respuesta';
+  private apiUrl = 'https://cookersback.onrender.com/respuesta';
 
   constructor(
     private http: HttpClient

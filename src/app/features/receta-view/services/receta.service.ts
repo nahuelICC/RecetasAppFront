@@ -10,9 +10,9 @@ import { PasoResponse } from '../models/PasoResponse';
 export class RecetaService {
 
 
-  private apiUrl = '/api/receta';
-  private apiIngredientesUrl = '/api/ingrediente';
-  private apiUsuarioUrl = '/api/usuario';
+  private apiUrl = 'https://cookersback.onrender.com/receta';
+  private apiIngredientesUrl = 'https://cookersback.onrender.com/ingrediente';
+  private apiUsuarioUrl = 'https://cookersback.onrender.com/usuario';
 
 
   constructor(private http: HttpClient) {

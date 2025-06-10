@@ -7,9 +7,9 @@ import {Observable} from 'rxjs';
 })
 export class RegistroService {
 
-  private apiUrl = '/api/alergeno';
-  private apiIngredientesUrl = '/api/ingrediente';
-  private apiUsuarioUrl = '/api/usuario';
+  private apiUrl = 'https://cookersback.onrender.com/alergeno';
+  private apiIngredientesUrl = 'https://cookersback.onrender.com/ingrediente';
+  private apiUsuarioUrl = 'https://cookersback.onrender.com/usuario';
 
 
   constructor(private http: HttpClient) {

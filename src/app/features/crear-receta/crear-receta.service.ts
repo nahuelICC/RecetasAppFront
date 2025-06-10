@@ -12,7 +12,7 @@ import { Observable } from 'rxjs';
 export class CrearRecetaService {
   constructor(private http: HttpClient) {}
 
-  private apiUrl = 'api/';
+  private apiUrl = 'https://cookersback.onrender.com/';
 
   /**
    * Endpoint que obtiene todos los ingredientes.

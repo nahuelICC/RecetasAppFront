@@ -13,7 +13,7 @@ import { ChatDTO, ConversacionDTO } from './models/chat.dto';
   providedIn: 'root'
 })
 export class ChatService {
-  private apiUrl = '/api/chat';
+  private apiUrl = 'https://cookersback.onrender.com/chat';
   private conversacionesSubject = new BehaviorSubject<ConversacionDTO[]>([]);
   conversaciones$ = this.conversacionesSubject.asObservable();
 

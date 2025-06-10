@@ -8,8 +8,8 @@ import {RecetaInicioDTO} from '../models/RecetaInicioDTO';
 })
 export class InicioService {
 
-  private apiUrl = 'api/receta';
-  private listaCompraUrl = 'api/listaCompra';// URL base del backend
+  private apiUrl = 'https://cookersback.onrender.com/receta';
+  private listaCompraUrl = 'https://cookersback.onrender.com/listaCompra';// URL base del backend
 
   constructor(private http: HttpClient) {}
 

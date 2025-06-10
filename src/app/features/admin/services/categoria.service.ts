@@ -10,7 +10,7 @@ import {CategoriaNoMedidaDTO} from '../models/CategoriaNoMedidaDTO';
   providedIn: 'root'
 })
 export class CategoriaService {
-  private apiUrl = '/api/categoria';
+  private apiUrl = 'https://cookersback.onrender.com/categoria';
   constructor(private http: HttpClient) {
 
   }
