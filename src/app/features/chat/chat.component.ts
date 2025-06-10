@@ -1,12 +1,12 @@
 import {
   Component,
-   OnInit,
-   OnDestroy,
+  OnInit,
+  OnDestroy,
   ViewChild,
-   ElementRef,
-   AfterViewInit,
-   ChangeDetectorRef,
-   NgZone,
+  ElementRef,
+  AfterViewInit,
+  ChangeDetectorRef,
+  NgZone,
 } from "@angular/core"
 import  { ChatService } from "./chat.service"
 import  { AuthService } from "../../core/services/auth.service"
@@ -58,6 +58,8 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
   usuariosSeguidos: any[] = []
   mostrarResultadosBusqueda = false
   perfilBloqueado = false
+  private scrollTimeout: any;
+  private resizeObserver: ResizeObserver | null = null;
 
   // Nuevas propiedades para emojis
   showEmojiPicker = false
@@ -181,6 +183,15 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
     this.platform.resize.subscribe(() => this.checkMobile())
   }
 
+  // FUNCIONES TRACKBY PARA OPTIMIZACIÓN
+  trackByConversacion(index: number, conversacion: ConversacionDTO): number {
+    return conversacion.otroUsuarioId
+  }
+
+  trackByMensaje(index: number, mensaje: ChatDTO): number {
+    return mensaje.id || index
+  }
+
   /**
    * Método que se ejecuta al inicializar el componente
    */
@@ -204,18 +215,44 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
    * @private
    */
   private setupMutationObserver(): void {
-    if (!this.scrollContainer) return
+    if (!this.scrollContainer) return;
 
     this.zone.runOutsideAngular(() => {
-      this.mutationObserver = new MutationObserver(() => {
-        this.scrollToBottom()
-      })
+      // MutationObserver para cambios en el DOM
+      this.mutationObserver = new MutationObserver((mutations) => {
+        let shouldScroll = false;
+
+        mutations.forEach((mutation) => {
+          if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+            shouldScroll = true;
+          }
+        });
+
+        if (shouldScroll) {
+          // Delay más largo para componentes que cargan contenido dinámico
+          this.scrollToBottom(false, 100);
+        }
+      });
 
       this.mutationObserver.observe(this.scrollContainer.nativeElement, {
         childList: true,
         subtree: true,
-      })
-    })
+        attributes: true,
+        attributeFilter: ['style', 'class']
+      });
+
+      // ResizeObserver para detectar cambios de tamaño (como cuando se carga preview-receta)
+      this.resizeObserver = new ResizeObserver((entries) => {
+        for (let entry of entries) {
+          // Solo hacer scroll si el contenido creció
+          if (entry.contentRect.height > 0) {
+            this.scrollToBottom(false, 50);
+          }
+        }
+      });
+
+      this.resizeObserver.observe(this.scrollContainer.nativeElement);
+    });
   }
 
   /**
@@ -251,14 +288,35 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
       this.chatService.conversaciones$
         .pipe(
           switchMap((conversaciones) => {
-            // Verificar bloqueo para cada conversación
-            const verificaciones = conversaciones.map((conv) =>
+            // Solo verificar bloqueo para conversaciones nuevas
+            const conversacionesExistentes = new Set(this.conversaciones.map((c) => c.otroUsuarioId))
+            const conversacionesNuevas = conversaciones.filter(
+              (conv) => !conversacionesExistentes.has(conv.otroUsuarioId),
+            )
+
+            if (conversacionesNuevas.length === 0) {
+              return of(
+                conversaciones.map((conv) => ({ ...conv, bloqueado: this.usuariosBloqueados.has(conv.otroUsuarioId) })),
+              )
+            }
+
+            const verificaciones = conversacionesNuevas.map((conv) =>
               this.usuarioService.perfilBloqueado(conv.otroUsuarioId.toString()).pipe(
                 map((bloqueado) => ({ ...conv, bloqueado })),
                 catchError(() => of({ ...conv, bloqueado: false })),
               ),
             )
-            return forkJoin(verificaciones)
+
+            return forkJoin(verificaciones).pipe(
+              map((nuevasConversaciones) => {
+                // Combinar conversaciones existentes con las nuevas verificadas
+                const todasLasConversaciones = conversaciones.map((conv) => {
+                  const nuevaConv = nuevasConversaciones.find((nc) => nc.otroUsuarioId === conv.otroUsuarioId)
+                  return nuevaConv || { ...conv, bloqueado: this.usuariosBloqueados.has(conv.otroUsuarioId) }
+                })
+                return todasLasConversaciones
+              }),
+            )
           }),
         )
         .subscribe({
@@ -282,6 +340,34 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
         }),
     )
     this.chatService.refreshConversaciones()
+  }
+
+  /**
+   * MÉTODO OPTIMIZADO: Actualiza solo una conversación específica
+   * @private
+   */
+  private actualizarConversacionEspecifica(usuarioId: number, ultimoMensaje: string, fecha: Date): void {
+    const index = this.conversaciones.findIndex((c) => c.otroUsuarioId === usuarioId)
+    if (index !== -1) {
+      // Actualizar solo la conversación específica
+      this.conversaciones[index] = {
+        ...this.conversaciones[index],
+        ultimoMensaje,
+        fechaUltimoMensaje: fecha,
+        noLeidos: usuarioId !== this.usuarioDestinoId, // Solo marcar como no leído si no es la conversación actual
+      }
+
+      // Mover la conversación al principio si no es la actual
+      if (index !== 0) {
+        const conversacionActualizada = this.conversaciones.splice(index, 1)[0]
+        this.conversaciones.unshift(conversacionActualizada)
+      }
+
+      this.cdr.detectChanges()
+    } else {
+      // Solo refrescar si la conversación no existe
+      this.chatService.refreshConversaciones()
+    }
   }
 
   /**
@@ -373,49 +459,51 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * Método que inicializa el WebSocket para recibir mensajes
+   * Método que inicializa el WebSocket para recibir mensajes - OPTIMIZADO
    * @private
    */
   private initWebSocket(): void {
     this.subscriptions.push(
       this.websocketService.getMessages().subscribe({
         next: (msg) => {
-          if (!msg) return
+          if (!msg) return;
 
-          // Verificar si el mensaje es de un usuario bloqueado
           if (this.usuariosBloqueados.has(msg.remitenteId)) {
-            return // Ignorar mensajes de usuarios bloqueados
+            return;
           }
 
           if (msg.borrado) {
-            const index = this.mensajes.findIndex((m) => m.id === msg.id)
+            const index = this.mensajes.findIndex((m) => m.id === msg.id);
             if (index !== -1) {
-              this.mensajes[index] = msg
-              this.cdr.detectChanges()
-              return
+              this.mensajes[index] = msg;
+              this.cdr.detectChanges();
+              return;
             }
           }
 
-          // Solo procesar mensajes si no estamos en un chat bloqueado
           if (!this.perfilBloqueado) {
-            this.audioService.reproducir("mensaje")
-            this.chatService.refreshConversaciones()
+            this.audioService.reproducir("mensaje");
+
+            const otroUsuarioId = msg.remitenteId === this.usuarioActualId ? msg.destinatarioId : msg.remitenteId;
+            this.actualizarConversacionEspecifica(otroUsuarioId, msg.texto, msg.fecha);
 
             if (
               (msg.remitenteId === this.usuarioDestinoId && msg.destinatarioId === this.usuarioActualId) ||
               (msg.remitenteId === this.usuarioActualId && msg.destinatarioId === this.usuarioDestinoId)
             ) {
-              this.mensajes.push(msg)
-              this.shouldScrollToBottom = true
-              this.cdr.detectChanges()
-              this.scrollToBottom(true)
-              this.marcarMensajesComoLeidos()
+              this.mensajes.push(msg);
+              this.shouldScrollToBottom = true;
+
+              // Detección de cambios y scroll con delay para contenido dinámico
+              this.cdr.detectChanges();
+              this.scrollToBottom(true, 150);
+              this.marcarMensajesComoLeidos();
             }
           }
         },
         error: (err) => console.error("Error en mensajes WebSocket:", err),
       }),
-    )
+    );
   }
 
   /**
@@ -616,26 +704,35 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * Desplaza el contenedor de mensajes hacia abajo de forma optimizada
+   * Método optimizado para scroll al final - VERSIÓN MEJORADA
    */
-  scrollToBottom(force = false): void {
-    if (!this.scrollContainer?.nativeElement) return
+  scrollToBottom(force = false, delay = 0): void {
+    if (!this.scrollContainer?.nativeElement) return;
+
+    // Limpiar timeout anterior si existe
+    if (this.scrollTimeout) {
+      clearTimeout(this.scrollTimeout);
+    }
 
     this.zone.runOutsideAngular(() => {
-      setTimeout(() => {
+      this.scrollTimeout = setTimeout(() => {
         try {
-          const element = this.scrollContainer.nativeElement
-          const isNearBottom = element.scrollHeight - element.scrollTop - element.clientHeight < 100
+          const element = this.scrollContainer.nativeElement;
+          const isNearBottom = element.scrollHeight - element.scrollTop - element.clientHeight < 150;
 
           if (force || isNearBottom || this.shouldScrollToBottom) {
-            element.scrollTop = element.scrollHeight
-            this.shouldScrollToBottom = false
+            // Usar scrollTo con behavior smooth para mejor UX
+            element.scrollTo({
+              top: element.scrollHeight,
+              behavior: force ? 'auto' : 'smooth'
+            });
+            this.shouldScrollToBottom = false;
           }
         } catch (err) {
-          console.error("Error al hacer scroll:", err)
+          console.error("Error al hacer scroll:", err);
         }
-      }, 0)
-    })
+      }, delay);
+    });
   }
 
   /**
@@ -643,16 +740,16 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param loadMore
    */
   cargarMensajes(loadMore = false): void {
-    if (!this.usuarioDestinoId || this.perfilBloqueado) return
+    if (!this.usuarioDestinoId || this.perfilBloqueado) return;
 
     if (loadMore) {
-      if (this.allMessagesLoaded || this.loadingMore) return
-      this.currentPage++
-      this.loadingMore = true
+      if (this.allMessagesLoaded || this.loadingMore) return;
+      this.currentPage++;
+      this.loadingMore = true;
     } else {
-      this.currentPage = 0
-      this.allMessagesLoaded = false
-      this.shouldScrollToBottom = true
+      this.currentPage = 0;
+      this.allMessagesLoaded = false;
+      this.shouldScrollToBottom = true;
     }
 
     this.chatService
@@ -660,41 +757,45 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
       .subscribe({
         next: (mensajes) => {
           if (loadMore) {
-            const prevScrollHeight = this.scrollContainer.nativeElement.scrollHeight
-            const prevScrollTop = this.scrollContainer.nativeElement.scrollTop
+            const prevScrollHeight = this.scrollContainer.nativeElement.scrollHeight;
+            const prevScrollTop = this.scrollContainer.nativeElement.scrollTop;
 
-            this.mensajes = [...mensajes.reverse(), ...this.mensajes]
+            this.mensajes = [...mensajes.reverse(), ...this.mensajes];
 
-            this.cdr.detectChanges()
-
-            // Mantener posición de scroll después de cargar mensajes anteriores
-            this.zone.runOutsideAngular(() => {
-              setTimeout(() => {
-                const newScrollHeight = this.scrollContainer.nativeElement.scrollHeight
-                this.scrollContainer.nativeElement.scrollTop = prevScrollTop + (newScrollHeight - prevScrollHeight)
-              }, 0)
-            })
+            // Usar requestAnimationFrame para mejor sincronización
+            requestAnimationFrame(() => {
+              this.cdr.detectChanges();
+              requestAnimationFrame(() => {
+                const newScrollHeight = this.scrollContainer.nativeElement.scrollHeight;
+                this.scrollContainer.nativeElement.scrollTop = prevScrollTop + (newScrollHeight - prevScrollHeight);
+              });
+            });
           } else {
-            this.mensajes = mensajes.reverse()
-            this.cdr.detectChanges()
-            this.scrollToBottom(true)
+            this.mensajes = mensajes.reverse();
+
+            // Para mensajes nuevos, asegurar scroll al final con delay
+            requestAnimationFrame(() => {
+              this.cdr.detectChanges();
+              // Delay adicional para componentes que cargan contenido dinámico
+              this.scrollToBottom(true, 200);
+            });
           }
 
           if (mensajes.length < this.pageSize) {
-            this.allMessagesLoaded = true
+            this.allMessagesLoaded = true;
           }
 
-          this.loading = false
-          this.loadingMore = false
-          this.marcarMensajesComoLeidos()
+          this.loading = false;
+          this.loadingMore = false;
+          this.marcarMensajesComoLeidos();
         },
         error: (err) => {
-          this.loading = false
-          this.loadingMore = false
-          console.error("Error al cargar mensajes:", err)
-          this.error = "Error al cargar los mensajes"
+          this.loading = false;
+          this.loadingMore = false;
+          console.error("Error al cargar mensajes:", err);
+          this.error = "Error al cargar los mensajes";
         },
-      })
+      });
   }
 
   /**
@@ -703,23 +804,28 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   seleccionarConversacion(usuarioId: number): void {
     if (usuarioId === this.usuarioActualId) {
-      this.error = "No puedes chatear contigo mismo"
-      return
+      this.error = "No puedes chatear contigo mismo";
+      return;
     }
 
     if (this.usuarioDestinoId === usuarioId) {
-      return
+      return;
     }
 
-    const encryptedId = this.encryptService.encriptar(usuarioId.toString())
-    this.router.navigate(["/chat", encryptedId])
+    const encryptedId = this.encryptService.encriptar(usuarioId.toString());
+    this.router.navigate(["/chat", encryptedId]).then(() => {
+      // Asegurar scroll al final después de navegar
+      setTimeout(() => {
+        this.scrollToBottom(true, 300);
+      }, 500);
+    });
   }
 
   /**
-   * Envía un mensaje al usuario destino.
+   * Envía un mensaje al usuario destino - OPTIMIZADO
    */
   enviarMensaje(): void {
-    if (!this.nuevoMensaje.trim() || !this.usuarioDestinoId || this.perfilBloqueado) return
+    if (!this.nuevoMensaje.trim() || !this.usuarioDestinoId || this.perfilBloqueado) return;
 
     this.usuarioService.getPerfil().subscribe({
       next: (perfil) => {
@@ -732,28 +838,31 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
           borrado: false,
           remitenteNombre: perfil.nombre || "Usuario",
           remitenteFoto: perfil.fotoPerfil || "assets/frutero.png",
-        }
+        };
 
         this.chatService.enviarMensaje(mensaje).subscribe({
           next: (mensajeGuardado) => {
-            this.mensajes.push(mensajeGuardado)
-            this.nuevoMensaje = ""
-            this.shouldScrollToBottom = true
-            this.cdr.detectChanges()
-            this.scrollToBottom(true)
-            this.chatService.refreshConversaciones()
+            this.mensajes.push(mensajeGuardado);
+            this.nuevoMensaje = "";
+            this.shouldScrollToBottom = true;
+
+            // Forzar detección de cambios y scroll inmediato
+            this.cdr.detectChanges();
+            this.scrollToBottom(true, 100);
+
+            this.actualizarConversacionEspecifica(this.usuarioDestinoId!, mensajeGuardado.texto, mensajeGuardado.fecha);
           },
           error: (err) => {
-            console.error("Error al enviar mensaje:", err)
-            this.error = "Error al enviar el mensaje"
+            console.error("Error al enviar mensaje:", err);
+            this.error = "Error al enviar el mensaje";
           },
-        })
+        });
       },
       error: (err) => {
-        console.error("Error al obtener perfil:", err)
-        this.error = "Error al cargar datos del usuario"
+        console.error("Error al obtener perfil:", err);
+        this.error = "Error al cargar datos del usuario";
       },
-    })
+    });
   }
 
   /**
@@ -810,12 +919,21 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * Desconecta el WebSocket y limpia las suscripciones al destruir el componente.
+   * Cleanup mejorado
    */
   ngOnDestroy(): void {
-    this.mutationObserver?.disconnect()
-    this.subscriptions.forEach((sub) => sub.unsubscribe())
-    this.websocketService.disconnect()
+    // Limpiar timeout
+    if (this.scrollTimeout) {
+      clearTimeout(this.scrollTimeout);
+    }
+
+    // Limpiar observers
+    this.mutationObserver?.disconnect();
+    this.resizeObserver?.disconnect();
+
+    // Limpiar suscripciones
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
+    this.websocketService.disconnect();
   }
 
   /**
