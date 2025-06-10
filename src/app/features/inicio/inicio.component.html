@@ -81,14 +81,14 @@
         <button
           *ngIf="recetasSiguiendoVisible.length < recetasSiguiendo.length"
           (click)="verMasSiguiendo()"
-          class="color-boton-verde text-white font-bold py-2 px-6 rounded hover:bg-yellow-500">
+          class="bg-[var(--color-verde-boton)] text-white font-bold py-2 px-6 rounded">
           Ver más
         </button>
 
         <button
           *ngIf="recetasSiguiendoVisible.length > cantidadInicialSiguiendo"
           (click)="verMenosSiguiendo()"
-          class="color-boton-amarillo text-white font-bold py-2 px-6 rounded hover:bg-gray-600">
+          class="bg-[var(--color-amarillo-boton)] text-white font-bold py-2 px-6 rounded">
           Ver menos
         </button>
       </div>
