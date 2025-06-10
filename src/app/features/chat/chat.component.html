@@ -22,7 +22,7 @@
       <div *ngIf="loading" class="flex-1 flex items-center justify-center p-4">
         <div class="flex flex-col items-center">
           <ion-icon name="refresh-outline" class="animate-spin text-2xl text-[var(--chat-highlight)] mb-2"></ion-icon>
-          <span class="text-sm text-[var(--chat-text-dark)]">Cargando...</span>
+          <span class="text-sm text-[var(--chat-text-dark)] hidden md:block">Cargando...</span>
         </div>
       </div>
 
@@ -82,10 +82,42 @@
                 (click)="irAlPerfil(usuarioDestinoId)">
               {{ getNombreUsuario(usuarioDestinoId) }}
             </h3>
-
           </div>
         </div>
+      </div>
 
+      <!-- Mensaje cuando no hay conversaciones - CONDICIÓN MUY ESTRICTA -->
+      <div *ngIf="showNoConversationsMessage && !loading && !error && dataLoaded"
+           class="flex-1 flex items-center justify-center p-4">
+        <div class="text-center bg-[var(--color-verde-translucido)] p-6 rounded-lg shadow-lg max-w-md mx-auto">
+          <ion-icon name="people-outline" class="text-5xl text-[var(--chat-highlight)] mb-4"></ion-icon>
+          <h3 class="text-xl font-bold mb-2 text-[var(--chat-text-dark)]">No tienes conversaciones</h3>
+          <p class="text-sm mb-4 text-[var(--chat-text-dark)]">Visita perfiles para comenzar a chatear</p>
+          <button (click)="irAExplorar()"
+                  class="px-6 py-2 bg-[var(--color-amarillo-boton)] rounded-full text-sm font-medium hover:bg-opacity-90 transition-all shadow-sm">
+            Explorar perfiles
+          </button>
+        </div>
+      </div>
+
+      <!-- Mensaje cuando no hay conversación seleccionada -->
+      <div *ngIf="!usuarioDestinoId && !perfilBloqueado && conversaciones.length > 0"
+           class="flex-1 flex items-center justify-center p-4">
+        <div class="text-center bg-[var(--color-verde-translucido)] p-6 rounded-lg shadow-lg max-w-md mx-auto">
+          <ion-icon name="chatbubble-ellipses-outline" class="text-5xl text-[var(--chat-highlight)] mb-4"></ion-icon>
+          <h3 class="text-xl font-bold mb-2 text-[var(--chat-text-dark)]">Bienvenido al chat</h3>
+          <p class="text-sm mb-4 text-[var(--chat-text-dark)]">Selecciona una conversación para comenzar a chatear</p>
+          <div class="flex justify-center">
+            <div class="hidden md:flex items-center text-sm text-[var(--chat-text-dark)] opacity-75">
+              <ion-icon name="arrow-back-outline" class="text-2xl mr-2 animate-pulse"></ion-icon>
+              Selecciona una conversación
+            </div>
+            <div class="block md:hidden text-sm text-[var(--chat-text-dark)] opacity-75">
+              <ion-icon name="menu-outline" class="text-2xl animate-pulse"></ion-icon>
+              <p class="mt-2">Abre el menú para ver conversaciones</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Mensaje de perfil bloqueado -->
@@ -97,8 +129,8 @@
         </div>
       </div>
 
-      <!-- Área de mensajes (solo visible si no está bloqueado) -->
-      <div *ngIf="!perfilBloqueado"
+      <!-- Área de mensajes (solo visible si no está bloqueado y hay usuario seleccionado) -->
+      <div *ngIf="!perfilBloqueado && usuarioDestinoId"
            class="flex-1 overflow-y-auto pt-4 pb-1 sm:py-4 px-3 sm:px-4 bg-[var(--chat-main-bg)]"
            #scrollContainer
            (scroll)="onScroll($event)">
