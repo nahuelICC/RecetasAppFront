@@ -33,7 +33,13 @@ export class WebsocketService {
       return;
     }
 
-    const socketUrl = `ws://localhost:8081/ws-native?token=${encodeURIComponent(token)}`;
+    // Detectar entorno o usar variable de entorno
+    const isProduction = window.location.hostname !== 'localhost';
+    const baseUrl = isProduction
+      ? 'wss://cookersback.onrender.com'
+      : 'ws://localhost:8081';
+
+    const socketUrl = `${baseUrl}/ws-native?token=${encodeURIComponent(token)}`;
 
     this.stompClient = new Client({
       brokerURL: socketUrl,
