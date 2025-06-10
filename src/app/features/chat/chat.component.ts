@@ -1,17 +1,17 @@
 import {
   Component,
-  OnInit,
-  OnDestroy,
+   OnInit,
+   OnDestroy,
   ViewChild,
-  ElementRef,
-  AfterViewInit,
-  ChangeDetectorRef,
-  NgZone,
+   ElementRef,
+   AfterViewInit,
+   ChangeDetectorRef,
+   NgZone,
 } from "@angular/core"
 import  { ChatService } from "./chat.service"
 import  { AuthService } from "../../core/services/auth.service"
 import  { UsuarioService } from "../usuario/services/usuario.service"
-import {  Subscription, of, forkJoin } from "rxjs"
+import {  Subscription, of, forkJoin, combineLatest } from "rxjs"
 import { switchMap, map, catchError } from "rxjs/operators"
 import  { ChatDTO, ConversacionDTO } from "./models/chat.dto"
 import  { ActivatedRoute, Router } from "@angular/router"
@@ -58,8 +58,12 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
   usuariosSeguidos: any[] = []
   mostrarResultadosBusqueda = false
   perfilBloqueado = false
-  private scrollTimeout: any;
-  private resizeObserver: ResizeObserver | null = null;
+  private scrollTimeout: any
+  private resizeObserver: ResizeObserver | null = null
+
+  // NUEVA PROPIEDAD: Control estricto para mostrar mensaje de "no conversaciones"
+  dataLoaded = false
+  showNoConversationsMessage = false
 
   // Nuevas propiedades para emojis
   showEmojiPicker = false
@@ -215,44 +219,44 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
    * @private
    */
   private setupMutationObserver(): void {
-    if (!this.scrollContainer) return;
+    if (!this.scrollContainer) return
 
     this.zone.runOutsideAngular(() => {
       // MutationObserver para cambios en el DOM
       this.mutationObserver = new MutationObserver((mutations) => {
-        let shouldScroll = false;
+        let shouldScroll = false
 
         mutations.forEach((mutation) => {
-          if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-            shouldScroll = true;
+          if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
+            shouldScroll = true
           }
-        });
+        })
 
         if (shouldScroll) {
           // Delay más largo para componentes que cargan contenido dinámico
-          this.scrollToBottom(false, 100);
+          this.scrollToBottom(false, 100)
         }
-      });
+      })
 
       this.mutationObserver.observe(this.scrollContainer.nativeElement, {
         childList: true,
         subtree: true,
         attributes: true,
-        attributeFilter: ['style', 'class']
-      });
+        attributeFilter: ["style", "class"],
+      })
 
       // ResizeObserver para detectar cambios de tamaño (como cuando se carga preview-receta)
       this.resizeObserver = new ResizeObserver((entries) => {
-        for (let entry of entries) {
+        for (const entry of entries) {
           // Solo hacer scroll si el contenido creció
           if (entry.contentRect.height > 0) {
-            this.scrollToBottom(false, 50);
+            this.scrollToBottom(false, 50)
           }
         }
-      });
+      })
 
-      this.resizeObserver.observe(this.scrollContainer.nativeElement);
-    });
+      this.resizeObserver.observe(this.scrollContainer.nativeElement)
+    })
   }
 
   /**
@@ -279,15 +283,63 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * Método que inicializa las conversaciones del usuario actual
+   * Método CORREGIDO que inicializa las conversaciones
    * @private
    */
   private initConversaciones(): void {
-    this.loading = true
+    // Suscribirse al estado de carga
+    this.subscriptions.push(
+      this.chatService.loading$.subscribe((isLoading) => {
+        this.loading = isLoading
+        this.cdr.detectChanges()
+      }),
+    )
+
+    // Control para mostrar mensaje de "no conversaciones"
+    this.subscriptions.push(
+      combineLatest([this.chatService.conversaciones$, this.chatService.dataLoaded$]).subscribe(
+        ([conversaciones, dataLoaded]) => {
+          this.dataLoaded = dataLoaded
+          console.log("Estado conversaciones:", {
+            conversaciones: conversaciones.length,
+            dataLoaded,
+            showMessage: this.showNoConversationsMessage,
+          })
+
+          // Si hay conversaciones, ocultar inmediatamente el mensaje
+          if (conversaciones.length > 0) {
+            this.showNoConversationsMessage = false
+            this.cdr.detectChanges()
+            return
+          }
+
+          // Solo mostrar el mensaje después de que los datos estén completamente cargados
+          if (dataLoaded && conversaciones.length === 0) {
+            setTimeout(() => {
+              if (this.conversaciones.length === 0 && this.dataLoaded) {
+                this.showNoConversationsMessage = true
+                this.cdr.detectChanges()
+              }
+            }, 800)
+          }
+
+          this.cdr.detectChanges()
+        },
+      ),
+    )
+
+    // SUSCRIPCIÓN CORREGIDA: Eliminar el filtro problemático
     this.subscriptions.push(
       this.chatService.conversaciones$
         .pipe(
           switchMap((conversaciones) => {
+            console.log("Procesando conversaciones:", conversaciones.length)
+
+            // Si hay conversaciones, ocultar inmediatamente el mensaje
+            if (conversaciones.length > 0) {
+              this.showNoConversationsMessage = false
+            }
+
             // Solo verificar bloqueo para conversaciones nuevas
             const conversacionesExistentes = new Set(this.conversaciones.map((c) => c.otroUsuarioId))
             const conversacionesNuevas = conversaciones.filter(
@@ -327,19 +379,23 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
               .filter((conv) => conv.bloqueado)
               .forEach((conv) => this.usuariosBloqueados.add(conv.otroUsuarioId))
 
+            console.log("Conversaciones finales asignadas:", this.conversaciones.length)
+
             if (this.usuarioDestinoId && !this.conversaciones.some((c) => c.otroUsuarioId === this.usuarioDestinoId)) {
               this.agregarConversacionSiNecesario()
             }
-            this.loading = false
+
+            // Forzar detección de cambios
+            this.cdr.detectChanges()
           },
           error: (err) => {
             console.error("Error al cargar conversaciones:", err)
             this.error = "Error al cargar las conversaciones"
             this.loading = false
+            this.cdr.detectChanges()
           },
         }),
     )
-    this.chatService.refreshConversaciones()
   }
 
   /**
@@ -363,6 +419,8 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
         this.conversaciones.unshift(conversacionActualizada)
       }
 
+      // Si se añade una conversación, ocultar el mensaje de "no conversaciones"
+      this.showNoConversationsMessage = false
       this.cdr.detectChanges()
     } else {
       // Solo refrescar si la conversación no existe
@@ -389,6 +447,8 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     this.conversaciones = [nuevaConversacion, ...this.conversaciones]
+    // Si se añade una conversación, ocultar el mensaje de "no conversaciones"
+    this.showNoConversationsMessage = false
   }
 
   /**
@@ -466,44 +526,83 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
     this.subscriptions.push(
       this.websocketService.getMessages().subscribe({
         next: (msg) => {
-          if (!msg) return;
+          if (!msg) return
 
           if (this.usuariosBloqueados.has(msg.remitenteId)) {
-            return;
+            return
           }
 
           if (msg.borrado) {
-            const index = this.mensajes.findIndex((m) => m.id === msg.id);
+            const index = this.mensajes.findIndex((m) => m.id === msg.id)
             if (index !== -1) {
-              this.mensajes[index] = msg;
-              this.cdr.detectChanges();
-              return;
+              this.mensajes[index] = msg
+              this.cdr.detectChanges()
+              return
             }
           }
 
           if (!this.perfilBloqueado) {
-            this.audioService.reproducir("mensaje");
+            this.audioService.reproducir("mensaje")
 
-            const otroUsuarioId = msg.remitenteId === this.usuarioActualId ? msg.destinatarioId : msg.remitenteId;
-            this.actualizarConversacionEspecifica(otroUsuarioId, msg.texto, msg.fecha);
+            const otroUsuarioId = msg.remitenteId === this.usuarioActualId ? msg.destinatarioId : msg.remitenteId
+            this.actualizarConversacionEspecifica(otroUsuarioId, msg.texto, msg.fecha)
 
             if (
               (msg.remitenteId === this.usuarioDestinoId && msg.destinatarioId === this.usuarioActualId) ||
               (msg.remitenteId === this.usuarioActualId && msg.destinatarioId === this.usuarioDestinoId)
             ) {
-              this.mensajes.push(msg);
-              this.shouldScrollToBottom = true;
+              this.mensajes.push(msg)
+              this.shouldScrollToBottom = true
 
               // Detección de cambios y scroll con delay para contenido dinámico
-              this.cdr.detectChanges();
-              this.scrollToBottom(true, 150);
-              this.marcarMensajesComoLeidos();
+              this.cdr.detectChanges()
+              this.scrollToBottom(true, 150)
+              this.marcarMensajesComoLeidos()
             }
           }
         },
         error: (err) => console.error("Error en mensajes WebSocket:", err),
       }),
-    );
+    )
+
+    // NUEVA SUSCRIPCIÓN: Escuchar actualizaciones de estado de lectura
+    this.subscriptions.push(
+      this.websocketService.getReadStatusUpdates().subscribe({
+        next: (readUpdate) => {
+          if (readUpdate && readUpdate.type === "READ_STATUS_UPDATE") {
+            console.log("Actualización de lectura recibida:", readUpdate)
+
+            // Actualizar el estado de los mensajes como leídos en tiempo real
+            if (
+              readUpdate.remitenteId === this.usuarioActualId &&
+              readUpdate.destinatarioId === this.usuarioDestinoId
+            ) {
+              // Marcar mensajes enviados como leídos
+              this.mensajes.forEach((mensaje) => {
+                if (mensaje.remitenteId === this.usuarioActualId && !mensaje.leido) {
+                  mensaje.leido = true
+                }
+              })
+
+              // Actualizar conversaciones para quitar indicador de no leídos
+              this.actualizarEstadoConversacion(readUpdate.destinatarioId)
+
+              this.cdr.detectChanges()
+            }
+          }
+        },
+        error: (err) => console.error("Error en actualizaciones de lectura:", err),
+      }),
+    )
+  }
+
+  // Agregar este método nuevo:
+  private actualizarEstadoConversacion(usuarioId: number): void {
+    const conversacion = this.conversaciones.find((c) => c.otroUsuarioId === usuarioId)
+    if (conversacion) {
+      conversacion.noLeidos = false
+      this.cdr.detectChanges()
+    }
   }
 
   /**
@@ -707,32 +806,32 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
    * Método optimizado para scroll al final - VERSIÓN MEJORADA
    */
   scrollToBottom(force = false, delay = 0): void {
-    if (!this.scrollContainer?.nativeElement) return;
+    if (!this.scrollContainer?.nativeElement) return
 
     // Limpiar timeout anterior si existe
     if (this.scrollTimeout) {
-      clearTimeout(this.scrollTimeout);
+      clearTimeout(this.scrollTimeout)
     }
 
     this.zone.runOutsideAngular(() => {
       this.scrollTimeout = setTimeout(() => {
         try {
-          const element = this.scrollContainer.nativeElement;
-          const isNearBottom = element.scrollHeight - element.scrollTop - element.clientHeight < 150;
+          const element = this.scrollContainer.nativeElement
+          const isNearBottom = element.scrollHeight - element.scrollTop - element.clientHeight < 150
 
           if (force || isNearBottom || this.shouldScrollToBottom) {
             // Usar scrollTo con behavior smooth para mejor UX
             element.scrollTo({
               top: element.scrollHeight,
-              behavior: force ? 'auto' : 'smooth'
-            });
-            this.shouldScrollToBottom = false;
+              behavior: force ? "auto" : "smooth",
+            })
+            this.shouldScrollToBottom = false
           }
         } catch (err) {
-          console.error("Error al hacer scroll:", err);
+          console.error("Error al hacer scroll:", err)
         }
-      }, delay);
-    });
+      }, delay)
+    })
   }
 
   /**
@@ -740,16 +839,16 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param loadMore
    */
   cargarMensajes(loadMore = false): void {
-    if (!this.usuarioDestinoId || this.perfilBloqueado) return;
+    if (!this.usuarioDestinoId || this.perfilBloqueado) return
 
     if (loadMore) {
-      if (this.allMessagesLoaded || this.loadingMore) return;
-      this.currentPage++;
-      this.loadingMore = true;
+      if (this.allMessagesLoaded || this.loadingMore) return
+      this.currentPage++
+      this.loadingMore = true
     } else {
-      this.currentPage = 0;
-      this.allMessagesLoaded = false;
-      this.shouldScrollToBottom = true;
+      this.currentPage = 0
+      this.allMessagesLoaded = false
+      this.shouldScrollToBottom = true
     }
 
     this.chatService
@@ -757,45 +856,43 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
       .subscribe({
         next: (mensajes) => {
           if (loadMore) {
-            const prevScrollHeight = this.scrollContainer.nativeElement.scrollHeight;
-            const prevScrollTop = this.scrollContainer.nativeElement.scrollTop;
+            const prevScrollHeight = this.scrollContainer.nativeElement.scrollHeight
+            const prevScrollTop = this.scrollContainer.nativeElement.scrollTop
 
-            this.mensajes = [...mensajes.reverse(), ...this.mensajes];
+            this.mensajes = [...mensajes.reverse(), ...this.mensajes]
 
             // Usar requestAnimationFrame para mejor sincronización
             requestAnimationFrame(() => {
-              this.cdr.detectChanges();
+              this.cdr.detectChanges()
               requestAnimationFrame(() => {
-                const newScrollHeight = this.scrollContainer.nativeElement.scrollHeight;
-                this.scrollContainer.nativeElement.scrollTop = prevScrollTop + (newScrollHeight - prevScrollHeight);
-              });
-            });
+                const newScrollHeight = this.scrollContainer.nativeElement.scrollHeight
+                this.scrollContainer.nativeElement.scrollTop = prevScrollTop + (newScrollHeight - prevScrollHeight)
+              })
+            })
           } else {
-            this.mensajes = mensajes.reverse();
+            this.mensajes = mensajes.reverse()
 
             // Para mensajes nuevos, asegurar scroll al final con delay
             requestAnimationFrame(() => {
-              this.cdr.detectChanges();
+              this.cdr.detectChanges()
               // Delay adicional para componentes que cargan contenido dinámico
-              this.scrollToBottom(true, 200);
-            });
+              this.scrollToBottom(true, 200)
+            })
           }
 
           if (mensajes.length < this.pageSize) {
-            this.allMessagesLoaded = true;
+            this.allMessagesLoaded = true
           }
 
-          this.loading = false;
-          this.loadingMore = false;
-          this.marcarMensajesComoLeidos();
+          this.loadingMore = false
+          this.marcarMensajesComoLeidos()
         },
         error: (err) => {
-          this.loading = false;
-          this.loadingMore = false;
-          console.error("Error al cargar mensajes:", err);
-          this.error = "Error al cargar los mensajes";
+          this.loadingMore = false
+          console.error("Error al cargar mensajes:", err)
+          this.error = "Error al cargar los mensajes"
         },
-      });
+      })
   }
 
   /**
@@ -804,28 +901,28 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   seleccionarConversacion(usuarioId: number): void {
     if (usuarioId === this.usuarioActualId) {
-      this.error = "No puedes chatear contigo mismo";
-      return;
+      this.error = "No puedes chatear contigo mismo"
+      return
     }
 
     if (this.usuarioDestinoId === usuarioId) {
-      return;
+      return
     }
 
-    const encryptedId = this.encryptService.encriptar(usuarioId.toString());
+    const encryptedId = this.encryptService.encriptar(usuarioId.toString())
     this.router.navigate(["/chat", encryptedId]).then(() => {
       // Asegurar scroll al final después de navegar
       setTimeout(() => {
-        this.scrollToBottom(true, 300);
-      }, 500);
-    });
+        this.scrollToBottom(true, 300)
+      }, 500)
+    })
   }
 
   /**
    * Envía un mensaje al usuario destino - OPTIMIZADO
    */
   enviarMensaje(): void {
-    if (!this.nuevoMensaje.trim() || !this.usuarioDestinoId || this.perfilBloqueado) return;
+    if (!this.nuevoMensaje.trim() || !this.usuarioDestinoId || this.perfilBloqueado) return
 
     this.usuarioService.getPerfil().subscribe({
       next: (perfil) => {
@@ -838,31 +935,31 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
           borrado: false,
           remitenteNombre: perfil.nombre || "Usuario",
           remitenteFoto: perfil.fotoPerfil || "assets/frutero.png",
-        };
+        }
 
         this.chatService.enviarMensaje(mensaje).subscribe({
           next: (mensajeGuardado) => {
-            this.mensajes.push(mensajeGuardado);
-            this.nuevoMensaje = "";
-            this.shouldScrollToBottom = true;
+            this.mensajes.push(mensajeGuardado)
+            this.nuevoMensaje = ""
+            this.shouldScrollToBottom = true
 
             // Forzar detección de cambios y scroll inmediato
-            this.cdr.detectChanges();
-            this.scrollToBottom(true, 100);
+            this.cdr.detectChanges()
+            this.scrollToBottom(true, 100)
 
-            this.actualizarConversacionEspecifica(this.usuarioDestinoId!, mensajeGuardado.texto, mensajeGuardado.fecha);
+            this.actualizarConversacionEspecifica(this.usuarioDestinoId!, mensajeGuardado.texto, mensajeGuardado.fecha)
           },
           error: (err) => {
-            console.error("Error al enviar mensaje:", err);
-            this.error = "Error al enviar el mensaje";
+            console.error("Error al enviar mensaje:", err)
+            this.error = "Error al enviar el mensaje"
           },
-        });
+        })
       },
       error: (err) => {
-        console.error("Error al obtener perfil:", err);
-        this.error = "Error al cargar datos del usuario";
+        console.error("Error al obtener perfil:", err)
+        this.error = "Error al cargar datos del usuario"
       },
-    });
+    })
   }
 
   /**
@@ -924,16 +1021,16 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnDestroy(): void {
     // Limpiar timeout
     if (this.scrollTimeout) {
-      clearTimeout(this.scrollTimeout);
+      clearTimeout(this.scrollTimeout)
     }
 
     // Limpiar observers
-    this.mutationObserver?.disconnect();
-    this.resizeObserver?.disconnect();
+    this.mutationObserver?.disconnect()
+    this.resizeObserver?.disconnect()
 
     // Limpiar suscripciones
-    this.subscriptions.forEach((sub) => sub.unsubscribe());
-    this.websocketService.disconnect();
+    this.subscriptions.forEach((sub) => sub.unsubscribe())
+    this.websocketService.disconnect()
   }
 
   /**
@@ -1028,5 +1125,9 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
       month: "long",
       year: fecha.getFullYear() !== hoy.getFullYear() ? "numeric" : undefined,
     })
+  }
+
+  irAExplorar(): void {
+    this.router.navigate(["/explorador"])
   }
 }

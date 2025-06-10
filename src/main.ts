@@ -58,6 +58,11 @@ import {
   refreshOutline,
   alertCircle,
   ellipsisHorizontal,
+  peopleOutline,
+  chatbubbleEllipsesOutline,
+  arrowBackOutline,
+  menuOutline,
+
 } from "ionicons/icons"
 
 addIcons({
@@ -115,6 +120,11 @@ addIcons({
   refreshOutline,
   alertCircle,
   ellipsisHorizontal,
+  peopleOutline,
+  chatbubbleEllipsesOutline,
+  arrowBackOutline,
+  menuOutline,
+
 })
 
 bootstrapApplication(AppComponent, appConfig).catch((err) => console.error(err))
