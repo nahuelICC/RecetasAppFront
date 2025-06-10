@@ -106,6 +106,8 @@
               (mousedown)="showPassword = true"
               (mouseup)="showPassword = false"
               (mouseleave)="showPassword = false"
+              (touchstart)="showPassword = true"
+              (touchend)="showPassword = false"
               class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-600 hover:text-gray-800 focus:outline-none"
             >
               <ion-icon name="eye" class="h-5 w-5"></ion-icon>
@@ -131,6 +133,8 @@
               (mousedown)="showNewPassword = true"
               (mouseup)="showNewPassword = false"
               (mouseleave)="showNewPassword = false"
+              (touchstart)="showNewPassword = true"
+              (touchend)="showNewPassword = false"
               class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-600 hover:text-gray-800 focus:outline-none"
             >
               <ion-icon name="eye" class="h-5 w-5"></ion-icon>
@@ -159,6 +163,8 @@
               (mousedown)="showRepeatPassword = true"
               (mouseup)="showRepeatPassword = false"
               (mouseleave)="showRepeatPassword = false"
+              (touchstart)="showRepeatPassword = true"
+              (touchend)="showRepeatPassword = false"
               class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-600 hover:text-gray-800 focus:outline-none"
             >
               <ion-icon name="eye" class="h-5 w-5"></ion-icon>
