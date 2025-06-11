@@ -13,6 +13,15 @@
     (cancel)="onCancel()">
   </app-alert-confirmar>
 
+  <app-alert-confirmar
+    *ngIf="showAlertConfirmar"
+    [message]="alertMessage"
+    (confirm)="onConfirmAccept()"
+    [confirmLabel]="'Aceptar'"
+    [showCancelButton]="false"
+    [showIcon]="false">
+  </app-alert-confirmar>
+
 
   <h1 class="text-3xl font-bold mb-6 text-center" style="color: var(--color-texto-blanco)">Crear Receta</h1>
   <form (ngSubmit)="registrarReceta()" class="bg-white p-6 rounded-lg shadow-md space-y-6" style="background-color: var(--color-verde-cuadros)">
