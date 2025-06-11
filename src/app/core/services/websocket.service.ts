@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core"
 import { Client } from "@stomp/stompjs"
 import { BehaviorSubject, type Observable } from "rxjs"
-import  { ChatDTO } from "../../features/chat/models/chat.dto"
-import  { AuthService } from "./auth.service"
+import { ChatDTO } from "../../features/chat/models/chat.dto"
+import { AuthService } from "./auth.service"
 
 /**
  * Servicio para manejar la conexión WebSocket y la comunicación en tiempo real del chat.
@@ -14,8 +14,6 @@ export class WebsocketService {
   private stompClient: Client | null = null
   private messageSubject = new BehaviorSubject<ChatDTO | null>(null)
   private connectionStatus = new BehaviorSubject<boolean>(false)
-
-  // NUEVO: Subject para notificaciones de estado de lectura
   private readStatusSubject = new BehaviorSubject<any>(null)
 
   constructor(private authService: AuthService) {}
@@ -25,28 +23,31 @@ export class WebsocketService {
    */
   connect(): void {
     if (this.stompClient?.connected) {
-      return;
+      return
     }
 
-    const token = this.authService.getToken();
-    const userId = this.authService.getUserId();
+    const token = this.authService.getToken()
+    const userId = this.authService.getUserId()
 
     if (!token || !userId) {
-      console.error('No hay token o ID de usuario disponible');
-      return;
+      console.error("No hay token o ID de usuario disponible")
+      return
     }
 
-    // Detectar entorno o usar variable de entorno
-    const isProduction = window.location.hostname !== 'localhost';
-    const baseUrl = isProduction
-      ? 'wss://cookersback.onrender.com'
-      : 'ws://localhost:8081';
+    // Detectar entorno y configurar URL correctamente
+    const isProduction = window.location.hostname !== "localhost"
+    const baseUrl = isProduction ? "wss://cookersback.onrender.com" : "ws://localhost:8081"
 
-    const socketUrl = `${baseUrl}/ws-native?token=${encodeURIComponent(token)}`;
+    const socketUrl = `${baseUrl}/ws-native?token=${encodeURIComponent(token)}`
+
+    console.log("Conectando WebSocket a:", socketUrl)
+    console.log("Entorno de producción:", isProduction)
 
     this.stompClient = new Client({
       brokerURL: socketUrl,
       reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
       debug: (str) => console.log("[STOMP]", str),
       onConnect: () => {
         console.log("Conectado al servidor WebSocket")
@@ -54,16 +55,29 @@ export class WebsocketService {
       },
       onStompError: (frame) => {
         console.error("Error en WebSocket:", frame.headers["message"])
+        console.error("Frame completo:", frame)
+        this.connectionStatus.next(false)
+      },
+      onWebSocketError: (error) => {
+        console.error("Error de WebSocket:", error)
+        this.connectionStatus.next(false)
+      },
+      onDisconnect: () => {
+        console.log("WebSocket desconectado")
         this.connectionStatus.next(false)
       },
     })
 
-    this.stompClient.activate()
+    try {
+      this.stompClient.activate()
+    } catch (error) {
+      console.error("Error al activar WebSocket:", error)
+      this.connectionStatus.next(false)
+    }
   }
 
   /**
    * Endpoint que maneja la conexión exitosa y suscribe al usuario a los mensajes.
-   * @param userId ID del usuario para suscribirse a los mensajes.
    */
   private onConnectSuccess(userId: number): void {
     this.connectionStatus.next(true)
@@ -72,18 +86,17 @@ export class WebsocketService {
       try {
         const data = JSON.parse(message.body)
 
-        // NUEVA FUNCIONALIDAD: Manejar diferentes tipos de mensajes
         if (data.type === "READ_STATUS_UPDATE") {
           console.log("Actualización de estado de lectura recibida:", data)
           this.readStatusSubject.next(data)
         } else {
-          // Es un mensaje de chat normal
           const chatMessage: ChatDTO = data
           console.log("Mensaje recibido via WebSocket:", chatMessage)
           this.messageSubject.next(chatMessage)
         }
       } catch (e) {
         console.error("Error al parsear mensaje:", e)
+        console.error("Mensaje recibido:", message.body)
       }
     })
   }
@@ -96,6 +109,7 @@ export class WebsocketService {
       })
     } else {
       console.warn("WebSocket no conectado, mensaje no enviado")
+      console.warn("Estado de conexión:", this.connectionStatus.value)
     }
   }
 
@@ -119,7 +133,7 @@ export class WebsocketService {
   }
 
   /**
-   * NUEVO: Obtiene las notificaciones de estado de lectura
+   * Obtiene las notificaciones de estado de lectura
    */
   getReadStatusUpdates(): Observable<any> {
     return this.readStatusSubject.asObservable()
