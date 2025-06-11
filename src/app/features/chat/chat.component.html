@@ -198,7 +198,7 @@
                 <div class="text-[10px] mt-1 flex justify-end items-center gap-1 text-[var(--chat-timestamp)]">
                   <span [ngClass]="{'italic': mensaje.borrado}">{{ mensaje.fecha | date:'shortTime' }}</span>
                   <span *ngIf="mensaje.remitenteId === usuarioActualId && !mensaje.borrado" class="flex items-center">
-            <ion-icon [name]="mensaje.leido ? 'checkmark-done' : 'checkmark'" class="text-xs"></ion-icon>
+            <ion-icon [name]="mensaje.leido ? 'checkmark-done' : 'checkmark'" class="text-xl color-texto-blanco"></ion-icon>
           </span>
                 </div>
 
