@@ -57,6 +57,7 @@ export class CrearRecetaComponent implements OnInit {
   showConfirm: boolean = false;
 
   loading: boolean = false;
+  showAlertConfirmar: boolean = false;
 
   constructor(private crearRecetaService: CrearRecetaService, private router: Router) {}
 
@@ -335,10 +336,8 @@ export class CrearRecetaComponent implements OnInit {
       .subscribe({
         next: () => {
           this.alertMessage = 'Receta registrada con éxito';
-          this.alertType = 'success';
-          this.showAlert = true;
-          this.router.navigate(['/main']);
           this.loading = false;
+          this.showAlertConfirmar = true;
         },
         error: () => {
           this.alertMessage = 'Error al registrar la receta';
@@ -361,5 +360,10 @@ export class CrearRecetaComponent implements OnInit {
    */
   togglePasos(): void {
     this.mostrarPasos = !this.mostrarPasos;
+  }
+
+  onConfirmAccept() {
+    this.showAlertConfirmar = false;
+    this.router.navigate(['/main']);
   }
 }
