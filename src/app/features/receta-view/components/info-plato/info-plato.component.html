@@ -9,23 +9,7 @@
     >
   </div>
 
-  <!-- Modal para la imagen a pantalla completa -->
-  <div *ngIf="showModal"
-       class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 p-4"
-       (click)="toggleModal()">
-    <div class="relative max-w-6xl max-h-screen">
-      <button class="absolute -top-12 right-0 text-white text-3xl hover:text-gray-300"
-              (click)="toggleModal(); $event.stopPropagation()">
-        &times;
-      </button>
-      <img
-        [src]="receta.imagen"
-        [alt]="receta.nombre"
-        class="max-w-full max-h-[90vh] object-contain"
-        (click)="$event.stopPropagation()"
-      >
-    </div>
-  </div>
+
 
     <!-- Informacion del plato -->
     <div class="w-full max-w-4xl mx-auto px-4 sm:px-6 mt-6 sm:mt-8">
@@ -101,4 +85,22 @@
 
         </ul>
     </div>
+
+  <!-- Modal para la imagen a pantalla completa -->
+  <div *ngIf="showModal"
+       class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 p-4"
+       (click)="toggleModal()">
+    <div class="relative max-w-6xl max-h-screen">
+      <button class="absolute -top-12 right-0 text-white text-3xl hover:text-gray-300"
+              (click)="toggleModal(); $event.stopPropagation()">
+        &times;
+      </button>
+      <img
+        [src]="receta.imagen"
+        [alt]="receta.nombre"
+        class="max-w-full max-h-[90vh] object-contain"
+        (click)="$event.stopPropagation()"
+      >
+    </div>
+  </div>
 </div>
