@@ -1,4 +1,4 @@
-<div class="flex items-center justify-center min-h-screen mt-16 xl:mt-8 px-4 md:px-10">
+<div class="flex items-center justify-center min-h-screen mt-16 xl:mt-8 px-4 md:px-10 mb-20">
   <div class="color-verde-claro p-8 rounded-lg shadow-lg w-full max-w-3xl">
 
     <h2 class="text-2xl font-bold mb-6 mt-0 text-center">Crea tu cuenta</h2>
@@ -73,6 +73,8 @@
               (mousedown)="showPassword = true"
               (mouseup)="showPassword = false"
               (mouseleave)="showPassword = false"
+              (touchstart)="showPassword = true"
+              (touchend)="showPassword = false"
               class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-600 hover:text-gray-800 focus:outline-none"
             >
               <ion-icon name="eye" class="h-5 w-5"></ion-icon>
@@ -99,6 +101,8 @@
               (mousedown)="showConfirmPassword = true"
               (mouseup)="showConfirmPassword = false"
               (mouseleave)="showConfirmPassword = false"
+              (touchstart)="showConfirmPassword = true"
+              (touchend)="showConfirmPassword = false"
               class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-600 hover:text-gray-800 focus:outline-none"
             >
               <ion-icon name="eye" class="h-5 w-5"></ion-icon>
