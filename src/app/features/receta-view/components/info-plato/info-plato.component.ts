@@ -12,4 +12,12 @@ import { RecetaViewResponse } from '../../models/RecetaViewResponse';
 export class InfoPlatoComponent {
 
   @Input() receta!:RecetaViewResponse;
+
+  calcularKcal(): number {
+    return (this.receta.grasas * 9) + (this.receta.proteinas * 4) + (this.receta.hidratos * 4);
+  }
+
+  get kcalRedondeadas(): number {
+    return Math.round(this.calcularKcal());
+  }
 }
