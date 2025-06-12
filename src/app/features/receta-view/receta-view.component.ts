@@ -76,6 +76,9 @@ export class RecetaViewComponent implements OnInit {
   currentItemsToShow: number = 5;
   allComentarios: ComentarioResponse[] = [];
   displayedComentarios: ComentarioResponse[] = [];
+  showPasoModal: boolean = false;
+  currentPasoImage: string | null = null;
+
 
 
   ngOnInit(): void {
@@ -289,4 +292,16 @@ export class RecetaViewComponent implements OnInit {
       });
     });
   }
+
+  togglePasoModal(imageUrl?: string) {
+    if (imageUrl) {
+      this.currentPasoImage = imageUrl;
+      this.showPasoModal = true;
+    } else {
+      this.showPasoModal = false;
+      this.currentPasoImage  = null;
+    }
+  }
+
+
 }
