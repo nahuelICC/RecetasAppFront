@@ -55,10 +55,19 @@ ion-list {
 
 .custom-list {
   background: transparent;
-  
+
   ion-item {
     --background: transparent;
     --padding-start: 0;
     --inner-padding-end: 0;
   }
+}
+/* Asegura que el modal no sea interactivo durante la animación */
+.modal-transition {
+  pointer-events: none;
+}
+
+/* Restaura la interactividad cuando está completamente abierto */
+.modal-transition[class*='opacity-100'] {
+  pointer-events: auto;
 }
