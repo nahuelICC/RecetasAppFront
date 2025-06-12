@@ -38,7 +38,7 @@
             type="text"
             formControlName="username"
             placeholder="Ingrese su nombre de usuario"
-            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
+            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all text-black"
           >
           <div *ngIf="formStep1.get('username')?.invalid && (formStep1.get('username')?.dirty || formStep1.get('username')?.touched)"
                class="text-red-500 text-xs mt-1">
@@ -52,7 +52,7 @@
             type="email"
             formControlName="email"
             placeholder="Ingrese su correo electrónico"
-            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
+            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all text-black"
           >
           <div *ngIf="formStep1.get('email')?.invalid && (formStep1.get('email')?.dirty || formStep1.get('email')?.touched)"
                class="text-red-500 text-xs mt-1">
@@ -67,7 +67,7 @@
               [type]="showPassword ? 'text' : 'password'"
               formControlName="password"
               placeholder="Ingrese su contraseña"
-              class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
+              class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all text-black"
             />
             <button
               (mousedown)="showPassword = true"
@@ -93,7 +93,7 @@
               [type]="showConfirmPassword ? 'text' : 'password'"
               formControlName="confirmPassword"
               placeholder="Confirme su contraseña"
-              class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
+              class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all text-black"
             />
             <button
               (mousedown)="showConfirmPassword = true"
@@ -148,7 +148,7 @@
             type="text"
             formControlName="nombre"
             placeholder="Ingrese su nombre"
-            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
+            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all text-black"
           >
           <div *ngIf="formStep2.get('nombre')?.invalid && (formStep2.get('nombre')?.dirty || formStep2.get('nombre')?.touched)"
                class="text-red-500 text-xs mt-1">
@@ -162,7 +162,7 @@
             type="text"
             formControlName="apellidos"
             placeholder="Ingrese sus apellidos"
-            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
+            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all text-black"
           >
           <div *ngIf="formStep2.get('apellidos')?.invalid && (formStep2.get('apellidos')?.dirty || formStep2.get('apellidos')?.touched)"
                class="text-red-500 text-xs mt-1">
@@ -175,7 +175,7 @@
           <input
             type="date"
             formControlName="fecha"
-            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
+            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all text-black"
           >
           <div *ngIf="formStep2.get('fecha')?.invalid && (formStep2.get('fecha')?.dirty || formStep2.get('fecha')?.touched)"
                class="text-red-500 text-xs mt-1">
@@ -190,7 +190,7 @@
             type="text"
             formControlName="telefono"
             placeholder="Ingrese su número de teléfono"
-            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
+            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all text-black"
           >
           <div *ngIf="formStep2.get('telefono')?.invalid && (formStep2.get('telefono')?.dirty || formStep2.get('telefono')?.touched)"
                class="text-red-500 text-xs mt-1">
@@ -206,7 +206,7 @@
         <textarea
           formControlName="descripcionBreve"
           placeholder="Ingrese una descripción breve"
-          class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all max-h-20"
+          class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all max-h-20 text-black"
           rows="4"
         ></textarea>
       </div>
@@ -226,13 +226,13 @@
           <input
             type="text"
             placeholder="Buscar"
-            class="w-full outline-none bg-transparent"
+            class="w-full outline-none bg-transparent text-black"
             (input)="filtrarIngredientes($event)">
         </div>
 
         <!-- Resultados de búsqueda con scroll y fondo blanco -->
         <div *ngIf="ingredientesFiltrados.length > 0"
-             class="bg-white border rounded-lg shadow-md max-h-40 overflow-y-auto mt-2 p-2">
+             class="bg-white border rounded-lg shadow-md max-h-40 overflow-y-auto mt-2 p-2 text-black">
           <div *ngFor="let ingrediente of ingredientesFiltrados.slice(0, 5)"
                class="cursor-pointer hover:bg-gray-100 p-2 rounded"
                (click)="seleccionarIngrediente(ingrediente)">
