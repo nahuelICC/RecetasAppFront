@@ -31,10 +31,28 @@
         (click)="toggleGuardar();$event.stopPropagation()"></ion-icon>
       <span class="text-white text-sm mt-1">{{ receta.guardados }}</span>
     </div>
-  </div>
+    <div class="flex flex-col items-center">
+      <ion-icon
+        name="paper-plane-outline"
+        class="text-3xl text-white cursor-pointer hover:scale-110 transition-transform"
+        (click)="abrirShareModal();$event.stopPropagation()"></ion-icon>
+      <span class="invisible text-sm mt-1">_</span>
+    </div>
 
   <div class="absolute bottom-0 w-full color-verde-claro-tranlucido p-3 backdrop-blur-sm">
     <p class="font-semibold color-texto truncate text-center">{{ receta.nombre }}</p>
   </div>
 
 </div>
+  @if (mostrarShareModal) {
+    <app-share-modal
+      [recetaId]="receta.idReceta.toString()"
+      (closeModal)="mostrarShareModal = false"
+    ></app-share-modal>
+  }
+
+
+
+</div>
+
+

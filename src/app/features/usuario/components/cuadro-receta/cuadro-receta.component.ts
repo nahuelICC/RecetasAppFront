@@ -3,6 +3,7 @@ import {IonIcon} from '@ionic/angular/standalone';
 import {NgIf} from '@angular/common';
 import {UsuarioService} from '../../services/usuario.service';
 import {InicioService} from '../../../inicio/services/inicio.service';
+import {ShareModalComponent} from '../../../inicio/components/share-modal/share-modal.component';
 import {Router, RouterLink} from '@angular/router';
 import { EncryptService } from '../../../../core/services/encrypt.service';
 
@@ -14,7 +15,7 @@ import { EncryptService } from '../../../../core/services/encrypt.service';
   templateUrl: './cuadro-receta.component.html',
   styleUrls: ['./cuadro-receta.component.css'],
   standalone: true,
-  imports: [IonIcon, NgIf]
+  imports: [IonIcon, NgIf, ShareModalComponent]
 })
 export class CuadroRecetaComponent  implements OnInit {
 
@@ -37,6 +38,9 @@ export class CuadroRecetaComponent  implements OnInit {
   @Output() editaGuardar = new EventEmitter<any>();
 
   @Output() editaVisibilidad = new EventEmitter<any>();
+  menuAbierto: boolean = false;
+  mostrarShareModal: boolean = false;
+
 
   /**
    * Alterna la visibilidad de la receta.
@@ -118,4 +122,9 @@ export class CuadroRecetaComponent  implements OnInit {
     });
   }
 
+  abrirShareModal(): void {
+    this.menuAbierto = false;
+    this.mostrarShareModal = true;
+    console.log('Modal de compartir abierto para receta:', this.receta.idReceta);
+  }
 }
