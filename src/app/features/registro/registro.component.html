@@ -276,13 +276,13 @@
       <h3 class="text-xl font-bold text-center text-gray-800 mb-4">Resumen del Registro</h3>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <p><strong class="text-gray-700">Nombre de usuario:</strong> {{ formStep1.value.username }}</p>
-        <p><strong class="text-gray-700">Email:</strong> {{ formStep1.value.email }}</p>
-        <p><strong class="text-gray-700">Nombre:</strong> {{ formStep2.value.nombre }}</p>
-        <p><strong class="text-gray-700">Apellidos:</strong> {{ formStep2.value.apellidos }}</p>
-        <p><strong class="text-gray-700">Fecha de nacimiento:</strong> {{ formStep2.value.fecha }}</p>
-        <p><strong class="text-gray-700">Teléfono:</strong> {{ formStep2.value.telefono }}</p>
-        <p><strong class="text-gray-700">Descripción breve:</strong> {{ formStep2.value.descripcionBreve || 'No especificada' }}</p>
+        <p class="text-gray-700"><strong class="text-gray-700">Nombre de usuario:</strong> {{ formStep1.value.username }}</p>
+        <p class="text-gray-700"><strong class="text-gray-700">Email:</strong> {{ formStep1.value.email }}</p>
+        <p class="text-gray-700"><strong class="text-gray-700">Nombre:</strong> {{ formStep2.value.nombre }}</p>
+        <p class="text-gray-700"><strong class="text-gray-700">Apellidos:</strong> {{ formStep2.value.apellidos }}</p>
+        <p class="text-gray-700"><strong class="text-gray-700">Fecha de nacimiento:</strong> {{ formStep2.value.fecha }}</p>
+        <p class="text-gray-700"><strong class="text-gray-700">Teléfono:</strong> {{ formStep2.value.telefono }}</p>
+        <p class="text-gray-700"><strong class="text-gray-700">Descripción breve:</strong> {{ formStep2.value.descripcionBreve || 'No especificada' }}</p>
       </div>
 
       <!-- Ingredientes seleccionados -->
@@ -290,8 +290,8 @@
         <h4 class="text-lg font-bold text-gray-800">Ingredientes Seleccionados:</h4>
         <div *ngIf="ingredientesSeleccionados.length > 0; else sinIngredientes">
           <div class="flex gap-2 flex-wrap mt-2">
-            <ion-chip class="sinPointer" *ngFor="let ingrediente of ingredientesSeleccionados">
-              <ion-label >{{ ingrediente.nombre }}</ion-label>
+            <ion-chip class="sinPointer bg-gray-400" *ngFor="let ingrediente of ingredientesSeleccionados">
+              <ion-label class="text-black">{{ ingrediente.nombre }}</ion-label>
             </ion-chip>
           </div>
         </div>
