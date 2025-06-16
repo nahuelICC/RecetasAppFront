@@ -34,7 +34,7 @@ export class HeaderComponent implements OnInit {
   imagenPerfil: string = 'https://ionicframework.com/docs/img/demos/avatar.svg';
   mostrarNotificaciones = false;
   notificacionesNoLeidasCount = 0;
-  isLightMode: boolean = false;
+  isLightMode: boolean = true;
   mensajesNoLeidos: number = 0;
   private subscriptions: Subscription[] = [];
 
@@ -136,7 +136,7 @@ export class HeaderComponent implements OnInit {
    */
   toggleTheme() {
     this.isLightMode = !this.isLightMode;
-    localStorage.setItem('theme', this.isLightMode ? 'light' : 'dark');
+    localStorage.setItem('theme', this.isLightMode ? 'dark' : 'light');
     this.applyTheme();
   }
 
