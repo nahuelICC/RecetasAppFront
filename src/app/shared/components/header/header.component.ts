@@ -34,7 +34,7 @@ export class HeaderComponent implements OnInit {
   imagenPerfil: string = 'https://ionicframework.com/docs/img/demos/avatar.svg';
   mostrarNotificaciones = false;
   notificacionesNoLeidasCount = 0;
-  isLightMode: boolean = true;
+  isLightMode: boolean = false;
   mensajesNoLeidos: number = 0;
   private subscriptions: Subscription[] = [];
 
@@ -59,7 +59,7 @@ export class HeaderComponent implements OnInit {
       }
     });
     const savedTheme = localStorage.getItem('theme');
-    this.isLightMode = savedTheme === 'dark';
+    this.isLightMode = savedTheme ? savedTheme === 'dark' : false; // Oscuro si no hay tema guardado
     this.applyTheme();
 
     if (this.authService.isLogged()) {
