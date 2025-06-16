@@ -81,7 +81,7 @@ export const ingredientesConfigResolver: ResolveFn<EntityConfiguration> = (route
               type: 'select',
               options: categoriasOpts,
               placeholder: 'Seleccionar Categoría',
-              required: false
+              required: true
             },
             { name: 'proteinas', label: 'Proteínas (por 100g)', type: 'number', required: true, min: 0, step: 0.1 },
             { name: 'hidratos', label: 'Hidratos (por 100g)', type: 'number', required: true, min: 0, step: 0.1 },
