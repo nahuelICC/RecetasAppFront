@@ -59,7 +59,7 @@ export class HeaderComponent implements OnInit {
       }
     });
     const savedTheme = localStorage.getItem('theme');
-    this.isLightMode = savedTheme === 'light';
+    this.isLightMode = savedTheme === 'dark';
     this.applyTheme();
 
     if (this.authService.isLogged()) {
